@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div className="chat-container">
-      {isVisible && <ChatInterface greeting="How can I help you?" />}
+      {isVisible && <ChatInterface />}
       <button className="chat-bubble" onClick={toggleChat}>
         <img src={bubbleIcon} alt="Chat" />
         Chat

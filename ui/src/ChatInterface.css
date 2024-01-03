@@ -46,6 +46,7 @@
     padding: 10px 20px;
 }
 
+
 .chat-input-container label {
     position: absolute;
   width: 1px;
@@ -78,4 +79,20 @@
 .chat-input-container button img {
     width: 48px;
     height: auto;
+}
+
+.chat-disclaimer-container {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    border-top: 1px solid var(--tw-chat-primary);
+    background-color: var(--tw-chat-disclaimer-background, #f0f0f0);
+    color: var(--tw-chat-disclaimer-color, #000);
+}
+
+.chat-disclaimer-container a {
+    text-decoration: none;
+}
+
+.chat-is-waiting {
+    opacity: 0;
 }

@@ -2,11 +2,13 @@
 /*
 Plugin Name: Treyworks Chat UI
 Plugin URI: https://treyworks.com
-Description: A chat UI plugin for WordPress.
-Version: 1.0
+Description: A chat UI plugin for WordPress powered by the OpenAI Assistants API.
+Version: 2024.01.02
 Author: Treyworks LLC
 Author URI: https://treyworks.com
 */
+
+require_once 'vendor/autoload.php';
 
 class TWChatUIPlugin {
     /**
@@ -19,7 +21,7 @@ class TWChatUIPlugin {
         add_action('rest_api_init', array($this, 'register_chat_response_endpoint'));
         add_action('admin_menu', array($this, 'add_options_page'));
         add_action('admin_init', array($this, 'register_settings'));
-        add_shortcode('tw-chat-ui', array($this, 'tw_chat_ui_shortcode'));
+        // add_shortcode('tw-chat-ui', array($this, 'tw_chat_ui_shortcode'));
     }
 
     public function enqueue_scripts() {
@@ -40,7 +42,17 @@ class TWChatUIPlugin {
      * This function is hooked to 'wp_footer'.
      */
     public function add_footer_html() {
-        echo '<div id="tw-chat-ui"></div>';
+        $settings = $this->get_plugin_settings();
+        $dataArray = [
+            "greeting" => $settings["greeting"],
+            "disclaimer" => $settings["disclaimer"],
+            "privacy_policy_url" => $settings["privacy_policy_url"]
+        ];
+        $outputHtml = "<script id=\"tw-chat-ui-data\" type=\"application/json\">";
+        $outputHtml .= json_encode($dataArray);
+        $outputHtml .= "</script>";
+        $outputHtml .= '<div id="tw-chat-ui" data-wpnonce="' . wp_create_nonce("tw-chat-ui-endpoint") . '"></div>';
+        echo $outputHtml;
     }
 
     /**
@@ -60,8 +72,11 @@ class TWChatUIPlugin {
      * Registers settings for the options page.
      */
     public function register_settings() {
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_ui_endpoint_url');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_ui_primary_color');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_assistant_id');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_openai_key');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_greeting');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_privacy_policy_url');
     }
 
     /**
@@ -71,8 +86,11 @@ class TWChatUIPlugin {
      */
     public function get_plugin_settings() {
         return array(
-            'endpoint_url' => get_option('tw_chat_ui_endpoint_url', ''),  // Default to empty string if not set
-            'primary_color' => get_option('tw_chat_ui_primary_color', '') // Default to empty string if not set
+            'openai_key' => get_option('tw_chat_openai_key', ''),  // Default to empty string if not set
+            'assistant_id' => get_option('tw_chat_assistant_id', ''),
+            'greeting' => get_option('tw_chat_greeting', ''),
+            'disclaimer' => get_option('tw_chat_disclaimer', ''),
+            'privacy_policy_url' => get_option('tw_chat_privacy_policy_url', '')
         );
     }
 
@@ -80,7 +98,7 @@ class TWChatUIPlugin {
      * Renders the options page HTML.
      */
     public function render_options_page() {
-        include 'options-page.php';
+        include 'templates/options-page.php';
     }
 
     /**
@@ -90,7 +108,7 @@ class TWChatUIPlugin {
     public function register_chat_response_endpoint() {
         register_rest_route('tw-chat-ui/v1', '/chat-response', array(
             'methods' => 'POST',
-            'callback' => array($this, 'handle_retool_response'),
+            'callback' => array($this, 'handle_response'),
             'permission_callback' => function () { return true; }
         ));
     }
@@ -100,44 +118,108 @@ class TWChatUIPlugin {
      * Processes the 'messageHistory' and 'message' from POST data.
      * Returns a REST response.
      */
-    public function handle_retool_response($request) {
-        $params = $request->get_json_params();
-        $messageHistory = $params['messageHistory'] ?? null;
-        $message = $params['message'] ?? null;
+    public function handle_response($request) {
 
-        if (is_null($messageHistory) || is_null($message)) {
-            return new WP_Error('missing_params', 'Missing required parameters', array('status' => 400));
-        }
-
+        // Get settings
         $settings = $this->get_plugin_settings();
-        $endpoint_url = $settings['endpoint_url'];
+        $assistant_id = $settings['assistant_id'];
+        $openai_key = $settings['openai_key'];
         
-        if (empty($endpoint_url)) {
-            return new WP_Error('invalid_endpoint', 'The endpoint URL is not set.', array('status' => 500));
+        // Return error if settings are not found
+        if (empty($assistant_id)) {
+            return new WP_Error('missing_settings', 'The assistant ID is not set.', array('status' => 400));
         }
 
-        // Prepare the data to be sent in the POST request
-        $body = array(
-            'messageHistory' => $messageHistory,
-            'message' => $message
-        );
-
-        // Execute the POST request to the specified endpoint
-        $response = wp_remote_post($endpoint_url, array(
-            'headers' => array('Content-Type' => 'application/json; charset=utf-8'),
-            'body'    => json_encode($body),
-            'timeout'     => 45,
-            'method'  => 'POST',
-            'data_format' => 'body'
-        ));
-
-        // Handle the response from the endpoint
-        if (is_wp_error($response)) {
-            return $response;
+        if (empty($openai_key)) {
+            return new WP_Error('missing_settings', 'The OpenAI API Key is not set.', array('status' => 400));
         }
 
-        $response_body = wp_remote_retrieve_body($response);
-        return new WP_REST_Response($response_body, 200);
+        try {
+            // OpenAI API client
+            $client = OpenAI::client($openai_key);
+
+            // Get request parameters
+            $params = $request->get_json_params();
+            $thread_id = $params['thread_id'] ?? "";
+            $message = $params['message'] ?? null;
+            $nonce = $params['wpnonce'];
+            
+            $run_id = null;
+
+            // Check nonce
+            if (!wp_verify_nonce($nonce, 'tw-chat-ui-endpoint')) {
+                return new WP_Error('rest_invalid_nonce', __('Invalid nonce.'), array('status' => 403));
+            }
+
+            // Check for message parameter
+            if (empty($message) || is_null($message)) {
+                return new WP_Error('missing_params', __('Missing required parameters'), array('status' => 400));
+            }
+
+            // sanitize and block swear words
+            $sanitize_message = sanitize_text_field($message);
+            $clean_message = \ConsoleTVs\Profanity\Builder::blocker($sanitize_message)->filter();
+
+            // Create a new thread if none is passed
+            if (empty($thread_id) || is_null($thread_id)) {
+                $run_response = $client->threads()->createAndRun(
+                    array(
+                        'assistant_id' => $assistant_id,
+                        'thread' => array(
+                            'messages' => array(
+                                array(
+                                    'role' => 'user',
+                                    'content' => $clean_message
+                                ),
+                            ),
+                        ),
+                    ),
+                );
+                $thread_id = $run_response->threadId;
+                $run_id = $run_response->id;
+                
+            } else {
+                // Create a new message
+                $message_response = $client->threads()->messages()->create($thread_id, array(
+                    'role' => 'user',
+                    'content' => $clean_message,
+                ));
+
+                $run_response = $client->threads()->runs()->create(
+                    threadId: $thread_id, 
+                    parameters: array(
+                        'assistant_id' => $assistant_id,
+                    ),
+                );
+                $run_id = $run_response->id;
+            }
+
+            // poll for response
+            $is_complete = null;
+            while(is_null($is_complete)) {
+
+                $run_response = $client->threads()->runs()->retrieve(
+                    threadId: $thread_id,
+                    runId: $run_id,
+                );
+                $run_status = $run_response->status;
+
+                if ($run_status === 'completed' || $run_status === 'cancelled' || $run_status === 'failed' || $run_status === 'expired') {
+                    $completed_response = $run_response;
+                    break; 
+                } else {
+                    sleep(1);  // Wait for 1 seconds before checking again
+                }
+            }
+
+            $messages_response = $client->threads()->messages()->list($thread_id, [
+                'limit' => 1,
+            ]);
+
+            return new WP_REST_Response($messages_response->toArray(), 200);
+        } catch (Exception $e) {
+            return new WP_Error('api_error', 'Error ' . $e->getMessage(), array('status' => 400));
+        }
     }
 
     /**
@@ -145,10 +227,10 @@ class TWChatUIPlugin {
      * Enqueues necessary JavaScript and CSS for the chat UI.
      * Returns the HTML structure for the chat UI.
      */
-    public function tw_chat_ui_shortcode() {
-        $this->enqueue_scripts();
-        return "<div id=\"tw-chat-ui\"></div>";
-    }
+    // public function tw_chat_ui_shortcode() {
+    //     $this->enqueue_scripts();
+    //     return "<div id=\"tw-chat-ui\"></div>";
+    // }
     
 }
 
