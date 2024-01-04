@@ -1,0 +1,39 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --tw-chat-primary: #052b43;
+  --tw-chat-bubble-box-shadow: 0 0 10px rgba(0,0,0,0.25);
+  --tw-chat-bubble-background: #fff;
+}
+
+body {
+  background-color: var(--tw-chat-primary);
+  color: #fff;
+  min-height: 100vh;
+}
+
+.logo {
+  max-width: 250px;
+  height: auto;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
