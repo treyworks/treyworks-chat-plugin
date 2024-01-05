@@ -3,12 +3,18 @@ import './ChatInterface.css'; // Assuming separate CSS for ChatInterface
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import PulseLoader from "react-spinners/PulseLoader";
-import sendIcon from './assets/send.svg';
+
 import logoUrl from './assets/powered-by-treyworks.png';
-import showIcon from './assets/show.svg';
-import hideIcon from './assets/hide.svg';
 
+import SendIcon from './icons/sendIcon';
+import ShowIcon from './icons/showIcon';
+import HideIcon from './icons/hideIcon';
 
+// Get chat settings 
+const rootElement = document.getElementById('tw-chat-ui');
+const chatSettings = JSON.parse(document.getElementById('tw-chat-ui-data').textContent);
+
+/* Return a new message object */
 const newMessage = (content, role) => {
     return {
         content: content,
@@ -16,15 +22,9 @@ const newMessage = (content, role) => {
     }
 };
 
-const rootElement = document.getElementById('tw-chat-ui');
-const chatSettings = JSON.parse(document.getElementById('tw-chat-ui-data').textContent);
-const initialMessages = [
-    newMessage(chatSettings.greeting, "assistant")
-];
+const ChatInterface = ({ iconColor }) => {
 
-const ChatInterface = () => {
-
-    const [messages, setMessages] = useState(initialMessages);
+    const [messages, setMessages] = useState([newMessage(chatSettings.greeting, "assistant")]);
     const [messageText, setMessageText] = useState('');
     const [isWaiting, setIsWaiting] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -84,8 +84,8 @@ const ChatInterface = () => {
 
     const toggleDisclaimerText= () => {
         return !showDisclaimer ? 
-            <><img src={showIcon} alt="Show Disclaimer" /> Show Disclaimer </> :
-            <><img src={hideIcon} alt="Hide Disclaimer" /> Hide Disclaimer</>
+            <><ShowIcon iconColor={iconColor} /> Show Disclaimer </> :
+            <><HideIcon iconColor={iconColor} /> Hide Disclaimer</>
     }
     
     return (
@@ -104,7 +104,7 @@ const ChatInterface = () => {
             <label htmlFor="messageText">Send Message</label>
             <input placeholder="Enter your message..." id="messageText" type="text" onChange={handleMessageTextChange} value={messageText} name="message" required="required" />
              
-            <button><img src={sendIcon} alt="Send" /></button>
+            <button><SendIcon iconColor={iconColor} /><span className="sr-only">Send Message</span></button>
         </form>
         <div className='chat-disclaimer-container'>
             { showDisclaimer &&

@@ -1,7 +1,11 @@
 import './App.css'
-import bubbleIcon from './assets/speech-bubble.svg';
 import { useState } from 'react';
 import ChatInterface from './ChatInterface';
+import ChatIcon from './icons/chatIcon';
+
+// Get icon color
+var rootStyle = getComputedStyle(document.documentElement);
+var iconColor = rootStyle.getPropertyValue('--tw-chat-icon-color').trim();
 
 function App() {
 
@@ -17,10 +21,10 @@ function App() {
   return (
     <div className="chat-container">
       <div className={ isVisible ? "" : "chat-opacity-0"}>
-        <ChatInterface />
+        <ChatInterface iconColor={iconColor} />
       </div>
       <button className="chat-bubble" onClick={toggleChat}>
-        <img src={bubbleIcon} alt="Chat" />
+        <ChatIcon iconColor={iconColor} />
         Chat
       </button>
     </div>

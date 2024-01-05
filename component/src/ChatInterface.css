@@ -49,7 +49,7 @@
     background: var(--tw-chat-input-background, transparent);
 }
 
-.chat-input-container label {
+.chat-input-container label, .chat-interface .sr-only {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -78,7 +78,7 @@
     justify-content: center;
 }
 
-.chat-input-container button img {
+.chat-input-container button svg {
     width: 48px;
     height: auto;
 }
@@ -96,7 +96,7 @@
     text-decoration: none;
 }
 
-.chat-disclaimer-container img {
+.chat-disclaimer-container svg, .chat-disclaimer-container img {
     height: 36px;
     width: auto;
 }
@@ -116,7 +116,7 @@
     padding: 0;
 }
 
-.chat-disclaimer-container button img {
+.chat-disclaimer-container button svg {
     margin-right: 0.25rem;
     width: auto;
     height: 27px;
