@@ -22,11 +22,9 @@
             </tr>
             <tr valign="top">
                 <th scope="row">Disclaimer</th>
-                <td><input type="text" name="tw_chat_disclaimer" value="<?php echo esc_attr(get_option('tw_chat_disclaimer')); ?>" /></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row">Privacy Policy URL</th>
-                <td><input type="text" name="tw_chat_privacy_policy_url" value="<?php echo esc_attr(get_option('tw_chat_privacy_policy_url')); ?>" /></td>
+                <td>
+                    <textarea name="tw_chat_disclaimer" rows="3"><?php echo esc_attr(get_option('tw_chat_disclaimer')); ?></textarea>
+                </td>
             </tr>
         </table>
         <?php submit_button(); ?>

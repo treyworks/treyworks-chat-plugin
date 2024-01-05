@@ -3,7 +3,7 @@
 Plugin Name: Treyworks Chat UI
 Plugin URI: https://treyworks.com
 Description: A chat UI plugin for WordPress powered by the OpenAI Assistants API.
-Version: 2024.01.02
+Version: 2024.01.04
 Author: Treyworks LLC
 Author URI: https://treyworks.com
 */
@@ -13,7 +13,6 @@ require_once 'vendor/autoload.php';
 class TWChatUIPlugin {
     /**
      * Constructor for the TWChatUIPlugin class.
-     * Sets up shortcodes and hooks for REST API and script enqueuing.
      */
     public function __construct() {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_global_scripts'));
@@ -21,12 +20,11 @@ class TWChatUIPlugin {
         add_action('rest_api_init', array($this, 'register_chat_response_endpoint'));
         add_action('admin_menu', array($this, 'add_options_page'));
         add_action('admin_init', array($this, 'register_settings'));
-        // add_shortcode('tw-chat-ui', array($this, 'tw_chat_ui_shortcode'));
     }
 
     public function enqueue_scripts() {
-        wp_enqueue_script('tw-chat-ui-js', plugins_url('/ui/dist/tw-chat-ui.js', __FILE__), array(), '1.0.0', true);
-        wp_enqueue_style('tw-chat-ui-css', plugins_url('/ui/dist/style.css', __FILE__));
+        wp_enqueue_script('tw-chat-ui-js', plugins_url('/component/dist/tw-chat-ui.js', __FILE__), array(), '1.0.0', true);
+        wp_enqueue_style('tw-chat-ui-css', plugins_url('/component/dist/style.css', __FILE__));
     }
 
     /**
@@ -45,13 +43,12 @@ class TWChatUIPlugin {
         $settings = $this->get_plugin_settings();
         $dataArray = [
             "greeting" => $settings["greeting"],
-            "disclaimer" => $settings["disclaimer"],
-            "privacy_policy_url" => $settings["privacy_policy_url"]
+            "disclaimer" => $settings["disclaimer"]
         ];
         $outputHtml = "<script id=\"tw-chat-ui-data\" type=\"application/json\">";
         $outputHtml .= json_encode($dataArray);
         $outputHtml .= "</script>";
-        $outputHtml .= '<div id="tw-chat-ui" data-wpnonce="' . wp_create_nonce("tw-chat-ui-endpoint") . '"></div>';
+        $outputHtml .= '<div id="tw-chat-ui"></div>';
         echo $outputHtml;
     }
 
@@ -76,7 +73,6 @@ class TWChatUIPlugin {
         register_setting('tw-chat-ui-settings-group', 'tw_chat_openai_key');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_greeting');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_privacy_policy_url');
     }
 
     /**
@@ -90,7 +86,6 @@ class TWChatUIPlugin {
             'assistant_id' => get_option('tw_chat_assistant_id', ''),
             'greeting' => get_option('tw_chat_greeting', ''),
             'disclaimer' => get_option('tw_chat_disclaimer', ''),
-            'privacy_policy_url' => get_option('tw_chat_privacy_policy_url', '')
         );
     }
 
@@ -120,6 +115,16 @@ class TWChatUIPlugin {
      */
     public function handle_response($request) {
 
+        // check request server
+        $request_domain = $_SERVER['HTTP_HOST'];
+        $site_url = get_bloginfo('url');
+        $parsed_url = parse_url($site_url);
+        $server_domain = $parsed_url['host'];
+
+        if ($request_domain != $server_domain) {
+            return new WP_Error('no_crossorigin', __('Cross Origin access forbidden'), array('status' => 403));
+        }
+
         // Get settings
         $settings = $this->get_plugin_settings();
         $assistant_id = $settings['assistant_id'];
@@ -142,14 +147,8 @@ class TWChatUIPlugin {
             $params = $request->get_json_params();
             $thread_id = $params['thread_id'] ?? "";
             $message = $params['message'] ?? null;
-            $nonce = $params['wpnonce'];
             
             $run_id = null;
-
-            // Check nonce
-            if (!wp_verify_nonce($nonce, 'tw-chat-ui-endpoint')) {
-                return new WP_Error('rest_invalid_nonce', __('Invalid nonce.'), array('status' => 403));
-            }
 
             // Check for message parameter
             if (empty($message) || is_null($message)) {
@@ -221,17 +220,6 @@ class TWChatUIPlugin {
             return new WP_Error('api_error', 'Error ' . $e->getMessage(), array('status' => 400));
         }
     }
-
-    /**
-     * Handles the 'tw-chat-ui' shortcode.
-     * Enqueues necessary JavaScript and CSS for the chat UI.
-     * Returns the HTML structure for the chat UI.
-     */
-    // public function tw_chat_ui_shortcode() {
-    //     $this->enqueue_scripts();
-    //     return "<div id=\"tw-chat-ui\"></div>";
-    // }
-    
 }
 
 // Instantiate the plugin class
