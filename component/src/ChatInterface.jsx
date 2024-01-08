@@ -1,5 +1,4 @@
 import React from 'react';
-import './ChatInterface.css'; // Assuming separate CSS for ChatInterface
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import PulseLoader from "react-spinners/PulseLoader";
