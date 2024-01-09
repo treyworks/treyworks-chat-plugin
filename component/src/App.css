@@ -24,6 +24,7 @@
   flex-direction: column;
   justify-content: center;
   color: var(--tw-chat-primary, #000);
+  z-index: var(--tw-chat-bubble-z-index, 1);
 }
 
 .chat-bubble svg {
@@ -33,6 +34,9 @@
 
 .chat-opacity-0 {
   opacity: 0;
+  transform: scale(0);
+  width: 0;
+  height: 0;
 }
 
 .chat-interface {
