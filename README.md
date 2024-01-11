@@ -59,33 +59,51 @@ Automated responses can be set up through the prompt instructions defined in the
 Here is a list of CSS variable definitions and their default values:
 ```css
 :root {
-  --tw-chat-background: #fff;
-  --tw-chat-bubble-background: #fff;
-  --tw-chat-bubble-box-shadow: none;
-  --tw-chat-disclaimer-background: #f0f0f0;
-  --tw-chat-disclaimer-color: #000;
-  --tw-chat-disclaimer-font-size: 0.8rem;
-  --tw-chat-icon-color: #3d4df0;
-  --tw-chat-input-background: transparent;
-  --tw-chat-input-border: 1px solid;
-  --tw-chat-interface-border: 1px solid #ddd;
-  --tw-chat-interface-box-shadow: 0 0 5px rgba(0,0,0,0.1);
-  --tw-chat-interface-height: 500px;
-  --tw-chat-interface-max-height: 50vh;
-  --tw-chat-interface-max-width: 85vw;
-  --tw-chat-interface-width: 350px;
-  --tw-chat-message-background: #f0f0f0;
-  --tw-chat-message-border-radius: 0;
-  --tw-chat-message-box-shadow: -1px 1px rgba(0,0,0,0.5);
-  --tw-chat-message-color: #333;
-  --tw-chat-message-padding: 20px;
-  --tw-chat-message-user-background: #333;
-  --tw-chat-message-user-color: #fff;
-  --tw-chat-message-width: 85%;
-  --tw-chat-padding: 10px 20px;
-  --tw-chat-position-bottom: 25px;
-  --tw-chat-position-right: 25px;
-  --tw-chat-primary: #000;
+    --tw-chat-position-bottom: 25px;
+    --tw-chat-position-right: 25px;
+    --tw-chat-icon-color: #3d4df0;
+    --tw-chat-bubble-size: 100px;
+    --tw-chat-bubble-border-radius: 100%;
+    --tw-chat-bubble-background: #fff;
+    --tw-chat-bubble-box-shadow: none;
+    --tw-chat-bubble-font-size: 16px;
+    --tw-chat-primary: #000;
+    --tw-chat-bubble-z-index: 1;
+    --tw-chat-bubble-icon-size: 50px;
+    --tw-chat-interface-width: 350px;
+    --tw-chat-interface-max-width: 85vw;
+    --tw-chat-interface-height: 500px;
+    --tw-chat-interface-max-height: 50vh;
+    --tw-chat-background: white;
+    --tw-chat-interface-border: 1px solid #ddd;
+    --tw-chat-interface-box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    --tw-chat-header-background: #333;
+    --tw-chat-header-color: #fff;
+    --tw-chat-header-padding: 10px 20px;
+    --tw-chat-header-close-size: 32px;
+    --tw-chat-header-close-color: #fff;
+    --tw-chat-message-padding: 20px;
+    --tw-chat-message-border-radius: 0;
+    --tw-chat-message-box-shadow: -1px 1px rgba(0,0,0,0.5);
+    --tw-chat-padding: 10px 20px;
+    --tw-chat-message-width: 85%;
+    --tw-chat-message-background: #f0f0f0;
+    --tw-chat-message-color: #333;
+    --tw-chat-message-user-background: #333;
+    --tw-chat-message-user-color: #fff;
+    --tw-chat-message-error-background: transparent;
+    --tw-chat-message-error-box-shadow: none;
+    --tw-chat-input-border: 1px solid;
+    --tw-chat-input-background: transparent;
+    --tw-chat-disclaimer-font-size: 0.8rem;
+    --tw-chat-disclaimer-background: #f0f0f0;
+    --tw-chat-disclaimer-color: #000;
+    --tw-chat-interface-width-mobile: 95vw;
+    --tw-chat-interface-width-height: 95vh;
+    --tw-chat-interface-z-index-mobile: 999;
+    --tw-chat-bubble-size-mobile: 80px;
+    --tw-chat-bubble-font-size-mobile: 14px;
+    --tw-chat-bubble-icon-size-mobile: 40px;
 }
 ```
 
