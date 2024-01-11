@@ -3,7 +3,7 @@
 Plugin Name: Treyworks Chat UI
 Plugin URI: https://treyworks.com
 Description: A chat UI plugin for WordPress powered by the OpenAI Assistants API.
-Version: 2024.01.04
+Version: 2024.01.11
 Author: Treyworks LLC
 Author URI: https://treyworks.com
 */
@@ -15,24 +15,20 @@ class TWChatUIPlugin {
      * Constructor for the TWChatUIPlugin class.
      */
     public function __construct() {
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_global_scripts'));
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_footer', array($this, 'add_footer_html'));
         add_action('rest_api_init', array($this, 'register_chat_response_endpoint'));
         add_action('admin_menu', array($this, 'add_options_page'));
         add_action('admin_init', array($this, 'register_settings'));
     }
 
-    public function enqueue_scripts() {
-        wp_enqueue_script('tw-chat-ui-js', plugins_url('/component/dist/tw-chat-ui.js', __FILE__), array(), '1.0.0', true);
-        wp_enqueue_style('tw-chat-ui-css', plugins_url('/component/dist/style.css', __FILE__));
-    }
-
     /**
      * Enqueues additional scripts in the footer of the page.
      * This function is hooked to 'wp_enqueue_scripts'.
      */
-    public function enqueue_global_scripts() {
-        $this->enqueue_scripts();
+    public function enqueue_scripts() {
+        wp_enqueue_script('tw-chat-ui-js', plugins_url('/component/dist/tw-chat-ui.js', __FILE__), array(), '1.0.0', true);
+        wp_enqueue_style('tw-chat-ui-css', plugins_url('/component/dist/style.css', __FILE__));
     }
 
     /**
@@ -43,7 +39,10 @@ class TWChatUIPlugin {
         $settings = $this->get_plugin_settings();
         $dataArray = [
             "greeting" => $settings["greeting"],
-            "disclaimer" => $settings["disclaimer"]
+            "disclaimer" => $settings["disclaimer"],
+            "error_message" => $settings["error_message"],
+            "assistant_name" => $settings["assistant_name"]
+
         ];
         $outputHtml = "<script id=\"tw-chat-ui-data\" type=\"application/json\">";
         $outputHtml .= json_encode($dataArray);
@@ -57,8 +56,8 @@ class TWChatUIPlugin {
      */
     public function add_options_page() {
         add_options_page(
-            'Treyworks Chat UI Settings', // Page title
-            'Chat UI Settings',           // Menu title
+            'Treyworks Chat Settings', // Page title
+            'Treyworks Chat  Settings',           // Menu title
             'manage_options',             // Capability required
             'tw-chat-ui-settings',        // Menu slug
             array($this, 'render_options_page') // Callback function to render the options page
@@ -69,10 +68,12 @@ class TWChatUIPlugin {
      * Registers settings for the options page.
      */
     public function register_settings() {
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_assistant_name');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_assistant_id');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_openai_key');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_greeting');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_error_message');
     }
 
     /**
@@ -82,10 +83,12 @@ class TWChatUIPlugin {
      */
     public function get_plugin_settings() {
         return array(
-            'openai_key' => get_option('tw_chat_openai_key', ''),  // Default to empty string if not set
+            'assistant_name' => get_option('tw_chat_assistant_name', ''),
+            'openai_key' => get_option('tw_chat_openai_key', ''),
             'assistant_id' => get_option('tw_chat_assistant_id', ''),
             'greeting' => get_option('tw_chat_greeting', ''),
             'disclaimer' => get_option('tw_chat_disclaimer', ''),
+            'error_message' => get_option('tw_chat_error_message', '')
         );
     }
 

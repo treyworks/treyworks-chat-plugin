@@ -17,8 +17,16 @@
         <p>Enter configuration options for the chatbot user interface.</p>
         <table class="form-table">
             <tr valign="top">
+                <th scope="row">Assistant Name</th>
+                <td><input type="text" name="tw_chat_assistant_name" value="<?php echo esc_attr(get_option('tw_chat_assistant_name')); ?>" /></td>
+            </tr>
+            <tr valign="top">
                 <th scope="row">Chat Greeting</th>
                 <td><input type="text" name="tw_chat_greeting" value="<?php echo esc_attr(get_option('tw_chat_greeting')); ?>" /></td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Chat Error Message</th>
+                <td><input type="text" name="tw_chat_error_message" value="<?php echo esc_attr(get_option('tw_chat_error_message')); ?>" /></td>
             </tr>
             <tr valign="top">
                 <th scope="row">Disclaimer</th>
