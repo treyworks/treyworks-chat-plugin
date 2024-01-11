@@ -4,8 +4,8 @@ import ChatInterface from './ChatInterface';
 import ChatIcon from './icons/chatIcon';
 
 // Get icon color
-var rootStyle = getComputedStyle(document.documentElement);
-var iconColor = rootStyle.getPropertyValue('--tw-chat-icon-color').trim();
+const rootStyle = getComputedStyle(document.documentElement);
+const iconColor = rootStyle.getPropertyValue('--tw-chat-icon-color').trim();
 
 function App() {
 
@@ -19,11 +19,11 @@ function App() {
   };
 
   return (
-    <div className="chat-container">
-      <div className={ isVisible ? "" : "chat-opacity-0"}>
-        <ChatInterface iconColor={iconColor} />
+    <div className="tw-chat-container">
+      <div className={ isVisible ? "" : "tw-chat-visibility-0"}>
+        <ChatInterface iconColor={iconColor} toggleChat={toggleChat} />
       </div>
-      <button className="chat-bubble" onClick={toggleChat}>
+      <button className="tw-chat-bubble" onClick={toggleChat} aria-label="Open chat interface">
         <ChatIcon iconColor={iconColor} />
         Chat
       </button>

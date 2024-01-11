@@ -1,8 +1,9 @@
 :root {
   --tw-chat-icon-color: #3d4df0;
+  --tw-chat-header-close-color: #fff;
 }
 
-.chat-container {
+.tw-chat-container {
   position: fixed;
   bottom: var(--tw-chat-position-bottom, 25px);
   right: var(--tw-chat-position-right, 25px);;
@@ -11,12 +12,13 @@
   align-items: flex-end;
 }
 
-.chat-bubble {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+.tw-chat-bubble {
+  width: var(--tw-chat-bubble-size, 100px);
+  height: var(--tw-chat-bubble-size, 100px);
+  border-radius: var(--tw-chat-bubble-border-radius, 100%);
   background-color: var(--tw-chat-bubble-background, #fff);
   box-shadow: var(--tw-chat-bubble-box-shadow, none);
+  font-size: var(--tw-chat-bubble-font-size, 16px);
   border: none;
   cursor: pointer;
   display: flex;
@@ -27,19 +29,18 @@
   z-index: var(--tw-chat-bubble-z-index, 1);
 }
 
-.chat-bubble svg {
-  width: 50px;
+.tw-chat-bubble svg {
+  width: var(--tw-chat-bubble-icon-size, 50px);
   height: auto;
 }
 
-.chat-opacity-0 {
+.tw-chat-visibility-0 {
+  display: none;
+  visibility: hidden;
   opacity: 0;
-  transform: scale(0);
-  width: 0;
-  height: 0;
 }
 
-.chat-interface {
+.tw-chat-interface {
   width: var(--tw-chat-interface-width, 350px);
   max-width: var(--tw-chat-interface-max-width, 85vw);
   height: var(--tw-chat-interface-height, 500px);
@@ -52,7 +53,27 @@
   flex-direction: column;
 }
 
-.chat-messages {
+.tw-chat-header {
+  background-color: var(--tw-chat-header-background, #333);
+  color: var(--tw-chat-header-color, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--tw-chat-header-padding, 10px 20px);
+}
+
+.tw-chat-header .close {
+  background: none;
+  border: none;
+  align-self: flex-end;
+}
+
+.tw-chat-header .close svg {
+  width: var(--tw-chat-header-close-size, 32px);
+  height: var(--tw-chat-header-close-size, 32px);
+}
+
+.tw-chat-messages {
   display: flex;
   height: 100%;
   flex-direction: column;
@@ -60,7 +81,7 @@
   padding: var(--tw-chat-message-padding, 20px);
 }
 
-.chat-messages .message {
+.tw-chat-messages .message {
   border-radius: var(--tw-chat-message-border-radius, 0);
   box-shadow: var(--tw-chat-message-box-shadow, -1px 1px rgba(0,0,0,0.5));
   padding: var(--tw-chat-padding, 10px 20px);
@@ -70,19 +91,28 @@
   color: var(--tw-chat-message-color, #333);
 }
 
-.chat-messages .message.user {
+.tw-chat-messages .message.user {
   background: var(--tw-chat-message-user-background, #333);
   color: var(--tw-chat-message-user-color, #fff);
   align-self: flex-end;
 }
 
-.chat-messages .waiting-indicator {
+.tw-chat-messages .message.error {
+  background: var(--tw-chat-message-error-background, transparent);
+  color: var(--tw-chat-message-error-background, #333);
+  box-shadow: var(--tw-chat-message-error-box-shadow, none);
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tw-chat-messages .waiting-indicator {
   display: flex;
   justify-content: center;
   margin: 1rem;
 }
 
-.chat-input-container {
+.tw-chat-input-container {
   display: flex;
   border-top: var(--tw-chat-input-border, 1px solid);
   border-bottom: var(--tw-chat-input-border,  1px solid );
@@ -90,7 +120,7 @@
   background: var(--tw-chat-input-background, transparent);
 }
 
-.chat-input-container label, .chat-interface .sr-only {
+.tw-chat-input-container label, .tw-chat-interface .sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -102,14 +132,14 @@
   border: 0;
 }
 
-.chat-input-container input{
+.tw-chat-input-container input{
   width: 100%;
   background-color: transparent;
   border: none;
   color: var(--tw-chat-primary);
 }
 
-.chat-input-container button {
+.tw-chat-input-container button {
   background: transparent;
   border: none;
   text-transform: uppercase;
@@ -119,12 +149,12 @@
   justify-content: center;
 }
 
-.chat-input-container button svg {
+.tw-chat-input-container button svg {
   width: 48px;
   height: auto;
 }
 
-.chat-disclaimer-container {
+.tw-chat-disclaimer-container {
   display: flex;
   flex-direction: column;
   padding: var(--tw-chat-padding, 10px 20px);
@@ -133,22 +163,22 @@
   color: var(--tw-chat-disclaimer-color, #000);
 }
 
-.chat-disclaimer-container a {
+.tw-chat-disclaimer-container a {
   text-decoration: none;
 }
 
-.chat-disclaimer-container svg, .chat-disclaimer-container img {
+.tw-chat-disclaimer-container svg, .tw-chat-disclaimer-container img {
   height: 36px;
   width: auto;
 }
 
-.chat-disclaimer-links {
+.tw-chat-disclaimer-links {
   margin-top: 0.5rem;
   display: flex;
   justify-content: space-between;
 }
 
-.chat-disclaimer-container button {
+.tw-chat-disclaimer-container button {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -157,8 +187,33 @@
   padding: 0;
 }
 
-.chat-disclaimer-container button svg {
+.tw-chat-disclaimer-container button svg {
   margin-right: 0.25rem;
   width: auto;
   height: 27px;
+}
+
+/* mobile */
+@media screen and (max-width: 767px) {
+  .tw-chat-interface {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--tw-chat-interface-width-mobile, 95vw);
+    height: var(--tw-chat-interface-width-height, 95vh);
+    max-width: 100%;
+    z-index: var(--tw-chat-interface-z-index-mobile, 999);
+  }
+
+  .tw-chat-bubble {
+    width: var(--tw-chat-bubble-size-mobile, 80px);
+    height: var(--tw-chat-bubble-size-mobile, 80px);
+    font-size: var(--tw-chat-bubble-font-size-mobile, 14px);
+  }
+  
+  .tw-chat-bubble svg {
+    width: var(--tw-chat-bubble-icon-size-mobile, 40px);
+    height: auto;
+  }
 }
