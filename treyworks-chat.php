@@ -22,13 +22,21 @@ class TWChatUIPlugin {
         add_action('admin_init', array($this, 'register_settings'));
     }
 
+    public function is_enabled() {
+        $is_enabled = !empty(get_option('tw_chat_is_enabled'));
+        return $is_enabled;
+    }
+
     /**
      * Enqueues additional scripts in the footer of the page.
      * This function is hooked to 'wp_enqueue_scripts'.
      */
     public function enqueue_scripts() {
-        wp_enqueue_script('tw-chat-ui-js', plugins_url('/component/dist/tw-chat-ui.js', __FILE__), array(), '1.0.0', true);
-        wp_enqueue_style('tw-chat-ui-css', plugins_url('/component/dist/style.css', __FILE__));
+        // Check to see if chat widget is enabled
+        if ($this->is_enabled()) {
+            wp_enqueue_script('tw-chat-ui-js', plugins_url('/component/dist/tw-chat-ui.js', __FILE__), array(), '1.0.0', true);
+            wp_enqueue_style('tw-chat-ui-css', plugins_url('/component/dist/style.css', __FILE__));
+        }
     }
 
     /**
@@ -37,18 +45,22 @@ class TWChatUIPlugin {
      */
     public function add_footer_html() {
         $settings = $this->get_plugin_settings();
-        $dataArray = [
-            "greeting" => $settings["greeting"],
-            "disclaimer" => $settings["disclaimer"],
-            "error_message" => $settings["error_message"],
-            "assistant_name" => $settings["assistant_name"]
 
-        ];
-        $outputHtml = "<script id=\"tw-chat-ui-data\" type=\"application/json\">";
-        $outputHtml .= json_encode($dataArray);
-        $outputHtml .= "</script>";
-        $outputHtml .= '<div id="tw-chat-ui"></div>';
-        echo $outputHtml;
+        // Check to see if chat widget is enabled
+        if ($this->is_enabled()) {
+            $dataArray = [
+                "greeting" => $settings["greeting"],
+                "disclaimer" => $settings["disclaimer"],
+                "error_message" => $settings["error_message"],
+                "assistant_name" => $settings["assistant_name"]
+
+            ];
+            $outputHtml = "<script id=\"tw-chat-ui-data\" type=\"application/json\">";
+            $outputHtml .= json_encode($dataArray);
+            $outputHtml .= "</script>";
+            $outputHtml .= '<div id="tw-chat-ui"></div>';
+            echo $outputHtml;
+        }
     }
 
     /**
@@ -74,6 +86,7 @@ class TWChatUIPlugin {
         register_setting('tw-chat-ui-settings-group', 'tw_chat_greeting');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_error_message');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_is_enabled');
     }
 
     /**
@@ -88,7 +101,8 @@ class TWChatUIPlugin {
             'assistant_id' => get_option('tw_chat_assistant_id', ''),
             'greeting' => get_option('tw_chat_greeting', ''),
             'disclaimer' => get_option('tw_chat_disclaimer', ''),
-            'error_message' => get_option('tw_chat_error_message', '')
+            'error_message' => get_option('tw_chat_error_message', ''),
+            'is_enabled' => get_option('tw_chat_is_enabled')
         );
     }
 

@@ -6,6 +6,24 @@
     <form method="post" action="options.php">
         <?php settings_fields('tw-chat-ui-settings-group'); ?>
         <?php do_settings_sections('tw-chat-ui-settings-group'); ?>
+        <table class="form-table">
+            <th scope="row">Enable Chat Widget</th>
+            <td>
+                <input 
+                    type="checkbox" 
+                    id="tw_chat_is_enabled" 
+                    name="tw_chat_is_enabled" 
+                    value="enabled" 
+            <?php
+                $is_enabled = get_option('tw_chat_is_enabled');
+                if (!empty($is_enabled)) {
+                    echo "checked";
+                }
+            ?>
+                /> 
+                <label for="tw_chat_is_enabled">Enable</label>
+            </td>
+        </table>
         <p>Enter your OpenAI API key and assistant ID to use for the chatbot.</p>
         <table class="form-table">
             <tr valign="top">
