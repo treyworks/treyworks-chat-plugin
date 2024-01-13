@@ -19,7 +19,7 @@
 
 ## Usage:
 
-* Once activated, the chatbot will automatically appear on your website, ready to interact with visitors.
+* Once activated, users can enable the chatbot by going to Settings -> Treyworks Chat
 * Visitors can engage with the chatbot by typing their questions or requests in the chat interface.
 * The chatbot will utilize OpenAI Assistant API to generate responses and provide information or support.
 
