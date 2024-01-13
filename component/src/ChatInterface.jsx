@@ -41,6 +41,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
     const [characterCount, setCharacterCount] = useState(0);
     const lastElementRef = useRef(null);
     
+    // Set focus when instantiated
     useEffect(() => {
         setFocus();
     }, []);
@@ -53,6 +54,8 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         }
     }, [messages]);
 
+
+    // set keyboard focus on message input
     const setFocus = () => {
         document.getElementById("messageText").focus();
     }
@@ -69,30 +72,30 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
             message: messageText
         };
 
+        // Add thread ID if one exists. 
+        // The endpoint will create a new thread if nothing is passed.
         if (threadID) {
             data.threadID = threadID;
         }
 
-        // add new message to history
+        // Add new message to history
         window.twChatMessages = [...messages, newMessage(messageText, 'user')];
-        console.log(window.twChatMessages)
-        // update UI
+        // Set messages state to current history array
         setMessages(window.twChatMessages)
 
-        // Here you would also send the message to the server
+        // Send the message to the plugin enpoint
         axios.post(`${chatSettings.site_url}/wp-json/tw-chat-ui/v1/chat-response/`, data)
           .then(response => {
-            console.log(response.data);
-            // const responseData = JSON.parse(response.data)
+            // Check length of returned data
             if (response.data.data.length > 0) {
                 // Remove annotations
-
                 const newText = response.data.data[0].content[0].text.value.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "");
         
+                // Add response to messages state to update UI
                 setMessages([...window.twChatMessages, newMessage(newText, 'assistant')]); 
-                // Assuming the response has a messages array
             }
             setMessageText('');
+            setCharacterCount(0);
             setIsWaiting(false);
             setThreadID(response.data.thread_id);
             setFocus();
@@ -129,6 +132,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
             <><HideIcon iconColor={iconColor} /> Hide Disclaimer</>
     }
     
+    // Render component
     return (
     <div className="tw-chat-interface">
         <div className="tw-chat-header">
@@ -170,8 +174,6 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
                 </div>
             }
             </div>
-            
-             
             <button><SendIcon iconColor={iconColor} /><span className="sr-only">Send Message</span></button>
         </form>
         <div className='tw-chat-disclaimer-container'>
