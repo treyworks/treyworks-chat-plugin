@@ -78,12 +78,17 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         setMessages(window.twChatMessages)
 
         // Here you would also send the message to the server
-        axios.post('/wp-json/tw-chat-ui/v1/chat-response/', data)
+        axios.post(`${chatSettings.site_url}/wp-json/tw-chat-ui/v1/chat-response/`, data)
           .then(response => {
             console.log(response.data);
             // const responseData = JSON.parse(response.data)
             if (response.data.data.length > 0) {
-                setMessages([...window.twChatMessages, newMessage(response.data.data[0].content[0].text.value.replace(/(?:\r\n|\r|\n)/g, '<br />'), 'assistant')]); // Assuming the response has a messages array
+                // Remove annotations
+
+                const newText = response.data.data[0].content[0].text.value.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "");
+        
+                setMessages([...window.twChatMessages, newMessage(newText, 'assistant')]); 
+                // Assuming the response has a messages array
             }
             setMessageText('');
             setIsWaiting(false);
@@ -94,6 +99,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
           .catch(error => {
             console.error('Error fetching messages:', error);
             setMessages([...window.twChatMessages, newMessage(chatSettings.error_message, 'error')]); 
+            setIsWaiting(false);
           });
     };
 

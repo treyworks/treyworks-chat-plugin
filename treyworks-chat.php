@@ -3,7 +3,7 @@
 Plugin Name: Treyworks Chat UI
 Plugin URI: https://treyworks.com
 Description: A chat UI plugin for WordPress powered by the OpenAI Assistants API.
-Version: 2024.01.11
+Version: 2024.01.13
 Author: Treyworks LLC
 Author URI: https://treyworks.com
 */
@@ -52,8 +52,8 @@ class TWChatUIPlugin {
                 "greeting" => $settings["greeting"],
                 "disclaimer" => $settings["disclaimer"],
                 "error_message" => $settings["error_message"],
-                "assistant_name" => $settings["assistant_name"]
-
+                "assistant_name" => $settings["assistant_name"],
+                "site_url" => esc_url(site_url())
             ];
             $outputHtml = "<script id=\"tw-chat-ui-data\" type=\"application/json\">";
             $outputHtml .= json_encode($dataArray);
@@ -68,8 +68,8 @@ class TWChatUIPlugin {
      */
     public function add_options_page() {
         add_options_page(
-            'Treyworks Chat Settings', // Page title
-            'Treyworks Chat  Settings',           // Menu title
+            'Treyworks Chat for WordPress', // Page title
+            'Treyworks Chat for WordPress',           // Menu title
             'manage_options',             // Capability required
             'tw-chat-ui-settings',        // Menu slug
             array($this, 'render_options_page') // Callback function to render the options page

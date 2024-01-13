@@ -1,5 +1,5 @@
 <div class="wrap">
-    <h2>Treyworks Chat Settings</h2>
+    <h2>Treyworks Chat for WordPress</h2>
     <div class="postbox">   
         <p>This plugin is currently under active development. Please submit any issues to the <a href="https://github.com/treyworks/treyworks-chat-plugin/issues" target="_blank">Github page</a> or <a href="https://treyworks.com/contact-us/?utm_source=plugin&utm_medium=referral" target="_blank">send us a message</a> directly.</p>
     </div>
