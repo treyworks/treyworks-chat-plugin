@@ -176,6 +176,20 @@ class TWChatUIPlugin {
             $sanitize_message = sanitize_text_field($message);
             $clean_message = \ConsoleTVs\Profanity\Builder::blocker($sanitize_message)->filter();
 
+            // Moderation API call
+            $moderation_response = $client->moderations()->create([
+                'model' => 'text-moderation-latest',
+                'input' => $clean_message,
+            ]);
+            
+            // Loop moderation responses and checked for flagged status
+            foreach ($response->results as $result) {
+                if ($result->flagged) {
+                    // true, return error
+                    return new WP_Error('moderation_error', 'Message violates OpenAI Content Policy', array('status' => 400));
+                } 
+            }
+
             // Create a new thread if none is passed
             if (empty($thread_id) || is_null($thread_id)) {
                 $run_response = $client->threads()->createAndRun(
