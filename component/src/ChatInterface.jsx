@@ -13,6 +13,7 @@ import CloseIcon from './icons/close';
 // Get chat settings 
 const rootElement = document.getElementById('tw-chat-ui');
 const chatSettings = JSON.parse(document.getElementById('tw-chat-ui-data').textContent);
+const maxCharacters = chatSettings.max_characters;
 const rootStyle = getComputedStyle(document.documentElement);
 const closeColor = rootStyle.getPropertyValue('--tw-chat-header-close-color').trim();
 
@@ -31,12 +32,13 @@ window.twChatMessages = [
 
 const ChatInterface = ({ iconColor, toggleChat }) => {
 
-    // Inistialize state vars
+    // Initialize state vars
     const [messages, setMessages] = useState(window.twChatMessages);
     const [messageText, setMessageText] = useState('');
     const [isWaiting, setIsWaiting] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
     const [threadID, setThreadID] = useState(0);
+    const [characterCount, setCharacterCount] = useState(0);
     const lastElementRef = useRef(null);
     
     useEffect(() => {
@@ -105,7 +107,19 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
 
     // Handle message input change
     const handleMessageTextChange = (event) => {
+        const newText = event.target.value;
+        let newCharacterCount = newText.length;
+
+        // Enforce maxCharacters character limit if set
+        if (maxCharacters) {
+            if (newCharacterCount > maxCharacters) {
+                event.target.value = newText.slice(0, maxCharacters);
+                newCharacterCount = maxCharacters;
+            }
+        }
+  
         setMessageText(event.target.value);
+        setCharacterCount(newCharacterCount);
     };
 
     // Toggle disclaimer text
@@ -145,9 +159,18 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         </div>
         <form
             onSubmit={handleMessageSubmit} 
-            className={isWaiting ? "tw-chat-input-container tw-chat-visibility-0" : "tw-chat-input-container"}>
-            <label htmlFor="messageText">Send Message</label>
-            <input placeholder="Enter your message..." id="messageText" type="text" onChange={handleMessageTextChange} value={messageText} name="message" required="required" />
+            className={isWaiting ? "tw-chat-form tw-chat-visibility-0" : "tw-chat-form"}>
+            
+            <div className="tw-chat-input-container">
+                <label htmlFor="messageText">Send Message</label>
+                <input placeholder="Enter your message..." id="messageText" type="text" onChange={handleMessageTextChange} value={messageText} name="message" required="required" />
+            { maxCharacters && 
+                <div className="tw-chat-char-count">
+                    <span className={characterCount == maxCharacters ? "tw-chat-max-characters" : ""}>{characterCount} / {maxCharacters} characters</span>
+                </div>
+            }
+            </div>
+            
              
             <button><SendIcon iconColor={iconColor} /><span className="sr-only">Send Message</span></button>
         </form>

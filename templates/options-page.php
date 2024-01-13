@@ -55,6 +55,12 @@
                     <textarea class="regular-text" name="tw_chat_disclaimer" rows="5"><?php echo esc_attr(get_option('tw_chat_disclaimer')); ?></textarea>
                 </td>
             </tr>
+            <tr valign="top">
+                <th scope="row">Maximum Characters Allowed</th>
+                <td>
+                    <input class="regular-text" type="number" name="tw_chat_max_characters" value="<?php echo esc_attr(get_option('tw_chat_max_characters')); ?>" />
+                </td>
+            </tr>
         </table>
         <?php submit_button(); ?>
     </form>

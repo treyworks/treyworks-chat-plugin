@@ -53,7 +53,8 @@ class TWChatUIPlugin {
                 "disclaimer" => $settings["disclaimer"],
                 "error_message" => $settings["error_message"],
                 "assistant_name" => $settings["assistant_name"],
-                "site_url" => esc_url(site_url())
+                "site_url" => esc_url(site_url()),
+                "max_characters" => $settings["max_characters"]
             ];
             $outputHtml = "<script id=\"tw-chat-ui-data\" type=\"application/json\">";
             $outputHtml .= json_encode($dataArray);
@@ -87,6 +88,7 @@ class TWChatUIPlugin {
         register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_error_message');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_enabled');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_max_characters');
     }
 
     /**
@@ -102,7 +104,8 @@ class TWChatUIPlugin {
             'greeting' => get_option('tw_chat_greeting', ''),
             'disclaimer' => get_option('tw_chat_disclaimer', ''),
             'error_message' => get_option('tw_chat_error_message', ''),
-            'is_enabled' => get_option('tw_chat_is_enabled')
+            'is_enabled' => get_option('tw_chat_is_enabled'),
+            'max_characters' => get_option('tw_chat_max_characters')
         );
     }
 

@@ -112,7 +112,7 @@
   margin: 1rem;
 }
 
-.tw-chat-input-container {
+.tw-chat-form {
   display: flex;
   border-top: var(--tw-chat-input-border, 1px solid);
   border-bottom: var(--tw-chat-input-border,  1px solid );
@@ -120,7 +120,7 @@
   background: var(--tw-chat-input-background, transparent);
 }
 
-.tw-chat-input-container label, .tw-chat-interface .sr-only {
+.tw-chat-form label, .tw-chat-interface .sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -132,14 +132,14 @@
   border: 0;
 }
 
-.tw-chat-input-container input{
+.tw-chat-form input{
   width: 100%;
   background-color: transparent;
   border: none;
   color: var(--tw-chat-primary);
 }
 
-.tw-chat-input-container button {
+.tw-chat-form button {
   background: transparent;
   border: none;
   text-transform: uppercase;
@@ -149,9 +149,25 @@
   justify-content: center;
 }
 
-.tw-chat-input-container button svg {
+.tw-chat-form button svg {
   width: 48px;
   height: auto;
+}
+
+.tw-chat-input-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.tw-chat-input-container .tw-chat-char-count {
+  margin-top: 0.5rem;
+  font-size: var(--tw-chat-char-count-font-size, 0.75rem);
+}
+
+.tw-chat-input-container .tw-chat-max-characters {
+  font-weight: bold;
 }
 
 .tw-chat-disclaimer-container {
