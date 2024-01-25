@@ -9,9 +9,9 @@ export default defineConfig({
     lib: {
       // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, 'src/main.jsx'),
-      name: 'TWChatUI',
+      name: 'TWChat',
       // the proper extensions will be added
-      fileName: 'tw-chat-ui',
+      fileName: 'tw-chat',
     }
   },
   define: {

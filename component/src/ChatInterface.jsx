@@ -11,8 +11,7 @@ import HideIcon from './icons/hideIcon';
 import CloseIcon from './icons/close';
 
 // Get chat settings 
-const rootElement = document.getElementById('tw-chat-ui');
-const chatSettings = JSON.parse(document.getElementById('tw-chat-ui-data').textContent);
+const chatSettings = window.twChatSettings;
 const maxCharacters = chatSettings.max_characters;
 const rootStyle = getComputedStyle(document.documentElement);
 const closeColor = rootStyle.getPropertyValue('--tw-chat-header-close-color').trim();
@@ -84,7 +83,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         setMessages(window.twChatMessages)
 
         // Send the message to the plugin enpoint
-        axios.post(`${chatSettings.site_url}/wp-json/tw-chat-ui/v1/chat-response/`, data)
+        axios.post(`${chatSettings.site_url}/wp-json/tw-chat-assistant/v1/chat-response/`, data)
           .then(response => {
             // Check length of returned data
             if (response.data.data.length > 0) {

@@ -1,4 +1,4 @@
-# Treyworks Chat UI React Component
+# Treyworks Chat React Component
 
 ## Build instructions
 

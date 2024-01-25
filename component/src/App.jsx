@@ -25,7 +25,7 @@ function App() {
       </div>
       <button className="tw-chat-bubble" onClick={toggleChat} aria-label="Open chat interface">
         <ChatIcon iconColor={iconColor} />
-        Chat
+        {window.twChatSettings.button_text ? window.twChatSettings.button_text : "Chat"}
       </button>
     </div>
   );
