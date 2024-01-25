@@ -1,3 +1,9 @@
+<?php
+/**
+ *  Plugin settings page 
+ * 
+ */
+?>
 <div class="wrap">
     <h2>Treyworks Chat for WordPress</h2>
     <div class="postbox">   
@@ -42,6 +48,10 @@
                 <td><input class="regular-text" type="text" name="tw_chat_assistant_name" value="<?php echo esc_attr(get_option('tw_chat_assistant_name')); ?>" /></td>
             </tr>
             <tr valign="top">
+                <th scope="row">Chat Button Text</th>
+                <td><input class="regular-text" type="text" name="tw_chat_button_text" value="<?php echo esc_attr(get_option('tw_chat_button_text')); ?>" /></td>
+            </tr>
+            <tr valign="top">
                 <th scope="row">Chat Greeting</th>
                 <td><input class="regular-text" type="text" name="tw_chat_greeting" value="<?php echo esc_attr(get_option('tw_chat_greeting')); ?>" /></td>
             </tr>
@@ -65,6 +75,3 @@
         <?php submit_button(); ?>
     </form>
 </div>
-<style>
-    .postbox { padding: 0.5rem; margin-top: 1rem; }
-</style>
