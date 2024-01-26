@@ -114,10 +114,10 @@ class TW_Chat_Plugin {
     public function handle_chat_response($request) {
 
         // Verify nonce
-        // $nonce = $request->get_header('X-WP-Nonce');
-        // if ( !wp_verify_nonce($nonce, 'wp_rest') ) {
-        //     return new WP_Error('forbidden', __('Invalid nonce ' . $nonce), array('status' => 403));
-        // }
+        $nonce = $request->get_header('X-WP-Nonce');
+        if ( !wp_verify_nonce($nonce, 'wp_rest') ) {
+            return new WP_Error('forbidden', __('Invalid nonce ' . $nonce), array('status' => 403));
+        }
 
         // check request server
         $request_domain = $_SERVER['HTTP_HOST'];
