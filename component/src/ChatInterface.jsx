@@ -25,14 +25,14 @@ const newMessage = (content, role) => {
 };
 
 // Set up global message history array
-window.twChatMessages = [
+let twChatMessages = [
     newMessage(chatSettings.greeting, "assistant")
 ];
 
 const ChatInterface = ({ iconColor, toggleChat }) => {
 
     // Initialize state vars
-    const [messages, setMessages] = useState(window.twChatMessages);
+    const [messages, setMessages] = useState(twChatMessages);
     const [messageText, setMessageText] = useState('');
     const [isWaiting, setIsWaiting] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -68,7 +68,13 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         
         // Prepare data to be sent
         const data = {
-            message: messageText
+            message: messageText,
+            // _wpnonce: chatSettings.nonce
+        };
+        const axiosConfig = {
+            headers: {
+                'X-WP-Nonce': chatSettings.nonce
+            }
         };
 
         // Add thread ID if one exists. 
@@ -78,20 +84,22 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         }
 
         // Add new message to history
-        window.twChatMessages = [...messages, newMessage(messageText, 'user')];
+        twChatMessages = [...messages, newMessage(messageText, 'user')];
+        
         // Set messages state to current history array
-        setMessages(window.twChatMessages)
+        setMessages(twChatMessages)
 
         // Send the message to the plugin enpoint
-        axios.post(`${chatSettings.site_url}/wp-json/tw-chat-assistant/v1/chat-response/`, data)
-          .then(response => {
+        axios.post(`${chatSettings.root}tw-chat-assistant/v1/chat-response/`,
+            data, axiosConfig)
+        .then(response => {
             // Check length of returned data
             if (response.data.data.length > 0) {
                 // Remove annotations
                 const newText = response.data.data[0].content[0].text.value.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "");
         
                 // Add response to messages state to update UI
-                setMessages([...window.twChatMessages, newMessage(newText, 'assistant')]); 
+                setMessages([...twChatMessages, newMessage(newText, 'assistant')]); 
             }
             setMessageText('');
             setCharacterCount(0);
@@ -102,7 +110,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
           })
           .catch(error => {
             console.error('Error fetching messages:', error);
-            setMessages([...window.twChatMessages, newMessage(chatSettings.error_message, 'error')]); 
+            setMessages([...twChatMessages, newMessage(chatSettings.error_message, 'error')]); 
             setIsWaiting(false);
           });
     };

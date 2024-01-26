@@ -52,8 +52,9 @@ class TW_Chat_Plugin {
                 "disclaimer" => $settings["disclaimer"],
                 "error_message" => $settings["error_message"],
                 "assistant_name" => $settings["assistant_name"],
-                "site_url" => esc_url(site_url()),
-                "max_characters" => $settings["max_characters"]
+                "root" => esc_url_raw( rest_url() ),
+                "max_characters" => $settings["max_characters"],
+                'nonce' => wp_create_nonce('wp_rest')
             ];
             
             wp_localize_script('tw-chat-js', 'twChatSettings', $dataArray);
@@ -111,6 +112,12 @@ class TW_Chat_Plugin {
      * Returns a REST response.
      */
     public function handle_chat_response($request) {
+
+        // Verify nonce
+        // $nonce = $request->get_header('X-WP-Nonce');
+        // if ( !wp_verify_nonce($nonce, 'wp_rest') ) {
+        //     return new WP_Error('forbidden', __('Invalid nonce ' . $nonce), array('status' => 403));
+        // }
 
         // check request server
         $request_domain = $_SERVER['HTTP_HOST'];
