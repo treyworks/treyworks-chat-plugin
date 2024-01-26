@@ -94,10 +94,12 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
             data, axiosConfig)
         .then(response => {
             // Check length of returned data
-            if (response.data.data.length > 0) {
+            if (response.data.length > 0) {
+            // if (response.data.data.length > 0) {
                 // Remove annotations
-                const newText = response.data.data[0].content[0].text.value.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "");
-        
+                const newText = response.data.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "");
+                // const newText = response.data.data[0].content[0].text.value.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "");
+
                 // Add response to messages state to update UI
                 setMessages([...twChatMessages, newMessage(newText, 'assistant')]); 
             }

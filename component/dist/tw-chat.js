@@ -23310,8 +23310,8 @@ const SL = ({ iconColor: p, toggleChat: h }) => {
       Le,
       ft
     ).then((we) => {
-      if (we.data.data.length > 0) {
-        const dt = we.data.data[0].content[0].text.value.replace(/(?:\r\n|\r|\n)/g, "<br />").replace(/【\d+†source】/g, "");
+      if (we.data.length > 0) {
+        const dt = we.data.replace(/(?:\r\n|\r|\n)/g, "<br />").replace(/【\d+†source】/g, "");
         C([...ov, uy(dt, "assistant")]);
       }
       U(""), ye(0), E(!1), Y(we.data.thread_id), K();
