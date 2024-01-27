@@ -53,7 +53,7 @@
      * Renders the options page HTML.
      */
     public function render_options_page() {
-        include plugin_dir_path( __FILE__ ) . 'partials/settings-page.php';
+        require plugin_dir_path( __FILE__ ) . 'partials/settings-page.php';
     }
 
     /**
