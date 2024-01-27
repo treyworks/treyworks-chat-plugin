@@ -8,10 +8,8 @@ class TW_Chat_Plugin {
      * Constructor for the TW_Chat_Plugin class.
      */
     public function __construct() {
-
         $this->setup_admin();
         $this->setup_actions();
-
     }
 
     public function setup_admin() {
@@ -91,8 +89,6 @@ class TW_Chat_Plugin {
             'max_characters' => get_option('tw_chat_max_characters')
         );
     }
-
-    
 
     /**
      * Registers the REST API endpoint for chat responses.
@@ -223,17 +219,22 @@ class TW_Chat_Plugin {
 
                 if ($run_status === 'completed' || $run_status === 'cancelled' || $run_status === 'failed' || $run_status === 'expired') {
                     $completed_response = $run_response;
+                    $is_complete = true;
                     break; 
                 } else {
                     sleep(1);  // Wait for 1 seconds before checking again
                 }
             }
 
-            $messages_response = $client->threads()->messages()->list($thread_id, [
+            // Get latest message
+            $latest_message = $client->threads()->messages()->list($thread_id, [
                 'limit' => 1,
             ]);
 
-            return new WP_REST_Response($messages_response->toArray(), 200);
+            // Return response text
+            $messages_response = $latest_message->data[0]->content[0]->text->value;
+
+            return new WP_REST_Response($messages_response, 200);
         } catch (Exception $e) {
             return new WP_Error('api_error', 'Error ' . $e->getMessage(), array('status' => 400));
         }
