@@ -168,7 +168,7 @@ function ChatWidgetsManager() {
 
     return (
     <> 
-        <p><button className="button button-hero button-primary"  onClick={openModal}>Create New Chat Widget</button></p>
+        <p><button className="button button-primary"  onClick={openModal}>Create New Chat Widget</button></p>
         { chatWidgets.length > 0 && <WidgetsList /> }
         <Modal
             isOpen={modalIsOpen}

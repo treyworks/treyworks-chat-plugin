@@ -12,7 +12,7 @@ import CloseIcon from './icons/close';
 
 // Get chat settings 
 const chatSettings = window.twChatSettings;
-const maxCharacters = chatSettings.max_characters;
+const maxCharacters = chatSettings.tw_chat_max_characters;
 const rootStyle = getComputedStyle(document.documentElement);
 const closeColor = rootStyle.getPropertyValue('--tw-chat-header-close-color').trim();
 
@@ -25,11 +25,12 @@ const newMessage = (content, role) => {
 };
 
 // Set up global message history array
+const greeting = document.getElementById('tw-chat-component').dataset.chatGreeting;
 let twChatMessages = [
-    newMessage(chatSettings.greeting, "assistant")
+    newMessage(greeting, "assistant")
 ];
 
-const ChatInterface = ({ iconColor, toggleChat }) => {
+const ChatInterface = ({ iconColor, toggleChat, widgetID }) => {
 
     // Initialize state vars
     const [messages, setMessages] = useState(twChatMessages);
@@ -68,6 +69,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         
         // Prepare data to be sent
         const data = {
+            widget_id: widgetID,
             message: messageText,
             // _wpnonce: chatSettings.nonce
         };
@@ -80,7 +82,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         // Add thread ID if one exists. 
         // The endpoint will create a new thread if nothing is passed.
         if (threadID) {
-            data.threadID = threadID;
+            data.thread_id = threadID;
         }
 
         // Add new message to history
@@ -112,7 +114,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
           })
           .catch(error => {
             console.error('Error fetching messages:', error);
-            setMessages([...twChatMessages, newMessage(chatSettings.error_message, 'error')]); 
+            setMessages([...twChatMessages, newMessage(chatSettings.tw_chat_error_message, 'error')]); 
             setIsWaiting(false);
           });
     };
@@ -145,7 +147,7 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
     return (
     <div className="tw-chat-interface">
         <div className="tw-chat-header">
-            <span>{chatSettings.assistant_name}</span>
+            <span>{chatSettings.tw_chat_assistant_name}</span>
             <button 
                 className="close" 
                 onClick={() => toggleChat()}
@@ -187,10 +189,10 @@ const ChatInterface = ({ iconColor, toggleChat }) => {
         </form>
         <div className='tw-chat-disclaimer-container'>
             { showDisclaimer &&
-                <div dangerouslySetInnerHTML={{__html: chatSettings.disclaimer}} />
+                <div dangerouslySetInnerHTML={{__html: chatSettings.tw_chat_disclaimer}} />
             }
             <div className='tw-chat-disclaimer-links'>
-                { chatSettings.disclaimer && 
+                { chatSettings.tw_chat_disclaimer && 
                 <button onClick={() => setShowDisclaimer(!showDisclaimer) }>
                     { toggleDisclaimerText() }
                 </button>

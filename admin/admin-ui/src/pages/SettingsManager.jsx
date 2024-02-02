@@ -139,7 +139,7 @@ function SettingsManager() {
                         <th scope="row">Global Chat Widget</th>
                         <td>
                             <select name="tw_chat_global_widget_id" onChange={handleInputChange} defaultValue={formData.tw_chat_global_widget_id}>
-                                <option value="">Select an assistant</option>
+                                <option value="">Select a chat widget</option>
                             { chatWidgets.map(widget => (
                                 <option key={widget.id} value={widget.id}>{widget.name}</option>
                             ))}

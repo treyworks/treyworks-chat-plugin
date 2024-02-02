@@ -3,7 +3,12 @@
  * Define the functionality of the plugin.
  *
  */
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-admin.php';
+
 class TW_Chat_Plugin {
+
+    private TW_Chat_Admin $plugin_admin;
+
     /**
      * Constructor for the TW_Chat_Plugin class.
      */
@@ -16,17 +21,32 @@ class TW_Chat_Plugin {
         /**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-admin.php';
-
-		$plugin_admin = new TW_Chat_Admin();
+		$this->plugin_admin = new TW_Chat_Admin();
     }
 
     public function setup_actions() {
+        add_action('init', array($this, 'register_chat_widget_post_type'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_footer', array($this, 'add_footer_html'));
         add_action('rest_api_init', array($this, 'register_chat_response_endpoint'));
     }
 
+    /**
+     * Register Chat Widget Post Type
+     */
+    public function register_chat_widget_post_type() {
+        $args = array(
+            'public' => true,
+            'label'  => 'Chat Widgets',
+            'supports' => array('title', 'editor'),
+            'show_in_menu' => true, // This will hide it from the admin menu
+        );
+        register_post_type('chat_widgets', $args);
+    }
+
+    /** 
+     * Return is_enabled setting
+     */
     public function is_enabled() {
         $is_enabled = !empty(get_option('tw_chat_is_enabled'));
         return $is_enabled;
@@ -43,16 +63,16 @@ class TW_Chat_Plugin {
             wp_enqueue_style('tw-chat-css', plugins_url('../component/dist/style.css', __FILE__));
 
             // Localize script with plugin settings
-            $settings = $this->get_plugin_settings();
+            $settings = $this->plugin_admin->get_plugin_settings();
             $dataArray = [
-                "button_text" => $settings["button_text"],
-                "greeting" => $settings["greeting"],
-                "disclaimer" => $settings["disclaimer"],
-                "error_message" => $settings["error_message"],
-                "assistant_name" => $settings["assistant_name"],
                 "root" => esc_url_raw( rest_url() ),
-                "max_characters" => $settings["max_characters"],
-                'nonce' => wp_create_nonce('wp_rest')
+                'nonce' => wp_create_nonce('wp_rest'),
+                "tw_chat_button_text" => $settings["tw_chat_button_text"],
+                "tw_chat_disclaimer" => $settings["tw_chat_disclaimer"],
+                "tw_chat_error_message" => $settings["tw_chat_error_message"],
+                "tw_chat_assistant_name" => $settings["tw_chat_assistant_name"],       
+                "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
+                "tw_chat_widgets" => $this->plugin_admin->get_chat_widget_ids(), 
             ];
             
             wp_localize_script('tw-chat-js', 'twChatSettings', $dataArray);
@@ -66,28 +86,13 @@ class TW_Chat_Plugin {
     public function add_footer_html() {
         // Check to see if chat widget is enabled
         if ($this->is_enabled()) {
-            $outputHtml = '<div id="tw-chat-component"></div>';
+            // get the global widget id
+            $global_widget_id = get_option('tw_chat_global_widget_id');
+            $chat_widget = $this->plugin_admin->get_chat_widget_by_id($global_widget_id);
+
+            $outputHtml = '<div id="tw-chat-component" data-chat-widget="' . $global_widget_id . '" data-chat-greeting="' . $chat_widget['tw_chat_greeting'] .  '"></div>';
             echo $outputHtml;
         }
-    }
-
-    /**
-     * Retrieves the plugin's options settings.
-     * 
-     * @return array Contains the settings for Endpoint URL and Primary Color.
-     */
-    public function get_plugin_settings() {
-        return array(
-            'button_text' => get_option('tw_chat_button_text', ''),
-            'assistant_name' => get_option('tw_chat_assistant_name', ''),
-            'openai_key' => get_option('tw_chat_openai_key', ''),
-            'assistant_id' => get_option('tw_chat_assistant_id', ''),
-            'greeting' => get_option('tw_chat_greeting', ''),
-            'disclaimer' => get_option('tw_chat_disclaimer', ''),
-            'error_message' => get_option('tw_chat_error_message', ''),
-            'is_enabled' => get_option('tw_chat_is_enabled'),
-            'max_characters' => get_option('tw_chat_max_characters')
-        );
     }
 
     /**
@@ -126,14 +131,8 @@ class TW_Chat_Plugin {
         }
 
         // Get settings
-        $settings = $this->get_plugin_settings();
-        $assistant_id = $settings['assistant_id'];
-        $openai_key = $settings['openai_key'];
-        
-        // Return error if settings are not found
-        if (empty($assistant_id)) {
-            return new WP_Error('missing_settings', 'The assistant ID is not set.', array('status' => 400));
-        }
+        $settings = $this->plugin_admin->get_plugin_settings();
+        $openai_key = $settings['tw_chat_openai_key'];
 
         if (empty($openai_key)) {
             return new WP_Error('missing_settings', 'The OpenAI API Key is not set.', array('status' => 400));
@@ -142,18 +141,34 @@ class TW_Chat_Plugin {
         try {
             // OpenAI API client
             $client = OpenAI::client($openai_key);
+            $run_id = null;
 
             // Get request parameters
             $params = $request->get_json_params();
             $thread_id = $params['thread_id'] ?? "";
             $message = $params['message'] ?? null;
-            
-            $run_id = null;
+            $widget_id = $params['widget_id'] ?? null;
+
+            // Check for widget ID
+            if (empty($widget_id) || is_null($widget_id)) {
+                return new WP_Error('missing_params', __('Missing required parameters'), array('status' => 400));
+            }
 
             // Check for message parameter
             if (empty($message) || is_null($message)) {
                 return new WP_Error('missing_params', __('Missing required parameters'), array('status' => 400));
             }
+
+            // Get chat widget info
+            $chat_widget = $this->plugin_admin->get_chat_widget_by_id($widget_id);
+            // $assistant_id = $settings['tw_chat_assistant_id'];
+
+            // Return error if settings are not found
+            if (is_null($chat_widget)) {
+                return new WP_Error('missing_settings', 'The assistant ID is not set.', array('status' => 400));
+            }
+
+            $assistant_id = $chat_widget['tw_chat_assistant_id'];
 
             // sanitize and block swear words
             $sanitize_message = sanitize_text_field($message);

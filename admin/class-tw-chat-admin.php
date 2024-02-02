@@ -6,6 +6,8 @@
  */
 
  class TW_Chat_Admin {
+    public string $version = '0.1.0';
+
     /**
      * Constructor for the TW_Chat_Admin class.
      */
@@ -18,7 +20,11 @@
         add_action('admin_menu', array($this, 'add_options_page'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
-
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action( 'wp_ajax_save_settings', array($this, 'save_settings_callback') );
+        add_action( 'wp_ajax_get_chat_widgets', array($this, 'get_chat_widgets_callback') );
+        add_action( 'wp_ajax_get_assistants', array($this, 'get_assistants_callback') );
+        add_action( 'wp_ajax_create_chat_widget', array($this, 'create_chat_widget_callback'));
     }
 
     /**
@@ -27,9 +33,9 @@
     public function add_options_page() {
         add_options_page(
             'Treyworks Chat for WordPress', // Page title
-            'Treyworks Chat for WordPress',           // Menu title
+            'Treyworks Chat',           // Menu title
             'manage_options',             // Capability required
-            'tw-chat-ui-settings',        // Menu slug
+            'tw-chat-settings',        // Menu slug
             array($this, 'render_options_page') // Callback function to render the options page
         );
     }
@@ -47,6 +53,27 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_error_message');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_enabled');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_max_characters');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_global_widget_id');
+    }
+
+    /**
+     * Retrieves the plugin's options settings.
+     * 
+     * @return array Contains the settings
+     */
+    public function get_plugin_settings() {
+        return array(
+            'tw_chat_button_text' => get_option('tw_chat_button_text', ''),
+            'tw_chat_assistant_name' => get_option('tw_chat_assistant_name', ''),
+            'tw_chat_openai_key' => get_option('tw_chat_openai_key', ''),
+            'tw_chat_assistant_id' => get_option('tw_chat_assistant_id', ''),
+            'tw_chat_greeting' => get_option('tw_chat_greeting', ''),
+            'tw_chat_disclaimer' => get_option('tw_chat_disclaimer', ''),
+            'tw_chat_error_message' => get_option('tw_chat_error_message', ''),
+            'tw_chat_is_enabled' => get_option('tw_chat_is_enabled'),
+            'tw_chat_max_characters' => get_option('tw_chat_max_characters'),
+            'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id')
+        );
     }
 
     /**
@@ -60,9 +87,9 @@
 	 * Register the stylesheets for the admin area.
 	 */
 	public function enqueue_styles() {
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/tw-chat-admin.css', array(), $this->version, 'all' );
-
+        if ( isset( $_GET['page'] ) && $_GET['page'] === 'tw-chat-settings' ) {
+		    wp_enqueue_style( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/style.css', array(), $this->version, 'all' );
+        }
 	}
 
 	/**
@@ -70,9 +97,225 @@
 	 *
 	 */
 	public function enqueue_scripts() {
+        if ( isset( $_GET['page'] ) && $_GET['page'] === 'tw-chat-settings' ) {
+            wp_enqueue_script( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/tw-chat-admin.js', array(), $this->version, false );
 
-		// wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/plugin-name-admin.js', array( 'jquery' ), $this->version, false );
+            // Localize script with current settings
+            $script_data = $this->get_plugin_settings();
+            $script_data['ajax_url'] = admin_url( 'admin-ajax.php' );
+            $script_data['ajax_nonce'] =  wp_create_nonce( '_ajax_nonce' );
+            $script_data['chat_widgets'] = $this->get_chat_widgets();
 
+            wp_localize_script( 'tw-chat-admin', 'twChatSettings', $script_data );
+        }
 	}
 
+    /**
+	 * Handle Settings Form Submissions
+	 *
+	 */
+    public function save_settings_callback() {
+        try {
+
+            // Sanitize and validate received data
+            $settings = $_POST['data'];
+        
+            // Update settings 
+            update_option('tw_chat_openai_key', sanitize_text_field($settings['tw_chat_openai_key']));
+            update_option('tw_chat_is_enabled', sanitize_text_field($settings['tw_chat_is_enabled']));
+            update_option('tw_chat_button_text', sanitize_text_field($settings['tw_chat_button_text']));
+            update_option('tw_chat_disclaimer', sanitize_text_field($settings['tw_chat_disclaimer']));
+            update_option('tw_chat_error_message', sanitize_text_field($settings['tw_chat_error_message']));
+            update_option('tw_chat_max_characters', sanitize_text_field($settings['tw_chat_max_characters']));
+            update_option('tw_chat_global_widget_id', sanitize_text_field($settings['tw_chat_global_widget_id']));
+            // update_option('tw_chat_assistant_name', sanitize_text_field($settings['tw_chat_assistant_name']));
+            // update_option('tw_chat_assistant_id', sanitize_text_field($settings['tw_chat_assistant_id']));
+            // update_option('tw_chat_greeting', sanitize_text_field($settings['tw_chat_greeting']));
+            
+            // Send response back to AJAX
+            wp_send_json_success( array( 'message' => 'Settings saved!' ) );
+        } catch (Exception $e) {
+            wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
+        }
+    }
+    
+    /**
+     * Get Chat Widgets 
+     */
+    public function get_chat_widgets() {
+        // Query for chat assistant posts
+        $args = array(
+            'post_type' => 'chat_widgets', // Replace with your actual post type name
+            'posts_per_page' => -1,
+        );
+        $posts = get_posts( $args );
+
+        // Prepare the output array
+        $data = array();
+
+        // Loop through each post and its meta fields
+        foreach ( $posts as $post ) {
+            $post_data = array(
+                'id' => $post->ID,
+                'name' => $post->post_title,
+                // 'content' => $post->post_content,
+                // Add any other post fields you need
+            );
+
+            // Get all post meta fields
+            $post_meta = get_post_meta( $post->ID );
+
+            // Merge post meta with post data
+            $post_data['meta'] = $post_meta;
+
+            // Add the post data to the output array
+            $data[] = $post_data;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get Chat Widget IDs
+     */
+    public function get_chat_widget_ids() {
+        // Query for chat assistant posts
+        $args = array(
+            'post_type' => 'chat_widgets', // Replace with your actual post type name
+            'posts_per_page' => -1,
+        );
+        $posts = get_posts( $args );
+
+        // Prepare the output array
+        $data = array();
+
+        // Loop through each post and add the post ID
+        foreach ( $posts as $post ) {
+            $data[] = $post->ID;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get Assitant ID by Chat Widget ID
+     */
+    public function get_chat_widget_by_id($post_id) {
+        // Query for chat assistant posts
+        $post = get_post($post_id, ARRAY_A, 'chat_widgets');
+
+        if ($post) {
+            $assistant_id = get_post_meta($post_id, 'tw_chat_assistant_id', true);
+            $greeting = get_post_meta($post_id, 'tw_chat_greeting', true);
+
+            if (empty($assistant_id) || is_null($assistant_id)) {
+                // No assistant ID found
+                return null;
+            }
+
+            return array(
+                'tw_chat_widget_name' => $post['post_title'],
+                'tw_chat_assistant_id' => $assistant_id,
+                'tw_chat_greeting' => $greeting
+            );
+
+        } else {
+            // Handle the case where the post is not found
+            return null;
+        }
+    }
+
+    /**
+     * Get Chat Widgets AJAX Callback
+     */
+    public function get_chat_widgets_callback() {
+        try {
+            // Query for chat widget post
+            $data = $this->get_chat_widgets();
+            // Return the data in a JSON success response
+            wp_send_json_success( $data );
+        } catch (Exception $e) {
+            wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
+        }
+    }
+
+    /**
+     * Get Assistants using OpenAI API
+     */
+    public function get_assistants() {
+
+        /* Get API Key */
+        $settings = $this->get_plugin_settings();
+        $openai_key = $settings['tw_chat_openai_key'];
+
+        if (empty($openai_key)) {
+            return array();
+        }
+
+        // OpenAI API client
+        $client = OpenAI::client($openai_key);
+        $response = $client->assistants()->list();
+
+        return $response->data;
+    }
+
+    /**
+     * Get Assistants AJAX Callback
+     */
+    public function get_assistants_callback() {
+        try {
+            // Query for chat widget post
+            $data = $this->get_assistants();
+
+            if ($data == false) {
+                wp_send_json_error( array( 'message' => 'Error retrieving OpenAI API key') );
+            }
+            
+            // Return the data in a JSON success response
+            wp_send_json_success( $data );
+        } catch (Exception $e) {
+            wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
+        }
+        wp_die();
+    }
+
+    /**
+     * Create new chat_widget post
+     */
+    function create_chat_widget_callback() {
+        try {
+            // Get and sanitize post data
+            $chat_widget_name = sanitize_text_field($_POST['tw_chat_widget_name']);
+            $greeting = sanitize_text_field($_POST['tw_chat_greeting']);
+            $assistant_id = sanitize_text_field($_POST['tw_chat_assistant_id']);
+        
+            // Create the new post
+            $post_args = array(
+                'post_type' => 'chat_widgets',
+                'post_title' => $chat_widget_name,
+                'post_status' => 'publish',
+            );
+            $post_id = wp_insert_post($post_args);
+        
+            // Add the meta field
+            if ($post_id) {
+                update_post_meta($post_id, 'tw_chat_assistant_id', $assistant_id);
+                update_post_meta($post_id, 'tw_chat_greeting', $greeting);
+            }
+        
+            // Return an array with the new post data
+            $data = array(
+                'id' => $post_id,
+                'name' => $chat_widget_name,
+                'meta' => array(
+                    'tw_chat_greeting' => $greeting,
+                    'tw_chat_assistant_id' => $assistant_id
+                )
+            );
+            wp_send_json_success( $data );
+        } catch (Exception $e) {
+            wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
+        }
+        wp_die();
+    }
 }

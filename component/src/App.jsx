@@ -7,7 +7,7 @@ import ChatIcon from './icons/chatIcon';
 const rootStyle = getComputedStyle(document.documentElement);
 const iconColor = rootStyle.getPropertyValue('--tw-chat-icon-color').trim();
 
-function App() {
+function App({ widgetID }) {
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -21,11 +21,11 @@ function App() {
   return (
     <div className="tw-chat-container">
       <div className={ isVisible ? "" : "tw-chat-visibility-0"}>
-        <ChatInterface iconColor={iconColor} toggleChat={toggleChat} />
+        <ChatInterface widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} />
       </div>
       <button className="tw-chat-bubble" onClick={toggleChat} aria-label="Open chat interface">
         <ChatIcon iconColor={iconColor} />
-        {window.twChatSettings.button_text ? window.twChatSettings.button_text : "Chat"}
+        {window.twChatSettings.tw_chat_button_text ? window.twChatSettings.tw_chat_button_text : "Chat"}
       </button>
     </div>
   );
