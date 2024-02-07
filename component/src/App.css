@@ -42,7 +42,7 @@
 
 .tw-chat-interface {
   width: var(--tw-chat-interface-width, 350px);
-  max-width: var(--tw-chat-interface-max-width, 85vw);
+  max-width: var(--tw-chat-interface-max-width, 85%);
   height: var(--tw-chat-interface-height, 500px);
   max-height: var(--tw-chat-interface-max-height, 50vh);
   background-color: var(--tw-chat-background, white);
@@ -211,11 +211,14 @@
 
 /* mobile */
 @media screen and (max-width: 767px) {
-  .tw-chat-interface {
+  .tw-chat-interface.sticky {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  .tw-chat-interface {
     width: var(--tw-chat-interface-width-mobile, 95vw);
     height: var(--tw-chat-interface-width-height, 95vh);
     max-width: 100%;

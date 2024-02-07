@@ -104,7 +104,7 @@
             $script_data = $this->get_plugin_settings();
             $script_data['ajax_url'] = admin_url( 'admin-ajax.php' );
             $script_data['ajax_nonce'] =  wp_create_nonce( '_ajax_nonce' );
-            $script_data['chat_widgets'] = $this->get_chat_widgets();
+            $script_data['chat_widgets'] = TW_Chat_Widgets::get_chat_widgets();
 
             wp_localize_script( 'tw-chat-admin', 'twChatSettings', $script_data );
         }
@@ -128,100 +128,11 @@
             update_option('tw_chat_error_message', sanitize_text_field($settings['tw_chat_error_message']));
             update_option('tw_chat_max_characters', sanitize_text_field($settings['tw_chat_max_characters']));
             update_option('tw_chat_global_widget_id', sanitize_text_field($settings['tw_chat_global_widget_id']));
-            // update_option('tw_chat_assistant_name', sanitize_text_field($settings['tw_chat_assistant_name']));
-            // update_option('tw_chat_assistant_id', sanitize_text_field($settings['tw_chat_assistant_id']));
-            // update_option('tw_chat_greeting', sanitize_text_field($settings['tw_chat_greeting']));
-            
+
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
         } catch (Exception $e) {
             wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
-        }
-    }
-    
-    /**
-     * Get Chat Widgets 
-     */
-    public function get_chat_widgets() {
-        // Query for chat assistant posts
-        $args = array(
-            'post_type' => 'chat_widgets', // Replace with your actual post type name
-            'posts_per_page' => -1,
-        );
-        $posts = get_posts( $args );
-
-        // Prepare the output array
-        $data = array();
-
-        // Loop through each post and its meta fields
-        foreach ( $posts as $post ) {
-            $post_data = array(
-                'id' => $post->ID,
-                'name' => $post->post_title,
-                // 'content' => $post->post_content,
-                // Add any other post fields you need
-            );
-
-            // Get all post meta fields
-            $post_meta = get_post_meta( $post->ID );
-
-            // Merge post meta with post data
-            $post_data['meta'] = $post_meta;
-
-            // Add the post data to the output array
-            $data[] = $post_data;
-        }
-
-        return $data;
-    }
-
-    /**
-     * Get Chat Widget IDs
-     */
-    public function get_chat_widget_ids() {
-        // Query for chat assistant posts
-        $args = array(
-            'post_type' => 'chat_widgets', // Replace with your actual post type name
-            'posts_per_page' => -1,
-        );
-        $posts = get_posts( $args );
-
-        // Prepare the output array
-        $data = array();
-
-        // Loop through each post and add the post ID
-        foreach ( $posts as $post ) {
-            $data[] = $post->ID;
-        }
-
-        return $data;
-    }
-
-    /**
-     * Get Assitant ID by Chat Widget ID
-     */
-    public function get_chat_widget_by_id($post_id) {
-        // Query for chat assistant posts
-        $post = get_post($post_id, ARRAY_A, 'chat_widgets');
-
-        if ($post) {
-            $assistant_id = get_post_meta($post_id, 'tw_chat_assistant_id', true);
-            $greeting = get_post_meta($post_id, 'tw_chat_greeting', true);
-
-            if (empty($assistant_id) || is_null($assistant_id)) {
-                // No assistant ID found
-                return null;
-            }
-
-            return array(
-                'tw_chat_widget_name' => $post['post_title'],
-                'tw_chat_assistant_id' => $assistant_id,
-                'tw_chat_greeting' => $greeting
-            );
-
-        } else {
-            // Handle the case where the post is not found
-            return null;
         }
     }
 
@@ -231,7 +142,7 @@
     public function get_chat_widgets_callback() {
         try {
             // Query for chat widget post
-            $data = $this->get_chat_widgets();
+            $data = TW_Chat_Widgets::get_chat_widgets();
             // Return the data in a JSON success response
             wp_send_json_success( $data );
         } catch (Exception $e) {

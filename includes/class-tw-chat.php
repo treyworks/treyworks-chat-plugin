@@ -3,6 +3,7 @@
  * Define the functionality of the plugin.
  *
  */
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-widgets.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-admin.php';
 
 class TW_Chat_Plugin {
@@ -29,6 +30,15 @@ class TW_Chat_Plugin {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_footer', array($this, 'add_footer_html'));
         add_action('rest_api_init', array($this, 'register_chat_response_endpoint'));
+        add_shortcode('tw_chat_widget', array($this, 'tw_chat_widget_shortcode'));
+    }
+
+    /** 
+     * Return enabled setting for global chat widget
+     */
+    public function is_enabled() {
+        $is_enabled = !empty(get_option('tw_chat_is_enabled'));
+        return $is_enabled;
     }
 
     /**
@@ -44,27 +54,18 @@ class TW_Chat_Plugin {
         register_post_type('chat_widgets', $args);
     }
 
-    /** 
-     * Return is_enabled setting
-     */
-    public function is_enabled() {
-        $is_enabled = !empty(get_option('tw_chat_is_enabled'));
-        return $is_enabled;
-    }
-
     /**
      * Enqueues additional scripts in the footer of the page.
      * This function is hooked to 'wp_enqueue_scripts'.
      */
-    public function enqueue_scripts() {
-        // Check to see if chat widget is enabled
-        if ($this->is_enabled()) {
+    public function enqueue_scripts() {    
+        if (!is_admin()) {
             wp_enqueue_script('tw-chat-js', plugins_url('../component/dist/tw-chat.js', __FILE__), array(), '1.0.0', true);
             wp_enqueue_style('tw-chat-css', plugins_url('../component/dist/style.css', __FILE__));
 
             // Localize script with plugin settings
             $settings = $this->plugin_admin->get_plugin_settings();
-            $dataArray = [
+            $localizeData = [
                 "root" => esc_url_raw( rest_url() ),
                 'nonce' => wp_create_nonce('wp_rest'),
                 "tw_chat_button_text" => $settings["tw_chat_button_text"],
@@ -72,11 +73,17 @@ class TW_Chat_Plugin {
                 "tw_chat_error_message" => $settings["tw_chat_error_message"],
                 "tw_chat_assistant_name" => $settings["tw_chat_assistant_name"],       
                 "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
-                "tw_chat_widgets" => $this->plugin_admin->get_chat_widget_ids(), 
             ];
-            
-            wp_localize_script('tw-chat-js', 'twChatSettings', $dataArray);
+
+            wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
         }
+    }
+
+    /**
+     * Render component
+     */
+    public function render_component($post_id, $sticky = true) {
+        require plugin_dir_path( __FILE__ ) . 'partials/chat-widget-template.php';
     }
 
     /**
@@ -88,13 +95,50 @@ class TW_Chat_Plugin {
         if ($this->is_enabled()) {
             // get the global widget id
             $global_widget_id = get_option('tw_chat_global_widget_id');
-            $chat_widget = $this->plugin_admin->get_chat_widget_by_id($global_widget_id);
 
-            $outputHtml = '<div id="tw-chat-component" data-chat-widget="' . $global_widget_id . '" data-chat-greeting="' . $chat_widget['tw_chat_greeting'] .  '"></div>';
-            echo $outputHtml;
+            // Render component with post id and sticky 
+            echo $this->render_component($global_widget_id, 1);
         }
     }
 
+    /** 
+     * Render chat widget shortcode
+     */
+    function tw_chat_widget_shortcode($atts) {
+        
+        // Set up default attributes
+        $atts = shortcode_atts(
+            array(
+                'id' => 0, // Default to 0 if no post_id is provided
+            ),
+            $atts,
+            'tw_chat_widget'
+        );
+
+        // Access the post_id attribute
+        $post_id = $atts['id'];
+
+        // get the global widget id
+        $global_widget_id = get_option('tw_chat_global_widget_id');
+
+        if ($global_widget_id == $post_id) {
+            return "<p>This chat widget is available in the lower right corner of the screen.</p>";
+        }
+
+        // Do not load scripts in admin
+        if (!is_admin()) {
+            $this->enqueue_scripts();
+        }
+
+        // Store rendered component. Pass 0 for non-sticky
+        ob_start();
+        $this->render_component($post_id, 0);
+        $output = ob_get_clean();
+
+        return $output;
+    }
+    
+   
     /**
      * Registers the REST API endpoint for chat responses.
      * Defines the URL and handler for the 'chat-response' endpoint.
@@ -160,7 +204,7 @@ class TW_Chat_Plugin {
             }
 
             // Get chat widget info
-            $chat_widget = $this->plugin_admin->get_chat_widget_by_id($widget_id);
+            $chat_widget = TW_Chat_Widgets::get_chat_widget_by_id($widget_id);
             // $assistant_id = $settings['tw_chat_assistant_id'];
 
             // Return error if settings are not found

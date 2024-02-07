@@ -64,6 +64,7 @@ function ChatWidgetsManager() {
         return (        
         <table className="wp-list-table widefat fixed striped posts">
             <thead>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Greeting</th>         
                 <th>OpenAI Assistant ID</th>
@@ -71,6 +72,7 @@ function ChatWidgetsManager() {
             <tbody>
             { chatWidgets.map(widget => (
                 <tr key={widget.id}>
+                    <td>{widget.id}</td>
                     <td>{widget.name}</td>
                     <td>{widget.meta.tw_chat_greeting}</td>
                     <td>{widget.meta.tw_chat_assistant_id}</td>

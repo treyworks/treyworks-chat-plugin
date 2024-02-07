@@ -2,6 +2,9 @@ import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import PulseLoader from "react-spinners/PulseLoader";
+import classNames from 'classnames';
+
+import { newMessage, setFocus } from './utils/chat-utils';
 
 import logoUrl from './assets/powered-by-treyworks.png';
 
@@ -10,55 +13,39 @@ import ShowIcon from './icons/showIcon';
 import HideIcon from './icons/hideIcon';
 import CloseIcon from './icons/close';
 
-// Get chat settings 
-const chatSettings = window.twChatSettings;
-const maxCharacters = chatSettings.tw_chat_max_characters;
-const rootStyle = getComputedStyle(document.documentElement);
-const closeColor = rootStyle.getPropertyValue('--tw-chat-header-close-color').trim();
-
-/* Return a new message object */
-const newMessage = (content, role) => {
-    return {
-        content: content,
-        role: role
-    }
-};
-
-// Set up global message history array
-const greeting = document.getElementById('tw-chat-component').dataset.chatGreeting;
-let twChatMessages = [
-    newMessage(greeting, "assistant")
-];
-
-const ChatInterface = ({ iconColor, toggleChat, widgetID }) => {
-
+const ChatWidget = ({ iconColor, toggleChat, widgetID, sticky }) => {
     // Initialize state vars
-    const [messages, setMessages] = useState(twChatMessages);
+    const [messages, setMessages] = useState(twChatMessages[widgetID]);
     const [messageText, setMessageText] = useState('');
     const [isWaiting, setIsWaiting] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
     const [threadID, setThreadID] = useState(0);
     const [characterCount, setCharacterCount] = useState(0);
     const lastElementRef = useRef(null);
+    const parentRef = useRef(null);
+
+    // Get global settings 
+    const chatSettings = window.twChatPluginSettings;
+    const maxCharacters = chatSettings.tw_chat_max_characters;
+
+    // Close SVG color
+    const rootStyle = getComputedStyle(document.documentElement);
+    const closeColor = rootStyle.getPropertyValue('--tw-chat-header-close-color').trim();
     
     // Set focus when instantiated
     useEffect(() => {
-        setFocus();
+        if (sticky) {
+            setFocus(widgetID);
+        }
     }, []);
 
     // Set up effect for new messages
     useEffect(() => {
         // Scroll to  new message
-        if (lastElementRef.current) {
-            lastElementRef.current.scrollIntoView({ behavior: 'smooth' });
+        if (lastElementRef.current && parentRef.current) {
+            lastElementRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
         }
     }, [messages]);
-
-
-    // set keyboard focus on message input
-    const setFocus = () => {
-        document.getElementById("messageText").focus();
-    }
 
     // Function to send a new message
     const handleMessageSubmit = (event) => {
@@ -86,10 +73,10 @@ const ChatInterface = ({ iconColor, toggleChat, widgetID }) => {
         }
 
         // Add new message to history
-        twChatMessages = [...messages, newMessage(messageText, 'user')];
+        twChatMessages[widgetID] = [...messages, newMessage(messageText, 'user')];
         
         // Set messages state to current history array
-        setMessages(twChatMessages)
+        setMessages(twChatMessages[widgetID])
 
         // Send the message to the plugin enpoint
         axios.post(`${chatSettings.root}tw-chat-assistant/v1/chat-response/`,
@@ -103,18 +90,18 @@ const ChatInterface = ({ iconColor, toggleChat, widgetID }) => {
                 // const newText = response.data.data[0].content[0].text.value.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "");
 
                 // Add response to messages state to update UI
-                setMessages([...twChatMessages, newMessage(newText, 'assistant')]); 
+                setMessages([...twChatMessages[widgetID], newMessage(newText, 'assistant')]); 
             }
             setMessageText('');
             setCharacterCount(0);
             setIsWaiting(false);
             setThreadID(response.data.thread_id);
-            setFocus();
+            setFocus(widgetID);
             
           })
           .catch(error => {
             console.error('Error fetching messages:', error);
-            setMessages([...twChatMessages, newMessage(chatSettings.tw_chat_error_message, 'error')]); 
+            setMessages([...twChatMessages[widgetID], newMessage(chatSettings.tw_chat_error_message, 'error')]); 
             setIsWaiting(false);
           });
     };
@@ -142,20 +129,28 @@ const ChatInterface = ({ iconColor, toggleChat, widgetID }) => {
             <><ShowIcon iconColor={iconColor} /> Show Disclaimer </> :
             <><HideIcon iconColor={iconColor} /> Hide Disclaimer</>
     }
+
+    // Component classes
+    const componentClasses = classNames(
+        "tw-chat-interface",
+        { "sticky": sticky }
+    );
     
     // Render component
     return (
-    <div className="tw-chat-interface">
+    <div className={componentClasses}>
         <div className="tw-chat-header">
             <span>{chatSettings.tw_chat_assistant_name}</span>
+        { sticky == 1 && 
             <button 
                 className="close" 
                 onClick={() => toggleChat()}
                 aria-label="Close chat interface">
                 <CloseIcon iconColor={closeColor} />
             </button>
+        }
         </div>
-        <div className="tw-chat-messages" id="tw-chat-messages">
+        <div ref={parentRef} className="tw-chat-messages" id={`tw-chat-messages-${widgetID}`}>
         {messages.map((message, index) => {
             const isLastElement = index === messages.length - 1;
 
@@ -163,7 +158,7 @@ const ChatInterface = ({ iconColor, toggleChat, widgetID }) => {
             <p 
                 key={index} 
                 ref={isLastElement ? lastElementRef : null}
-                id={`tw-chat-message-${index}`} 
+                id={`tw-chat-message-${widgetID}-${index}`} 
                 className={`message ${message.role}`}
             >
                 <span dangerouslySetInnerHTML={{__html: message.content}}/>
@@ -177,8 +172,8 @@ const ChatInterface = ({ iconColor, toggleChat, widgetID }) => {
             className={isWaiting ? "tw-chat-form tw-chat-visibility-0" : "tw-chat-form"}>
             
             <div className="tw-chat-input-container">
-                <label htmlFor="messageText">Send Message</label>
-                <input placeholder="Enter your message..." id="messageText" type="text" onChange={handleMessageTextChange} value={messageText} name="message" required="required" />
+                <label htmlFor={`message-text-${widgetID}`}>Send Message</label>
+                <input placeholder="Enter your message..." id={`message-text-${widgetID}`} type="text" onChange={handleMessageTextChange} value={messageText} name="message" required="required" />
             { maxCharacters && 
                 <div className="tw-chat-char-count">
                     <span className={characterCount == maxCharacters ? "tw-chat-max-characters" : ""}>{characterCount} / {maxCharacters} characters</span>
@@ -206,4 +201,4 @@ const ChatInterface = ({ iconColor, toggleChat, widgetID }) => {
     );
 };
 
-export default ChatInterface;
+export default ChatWidget;

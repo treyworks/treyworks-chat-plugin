@@ -1,34 +1,39 @@
 import './App.css'
 import { useState } from 'react';
-import ChatInterface from './ChatInterface';
+import ChatWidget from './ChatWidget';
 import ChatIcon from './icons/chatIcon';
+import { setFocus } from './utils/chat-utils';
 
 // Get icon color
 const rootStyle = getComputedStyle(document.documentElement);
 const iconColor = rootStyle.getPropertyValue('--tw-chat-icon-color').trim();
 
-function App({ widgetID }) {
+function App({ widgetID, sticky }) {
 
   const [isVisible, setIsVisible] = useState(false);
+  const buttonText = window.twChatPluginSettings.tw_chat_button_text || "Chat";
 
   const toggleChat = () => {
     if (!isVisible) {
-      document.getElementById("messageText").focus();
+      setFocus(widgetID);
     }
     setIsVisible(!isVisible);
   };
 
-  return (
+  return (<>
+  { sticky ? 
     <div className="tw-chat-container">
       <div className={ isVisible ? "" : "tw-chat-visibility-0"}>
-        <ChatInterface widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} />
+        <ChatWidget widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} sticky={sticky} />
       </div>
-      <button className="tw-chat-bubble" onClick={toggleChat} aria-label="Open chat interface">
-        <ChatIcon iconColor={iconColor} />
-        {window.twChatSettings.tw_chat_button_text ? window.twChatSettings.tw_chat_button_text : "Chat"}
-      </button>
+        <button className="tw-chat-bubble" onClick={toggleChat} aria-label="Open chat interface">
+          <ChatIcon iconColor={iconColor} />
+          {buttonText}
+        </button>
     </div>
-  );
+    : <ChatWidget widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} sticky={sticky} />
+  }
+  </>);
 }
 
 export default App
