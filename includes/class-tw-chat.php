@@ -121,7 +121,7 @@ class TW_Chat_Plugin {
         // get the global widget id
         $global_widget_id = get_option('tw_chat_global_widget_id');
 
-        if ($global_widget_id == $post_id) {
+        if ($this->is_enabled() && $global_widget_id == $post_id) {
             return "<p>This chat widget is available in the lower right corner of the screen.</p>";
         }
 

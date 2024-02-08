@@ -40,6 +40,10 @@
   opacity: 0;
 }
 
+.tw-chat-widget {
+  max-width: 100%;
+}
+
 .tw-chat-interface {
   width: var(--tw-chat-interface-width, 350px);
   max-width: var(--tw-chat-interface-max-width, 85%);
