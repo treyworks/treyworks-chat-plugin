@@ -133,7 +133,8 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, sticky }) => {
     // Component classes
     const componentClasses = classNames(
         "tw-chat-interface",
-        { "sticky": sticky }
+        { "sticky": sticky },
+        { "embedded": !sticky }
     );
     
     // Render component

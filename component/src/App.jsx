@@ -20,8 +20,8 @@ function App({ widgetID, sticky }) {
     setIsVisible(!isVisible);
   };
 
-  return (<>
-  { sticky ? 
+  const StickyWidget = () => {
+    return (
     <div className="tw-chat-container">
       <div className={ isVisible ? "" : "tw-chat-visibility-0"}>
         <ChatWidget widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} sticky={sticky} />
@@ -31,6 +31,12 @@ function App({ widgetID, sticky }) {
           {buttonText}
         </button>
     </div>
+    )
+  }
+
+  return (<>
+  { sticky ? 
+    <StickyWidget />
     : <ChatWidget widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} sticky={sticky} />
   }
   </>);

@@ -53,6 +53,13 @@
   flex-direction: column;
 }
 
+.tw-chat-interface.embedded {
+  width: var(--tw-chat-interface-embedded-width, 550px);
+  max-width: var(--tw-chat-interface-embedded-max-width, 100%);
+  height: var(--tw-chat-interface-embedded-height, 550px);
+  max-height: var(--tw-chat-interface-embedded-max-height, 75vh);
+}
+
 .tw-chat-header {
   background-color: var(--tw-chat-header-background, #333);
   color: var(--tw-chat-header-color, #fff);
