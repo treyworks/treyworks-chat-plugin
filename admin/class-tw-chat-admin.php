@@ -24,7 +24,8 @@
         add_action( 'wp_ajax_save_settings', array($this, 'save_settings_callback') );
         add_action( 'wp_ajax_get_chat_widgets', array($this, 'get_chat_widgets_callback') );
         add_action( 'wp_ajax_get_assistants', array($this, 'get_assistants_callback') );
-        add_action( 'wp_ajax_create_chat_widget', array($this, 'create_chat_widget_callback'));
+        add_action( 'wp_ajax_save_chat_widget', array($this, 'save_chat_widget_callback'));
+        add_action( 'wp_ajax_remove_chat_widget', array($this, 'remove_chat_widget_callback'));
     }
 
     /**
@@ -193,37 +194,65 @@
     /**
      * Create new chat_widget post
      */
-    function create_chat_widget_callback() {
+    function save_chat_widget_callback() {
         try {
             // Get and sanitize post data
             $chat_widget_name = sanitize_text_field($_POST['tw_chat_widget_name']);
             $greeting = sanitize_text_field($_POST['tw_chat_greeting']);
             $assistant_id = sanitize_text_field($_POST['tw_chat_assistant_id']);
         
-            // Create the new post
-            $post_args = array(
-                'post_type' => 'chat_widgets',
-                'post_title' => $chat_widget_name,
-                'post_status' => 'publish',
-            );
-            $post_id = wp_insert_post($post_args);
-        
-            // Add the meta field
-            if ($post_id) {
-                update_post_meta($post_id, 'tw_chat_assistant_id', $assistant_id);
-                update_post_meta($post_id, 'tw_chat_greeting', $greeting);
+            if (isset($_POST['id'])) {
+                $post_id = sanitize_text_field($_POST['id']);
+                // Post ID is passed, update fields
+                $post_args = array(
+                    'ID' => $post_id,
+                    'post_title' => $chat_widget_name,
+                );
+                wp_update_post($post_args);
+            } else {
+                // Create the new post
+                $post_args = array(
+                    'post_type' => 'chat_widgets',
+                    'post_title' => $chat_widget_name,
+                    'post_status' => 'publish',
+                );
+                $post_id = wp_insert_post($post_args);
             }
         
-            // Return an array with the new post data
-            $data = array(
-                'id' => $post_id,
-                'name' => $chat_widget_name,
-                'meta' => array(
-                    'tw_chat_greeting' => $greeting,
-                    'tw_chat_assistant_id' => $assistant_id
-                )
-            );
-            wp_send_json_success( $data );
+            // Add the meta fields
+            update_post_meta($post_id, 'tw_chat_assistant_id', $assistant_id);
+            update_post_meta($post_id, 'tw_chat_greeting', $greeting);
+        
+            $response = TW_Chat_Widgets::get_chat_widgets();
+            wp_send_json_success( $response );
+        } catch (Exception $e) {
+            wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
+        }
+        wp_die();
+    }
+
+    /**
+     * Remove a chat_widget post
+     */
+    function remove_chat_widget_callback() {
+        try {
+            // Get and sanitize post data
+            if (isset($_POST['id'])) {
+                $deleted = wp_delete_post($_POST['id'], true);;
+
+                if ($deleted) {
+                    // Success, return all widgets
+                    $response = TW_Chat_Widgets::get_chat_widgets();
+                    wp_send_json_success( $response );
+                } else {
+                    // Error remove post
+                    wp_send_json_error( array( 'message' => 'An error occurred while removing the chat widget.') );
+                }
+
+            } else {
+                // Post ID is required
+                wp_send_json_error( array( 'message' => 'Post ID is required') );
+            }
         } catch (Exception $e) {
             wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
         }

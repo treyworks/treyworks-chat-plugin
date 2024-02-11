@@ -90,5 +90,4 @@ class TW_Chat_Widgets {
             return null;
         }
     }
-
 }

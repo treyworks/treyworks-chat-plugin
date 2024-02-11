@@ -84,10 +84,6 @@ function SettingsManager() {
                     <th scope="row">OpenAI Key</th>
                     <td><input className="regular-text" type="text" name="tw_chat_openai_key" onChange={handleInputChange} defaultValue={formData.tw_chat_openai_key} /></td>
                 </tr>
-                {/* <tr valign="top">
-                    <th scope="row">Assistant ID</th>
-                    <td><input className="regular-text" type="text" name="tw_chat_assistant_id" onChange={handleInputChange} defaultValue={formData.tw_chat_assistant_id} /></td>
-                </tr> */}
             </tbody>
         </table>
         <p>Global settings for chat widget functionality.</p>
@@ -115,12 +111,7 @@ function SettingsManager() {
         <>
             <p>Set up your global chat widget that appears in the lower right corner of the screen.</p>
             <table className="form-table">
-                
                 <tbody>
-                    {/* <tr valign="top">
-                        <th scope="row">Assistant Name</th>
-                        <td><input className="regular-text" type="text" name="tw_chat_assistant_name" onChange={handleInputChange} defaultValue={formData.tw_chat_assistant_name} /></td>
-                    </tr> */}
                     <tr>
                         <th scope="row">Enable Global Chat Widget</th>
                         <td>
@@ -149,26 +140,6 @@ function SettingsManager() {
                     <tr valign="top">
                         <th scope="row">Chat Button Text</th>
                         <td><input className="regular-text" type="text" name="tw_chat_button_text" onChange={handleInputChange} defaultValue={formData.tw_chat_button_text} /></td>
-                    </tr>
-                    {/* <tr valign="top">
-                        <th scope="row">Default Chat Greeting</th>
-                        <td><input className="regular-text" type="text" name="tw_chat_greeting" onChange={handleInputChange} defaultValue={formData.tw_chat_greeting} /></td>
-                    </tr> */}
-                    <tr valign="top">
-                        <th scope="row">Chat Error Message</th>
-                        <td><input className="regular-text" type="text" name="tw_chat_error_message" onChange={handleInputChange} defaultValue={formData.tw_chat_error_message} /></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row">Disclaimer</th>
-                        <td>
-                            <textarea className="regular-text" name="tw_chat_disclaimer" rows="5" onChange={handleInputChange} defaultValue={formData.tw_chat_disclaimer} />
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row">Maximum Characters Allowed</th>
-                        <td>
-                            <input className="regular-text" type="number" name="tw_chat_max_characters" onChange={handleInputChange} defaultValue={formData.tw_chat_max_characters} />
-                        </td>
                     </tr>
                 </tbody>
             </table>

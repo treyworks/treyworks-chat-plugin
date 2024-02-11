@@ -41,6 +41,7 @@ button.nav-tab:focus {
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
+  overflow-y: scroll;
   max-width: 95%;
   max-height: 95%;
   background-color: #f0f0f0;
@@ -82,6 +83,11 @@ button.nav-tab:focus {
   padding: 1rem;
 }
 
+.tw-chat-admin-modal-content pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .tw-chat-admin-overlay {
   z-index: 9999;
   position: fixed;
@@ -90,4 +96,17 @@ button.nav-tab:focus {
   right: 0;
   bottom: 0;
   background-color: rgba(4, 34, 54, 0.75);
+}
+
+/* Table buttons */
+.wp-list-table button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.wp-list-table button:last-child {
+  margin-right: 0;
 }

@@ -1,66 +1,68 @@
 import React from "react";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 
 import toast from "react-hot-toast";
 import Modal from "react-modal";
-import LoadingIndicator from "../components/LoadingIndicator";
 
 import { useAtom } from 'jotai';
-import { assistantsAtom, chatWidgetsAtom } from '../atoms';
-import { getAssistants } from "../utils/assistantsService";
-import { createChatWidget } from "../utils/chatWidgetsService";
+import { chatWidgetsAtom } from '../atoms';
+import { saveChatWidget, removeChatWidget } from "../utils/chatWidgetsService";
 
 function ChatWidgetsManager() {
-    const [assistants, setAssistants] = useAtom(assistantsAtom);
     const [chatWidgets, setChatWidgets] = useAtom(chatWidgetsAtom);
-
+    const [currentWidget, setCurrentWidget] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
-    function openModal() {
-        setModalIsOpen(true);
+    // Open modal with widget data if passed
+    function openModal(widget) {
+        if (widget) {
+            console.log(widget)
+            setCurrentWidget(widget);
+            setModalIsOpen(true);
+        } else {
+            setModalIsOpen(true);
+        }
     }
 
+    // Close Modal
     function closeModal() {
+        // Reset current widget state
+        console.log('reset current widget')
+        setCurrentWidget(null);
         setModalIsOpen(false);
     }
 
+    // After Modal is opened
     function afterOpenModal() {
-        // 
+        return;
     }
 
-    const handleRefreshAssistants = function() {
-        setAssistants([]);
-        setIsLoading(true);
-        getAssistants(onRefreshSuccess, onRefreshError);
-    }
-
-    const onRefreshSuccess = function(response) {
-        // Handle success response (e.g., display success message)
-        console.log(response.data);
-
-        if (response.data.success) {
-            setAssistants(response.data.data);
-        } else {
-            // Something happened
-            toast.error('There was an error retrieving assistants.');
-            console.log(`Error: ${response.data.data.message}`);
-        }
-        
-        setIsLoading(false);
-    };
-    
-    // Handle error response (e.g., display error message)
-    const onRefreshError = function(error) {
-        
-        toast.error('There was an error retrieving assistants.');
-        console.log(`Error: ${error}`);
-
-        setIsLoading(false);
-    };
 
     const WidgetsList = () => {
+        const handleRemoveWidget = function(widgetID) {
+            // Confirm
+            if (window.confirm("Are you sure you want to remove this widget?")) {
+                removeChatWidget(widgetID,
+                    function(response) {
+                        // Success
+                        if (response.data.success) {
+                            toast.success('Chat widget removed');
+                            setChatWidgets(response.data.data);
+                            console.log(response.data);
+                        } else {
+                            console.log(response);
+                            toast.error('Error removing chat widget.');
+                        }
+                    },
+                    function(response){
+                        // Error
+                        console.log(response);
+                        toast.error('Error removing chat widget.');
+                    }
+                );
+            }
+        };
+        
         return (        
         <table className="wp-list-table widefat fixed striped posts">
             <thead>
@@ -68,6 +70,7 @@ function ChatWidgetsManager() {
                 <th>Name</th>
                 <th>Greeting</th>         
                 <th>OpenAI Assistant ID</th>
+                <th>Edit / Delete</th>
             </thead>
             <tbody>
             { chatWidgets.map(widget => (
@@ -76,6 +79,10 @@ function ChatWidgetsManager() {
                     <td>{widget.name}</td>
                     <td>{widget.meta.tw_chat_greeting}</td>
                     <td>{widget.meta.tw_chat_assistant_id}</td>
+                    <td>
+                        <button aria-label="Edit Chat Widget" onClick={() => openModal(widget)}><span className="dashicons dashicons-edit"></span></button>
+                        <button aria-label="Remove Chat Widget" onClick={() => handleRemoveWidget(widget.id)}><span className="dashicons dashicons-trash"></span></button>
+                    </td>
                 </tr>
             ))}
             </tbody>
@@ -83,79 +90,82 @@ function ChatWidgetsManager() {
         )
     }
 
-    const NewWidgetForm = () => {
+    const SaveWidgetForm = () => {
         const [isSaving, setIsSaving] = useState(false);
-        const [newWidgetData, setNewWidgetData] = useState({
+        const [saveWidgetData, setSaveWidgetData] = useState({
             tw_chat_widget_name: "",
-            tw_chat_widget_greeting: "",
+            tw_chat_greeting: "",
             tw_chat_assistant_id: ""
         });
 
-        const handleNewWidgetInputChange = function(e) {
+        useEffect(() => {
+            if (currentWidget) {
+                // console.log('current')
+                // console.log(currentWidget)
+                setSaveWidgetData({
+                    id: currentWidget.id,
+                    tw_chat_widget_name: currentWidget.name,
+                    tw_chat_greeting: currentWidget.meta.tw_chat_greeting[0],
+                    tw_chat_assistant_id: currentWidget.meta.tw_chat_assistant_id[0]
+                });      
+            }
+        }, []);
+
+        const handleSaveWidgetInputChange = function(e) {
             const {name, value} = e.target;
             // grab current form data
-            let updatedData = newWidgetData;
+            let updatedData = saveWidgetData;
             // update field name with new value
             updatedData[name] = value;
-            setNewWidgetData(updatedData);
+            setSaveWidgetData(updatedData);
         };
     
-        const handleNewWidgetSubmit = function(e) {
+        const handleSaveWidgetSubmit = function(e) {
             e.preventDefault();
             
             setIsSaving(true);
 
-            createChatWidget(newWidgetData,
-            function(response) {
-                // Success
-                if (response.data.success) {
-                    toast.success('Chat widget created');
-                    setChatWidgets([...chatWidgets, response.data.data])
-                    console.log(response.data);
-                    setModalIsOpen(false);
-                } else {
+            saveChatWidget(saveWidgetData,
+                function(response) {
+                    // Success
+                    if (response.data.success) {
+                        toast.success('Chat widget saved');
+                        setChatWidgets(response.data.data);
+                        console.log(response.data);
+                        setModalIsOpen(false);
+                    } else {
+                        console.log(response);
+                        toast.error('Error saving chat widget.');
+                    }
+
+                    setIsSaving(false);
+                },
+                function(response){
+                    // Error
                     console.log(response);
-                    toast.error('Error creating chat widget.');
+                    toast.error('Error saving chat widget.');
+                    setIsSaving(false);
                 }
-
-                setIsSaving(false);
-                
-            },
-            function(response){
-                // Error
-                console.log(response);
-                toast.error('Error creating chat widget.');
-            });
-        }
-
-        const assistantOptions = assistants.map(assistant => (
-            <option key={assistant.id} value={assistant.id}>{assistant.name}</option>
-        ));
+            );
+        };
 
         return (
-        <form id="tw-chat-new-widget-form" onSubmit={handleNewWidgetSubmit}>
+        <form id="tw-chat-new-widget-form" onSubmit={handleSaveWidgetSubmit}>
             <table className="form-table">
                 <tbody>
                     <tr valign="top">
                         <th scope="row">Name</th>
-                        <td><input className="regular-text" type="text" name="tw_chat_widget_name" onChange={handleNewWidgetInputChange} required="required" /></td>
+                        <td><input className="regular-text" type="text" name="tw_chat_widget_name" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_widget_name} required="required" /></td>
                     </tr>
                     <tr valign="top">
                         <th scope="row">Assistant ID</th>
                         <td>
-                        { !isLoading ? 
-                            <select name="tw_chat_assistant_id" onChange={handleNewWidgetInputChange} required="required">
-                                <option value="">Select an assistant</option>
-                                {assistantOptions}
-                            </select>
-                            : <p><LoadingIndicator /></p>
-                        }   
-                            <p><a href="#" onClick={handleRefreshAssistants}>Refresh assistants list</a></p>
+                            <input className="regular-text" type="text" name="tw_chat_assistant_id" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_assistant_id} required="required" />
                         </td>
                     </tr>
                     <tr valign="top">
                         <th scope="row">Greeting</th>
-                        <td><input className="regular-text" type="text" name="tw_chat_greeting" onChange={handleNewWidgetInputChange} required="required" /></td>
+                        <td><input className="regular-text" type="text" name="tw_chat_greeting" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_greeting} required="required" /></td>
                     </tr>
                 </tbody>
             </table>
@@ -170,7 +180,7 @@ function ChatWidgetsManager() {
 
     return (
     <> 
-        <p><button className="button button-primary"  onClick={openModal}>Create New Chat Widget</button></p>
+        <p><button className="button button-primary"  onClick={() => openModal()}>Create New Chat Widget</button></p>
         { chatWidgets.length > 0 && <WidgetsList /> }
         <Modal
             isOpen={modalIsOpen}
@@ -181,11 +191,11 @@ function ChatWidgetsManager() {
             overlayClassName="tw-chat-admin-overlay"
         >
             <h2 className="tw-chat-admin-modal-header">
-                Create a New Chat Widget
+                Save Chat Widget
                 <button onClick={closeModal}><span className="dashicons dashicons-no-alt"></span></button>
             </h2>
             <div className="tw-chat-admin-modal-content">
-                <NewWidgetForm />         
+                <SaveWidgetForm />         
             </div>
         </Modal>
     </>
