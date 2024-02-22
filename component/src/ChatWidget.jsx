@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import PulseLoader from "react-spinners/PulseLoader";
 import classNames from 'classnames';
+import { marked } from 'marked';
 
 import { newMessage, setFocus } from './utils/chat-utils';
 
@@ -141,7 +142,7 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, sticky }) => {
     return (
     <div className={componentClasses}>
         <div className="tw-chat-header">
-            <span>{chatSettings.tw_chat_assistant_name}</span>
+            <span>{window.twChatWidgetSettings[widgetID].tw_chat_widget_name}</span>
         { sticky == 1 && 
             <button 
                 className="close" 
@@ -162,7 +163,7 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, sticky }) => {
                 id={`tw-chat-message-${widgetID}-${index}`} 
                 className={`message ${message.role}`}
             >
-                <span dangerouslySetInnerHTML={{__html: message.content}}/>
+                <span dangerouslySetInnerHTML={{__html: marked.parse(message.content)}}/>
             </p>
             );
         })}

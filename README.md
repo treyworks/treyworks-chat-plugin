@@ -8,9 +8,13 @@
 * Streamline customer support and reduce response times, leading to greater satisfaction.
 * Tailor the chatbot's visual appearance and placement to seamlessly blend with your website's design.
 
-## Installation:
+## How to Install:
 
-* Download the plugin as a zip from this repository.
+* Clone or download the repository as a zip file:
+`git clone https://github.com/treyworks/treyworks-chat-plugin.git`
+
+Note: The plugin is not currently available in the WordPress plugin repository.
+
 * Upload and install the plugin on the Add Plugins page.
 * Activate the plugin in your WordPress admin panel.
 * Navigate to the plugin's settings page and enter your OpenAI API key
@@ -20,8 +24,8 @@
 ## Usage:
 
 * A global chat widget can be set up on the Settings tab after a chat widget has been created.
-* Chat widgets can also be added to pages using a shortcode: [tw_chat_widget id=WIDGET_ID]
-* **Note:** Multiple chat widgets can be active on a page. The same chat widget cannot be added to a page more than once. 
+* Chat widgets can also be added to pages using a shortcode: `[tw_chat_widget id=WIDGET_ID]`
+* **Note:** Multiple chat widgets can be active on a page. However, the same chat widget cannot be added to a page more than once. 
 
 ## Additional Notes:
 
@@ -30,7 +34,8 @@
 * Regularly review and refine the chatbot's prompts and settings to optimize its performance.
 
 ## Style Customizations
-Here is a list of CSS variable definitions and their default values:
+
+The appearance of the plugin can be changed with CSS variables. Here is a list of CSS variable definitions and their default values:
 ```css
 :root {
     --tw-chat-position-bottom: 25px;
@@ -81,6 +86,8 @@ Here is a list of CSS variable definitions and their default values:
 }
 ```
 
-## Support:
+## Links
 
-For any questions or assistance, please visit the plugin's support forum or contact the plugin developer at (https://treyworks.com).
+Github: https://github.com/treyworks/treyworks-chat-plugin
+
+Website: https://treyworks.com/chat-plugin/
