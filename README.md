@@ -1,41 +1,33 @@
 # Treyworks Chat Plugin for WordPress
 
-**Features:**
-
-* Add a conversational chatbot powered by the OpenAI Assistants API to engage visitors and provide instant answers.
-* Automatically respond to user queries and offers assistance, enhancing visitor experience.
-* Encourage interaction and drive engagement on your website, keeping visitors engaged.
-* Streamline customer support and reduce response times, leading to greater satisfaction.
-* Tailor the chatbot's visual appearance and placement to seamlessly blend with your website's design.
+This plugin adds an OpenAI powered chatbot to your Wordpress website - giving your visitors instant answers and a boosted user experience. This plugin aims to strengthen website interaction, enhance customer support, and can be modified to fit your website's look and feel.
 
 ## How to Install:
 
 * Clone or download the repository as a zip file:
 `git clone https://github.com/treyworks/treyworks-chat-plugin.git`
-
-Note: The plugin is not currently available in the WordPress plugin repository.
-
 * Upload and install the plugin on the Add Plugins page.
 * Activate the plugin in your WordPress admin panel.
-* Navigate to the plugin's settings page and enter your OpenAI API key
-* Navigate to the Chat Widgets tab and create a new widget. Enter a name, assistants ID, and greeting text.
-* Navigate to the Assistants tab to view the assistants in your OpenAI account.
+* Go to the plugin's settings page and enter your OpenAI API key
+* Go to the Chat Widgets tab and create a new widget. Enter a name, assistants ID, and greeting text.
+* Go to the Assistants tab to view the assistants in your OpenAI account.
 
 ## Usage:
 
 * A global chat widget can be set up on the Settings tab after a chat widget has been created.
 * Chat widgets can also be added to pages using a shortcode: `[tw_chat_widget id=WIDGET_ID]`
-* **Note:** Multiple chat widgets can be active on a page. However, the same chat widget cannot be added to a page more than once. 
+* Keep in mind that multiple chat widgets can be present on a page, but the same chat widget cannot be added more than once.
 
 ## Additional Notes:
 
-* Ensure you have a valid OpenAI API account and API key.
-* Consider the potential cost implications of using the OpenAI Assistant API.
-* Regularly review and refine the chatbot's prompts and settings to optimize its performance.
+* Make sure you have a valid OpenAI API account and API key.
+* Take into account the potential cost implications of using the OpenAI Assistant API.
+* Routinely check and adjust the chatbot prompts and settings to improve its performance.
 
 ## Style Customizations
 
-The appearance of the plugin can be changed with CSS variables. Here is a list of CSS variable definitions and their default values:
+The appearance of the plugin can be modified with CSS variables. You can adjust elements like chat position, color, or bubble size to fit your website's design. Here is a list of CSS variable definitions and their default values:
+
 ```css
 :root {
     --tw-chat-position-bottom: 25px;
