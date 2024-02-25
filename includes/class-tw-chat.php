@@ -290,8 +290,11 @@ class TW_Chat_Plugin {
                 'limit' => 1,
             ]);
 
-            // Return response text
-            $messages_response = $latest_message->data[0]->content[0]->text->value;
+            // Return response text and thread id
+            $messages_response = array(
+                'message' => $latest_message->data[0]->content[0]->text->value,
+                'thread_id' => $thread_id
+            );
 
             return new WP_REST_Response($messages_response, 200);
         } catch (Exception $e) {
