@@ -26,6 +26,9 @@
         add_action( 'wp_ajax_get_assistants', array($this, 'get_assistants_callback') );
         add_action( 'wp_ajax_save_chat_widget', array($this, 'save_chat_widget_callback'));
         add_action( 'wp_ajax_remove_chat_widget', array($this, 'remove_chat_widget_callback'));
+
+        // Hook the function to the uninstall hook
+        register_uninstall_hook(__FILE__, array($this, 'delete_options'));
     }
 
     /**
@@ -55,6 +58,22 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_enabled');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_max_characters');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_global_widget_id');
+    }
+
+    /**
+     * Delete stored options when plugin is uninstalled.
+     */
+    public function delete_options() {
+        delete_option('tw_chat_assistant_name');
+        delete_option('tw_chat_assistant_id');
+        delete_option('tw_chat_openai_key');
+        delete_option('tw_chat_button_text');
+        delete_option('tw_chat_greeting');
+        delete_option('tw_chat_disclaimer');
+        delete_option('tw_chat_error_message');
+        delete_option('tw_chat_is_enabled');
+        delete_option('tw_chat_max_characters');
+        delete_option('tw_chat_global_widget_id');
     }
 
     /**
