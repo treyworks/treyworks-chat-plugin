@@ -211,13 +211,14 @@
     }
 
     /**
-     * Create new chat_widget post
+     * Save chat_widget post
      */
     function save_chat_widget_callback() {
         try {
             // Get and sanitize post data
             $chat_widget_name = sanitize_text_field($_POST['tw_chat_widget_name']);
             $greeting = sanitize_text_field($_POST['tw_chat_greeting']);
+            $suggested_answers = sanitize_text_field($_POST['tw_chat_suggested_answers']);
             $assistant_id = sanitize_text_field($_POST['tw_chat_assistant_id']);
         
             if (isset($_POST['id'])) {
@@ -241,7 +242,8 @@
             // Add the meta fields
             update_post_meta($post_id, 'tw_chat_assistant_id', $assistant_id);
             update_post_meta($post_id, 'tw_chat_greeting', $greeting);
-        
+            update_post_meta($post_id, 'tw_chat_suggested_answers', $suggested_answers);
+            
             $response = TW_Chat_Widgets::get_chat_widgets();
             wp_send_json_success( $response );
         } catch (Exception $e) {

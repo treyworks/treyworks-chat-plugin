@@ -95,6 +95,7 @@ function ChatWidgetsManager() {
         const [saveWidgetData, setSaveWidgetData] = useState({
             tw_chat_widget_name: "",
             tw_chat_greeting: "",
+            tw_chat_suggested_answers: "",
             tw_chat_assistant_id: ""
         });
 
@@ -106,7 +107,8 @@ function ChatWidgetsManager() {
                     id: currentWidget.id,
                     tw_chat_widget_name: currentWidget.name,
                     tw_chat_greeting: currentWidget.meta.tw_chat_greeting[0],
-                    tw_chat_assistant_id: currentWidget.meta.tw_chat_assistant_id[0]
+                    tw_chat_assistant_id: currentWidget.meta.tw_chat_assistant_id[0],
+                    tw_chat_suggested_answers: currentWidget.meta.tw_chat_suggested_answers ? currentWidget.meta.tw_chat_suggested_answers[0] : ""
                 });      
             }
         }, []);
@@ -166,6 +168,10 @@ function ChatWidgetsManager() {
                     <tr valign="top">
                         <th scope="row">Greeting</th>
                         <td><input className="regular-text" type="text" name="tw_chat_greeting" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_greeting} required="required" /></td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Suggested Answers</th>
+                        <td><input className="regular-text" type="text" name="tw_chat_suggested_answers" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_suggested_answers} required="required" /></td>
                     </tr>
                 </tbody>
             </table>

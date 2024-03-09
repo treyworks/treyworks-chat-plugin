@@ -73,6 +73,7 @@ class TW_Chat_Widgets {
         if ($post) {
             $assistant_id = get_post_meta($post_id, 'tw_chat_assistant_id', true);
             $greeting = get_post_meta($post_id, 'tw_chat_greeting', true);
+            $suggested_answers = get_post_meta($post_id, 'tw_chat_suggested_answers', true);
 
             if (empty($assistant_id) || is_null($assistant_id)) {
                 // No assistant ID found
@@ -82,7 +83,8 @@ class TW_Chat_Widgets {
             return array(
                 'tw_chat_widget_name' => $post['post_title'],
                 'tw_chat_assistant_id' => $assistant_id,
-                'tw_chat_greeting' => $greeting
+                'tw_chat_greeting' => $greeting,
+                'tw_chat_suggested_answers' => $suggested_answers
             );
 
         } else {
