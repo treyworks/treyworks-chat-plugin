@@ -102,10 +102,20 @@
   color: var(--tw-chat-message-color, #333);
 }
 
+.tw-chat-messages .message a {
+  color: var(--tw-chat-message-color, #333);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 .tw-chat-messages .message.user {
   background: var(--tw-chat-message-user-background, #333);
   color: var(--tw-chat-message-user-color, #fff);
   align-self: flex-end;
+}
+
+.tw-chat-messages .message.user a {
+  color: var(--tw-chat-message-user-color, #fff);
 }
 
 .tw-chat-messages .message.error {
@@ -179,6 +189,29 @@
 
 .tw-chat-input-container .tw-chat-max-characters {
   font-weight: bold;
+}
+
+.tw-chat-suggested-answers {
+  display: flex;
+  flex-direction: column;
+  padding: var(--tw-chat-message-padding, 20px);
+  border-top: var(--tw-chat-input-border, 1px solid);
+  background: var(--tw-chat-input-background, transparent);
+}
+
+.tw-chat-suggested-answers button {
+  font-size: var(--tw-chat-suggested-answer-font-size, 1rem);
+  padding: var(--tw-chat-suggested-answer-padding, 5px);
+  border-radius: var(--tw-chat-suggested-answer-border-radius, 0) !important;
+  color: var(--tw-chat-message-user-color, #fff);
+  background-color: var(--tw-chat-message-user-background, #333);
+  box-shadow: var(--tw-chat-suggested-answer-box-shadow, none);
+  border: var(--tw-chat-suggested-answer-border, none);
+  margin-bottom: var(--tw-chat-suggested-answer-spacing, 1rem);
+}
+
+.tw-chat-suggested-answers button:last-of-type {
+  margin-bottom: 0;
 }
 
 .tw-chat-disclaimer-container {

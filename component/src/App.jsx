@@ -12,11 +12,10 @@ function App({ widgetID, sticky }) {
 
   const [isVisible, setIsVisible] = useState(false);
   const buttonText = window.twChatPluginSettings.tw_chat_button_text || "Chat";
+  const width = window.twChatWidgetSettings[widgetID].tw_chat_width || null;
+  const height = window.twChatWidgetSettings[widgetID].tw_chat_height || null;
 
   const toggleChat = () => {
-    if (!isVisible) {
-      setFocus(widgetID);
-    }
     setIsVisible(!isVisible);
   };
 
@@ -37,7 +36,7 @@ function App({ widgetID, sticky }) {
   return (<>
   { sticky ? 
     <StickyWidget />
-    : <ChatWidget widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} sticky={sticky} />
+    : <ChatWidget widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} width={width} height={height} sticky={sticky} />
   }
   </>);
 }

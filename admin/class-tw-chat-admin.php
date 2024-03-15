@@ -220,7 +220,10 @@
             $greeting = sanitize_text_field($_POST['tw_chat_greeting']);
             $suggested_answers = sanitize_text_field($_POST['tw_chat_suggested_answers']);
             $assistant_id = sanitize_text_field($_POST['tw_chat_assistant_id']);
-        
+            $email_recipients = sanitize_text_field($_POST['tw_chat_email_recipients']);
+            $webhook_address = sanitize_text_field($_POST['tw_chat_webhook_address']);
+            $webhook_header = sanitize_text_field($_POST['tw_chat_webhook_header']);
+
             if (isset($_POST['id'])) {
                 $post_id = sanitize_text_field($_POST['id']);
                 // Post ID is passed, update fields
@@ -243,7 +246,10 @@
             update_post_meta($post_id, 'tw_chat_assistant_id', $assistant_id);
             update_post_meta($post_id, 'tw_chat_greeting', $greeting);
             update_post_meta($post_id, 'tw_chat_suggested_answers', $suggested_answers);
-            
+            update_post_meta($post_id, 'tw_chat_webhook_address', $webhook_address);
+            update_post_meta($post_id, 'tw_chat_webhook_header', $webhook_header);
+            update_post_meta($post_id, 'tw_chat_email_recipients', $email_recipients);
+
             $response = TW_Chat_Widgets::get_chat_widgets();
             wp_send_json_success( $response );
         } catch (Exception $e) {

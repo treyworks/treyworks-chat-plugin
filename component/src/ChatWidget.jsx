@@ -14,7 +14,7 @@ import ShowIcon from './icons/showIcon'
 import HideIcon from './icons/hideIcon'
 import CloseIcon from './icons/close'
 
-const ChatWidget = ({ iconColor, toggleChat, widgetID, sticky }) => {
+const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) => {
     // Initialize state vars
     const [messages, setMessages] = useState(twChatMessages[widgetID])
     const [messageText, setMessageText] = useState('')
@@ -195,13 +195,15 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, sticky }) => {
 
         if (suggestedAnswers.length > 0) {
             // Show suggested answers as button list
-            const suggestedAnswerButtons = suggestedAnswers.map((answer, index) => {
-                return (
+            return (
+            <div className="tw-chat-suggested-answers"> 
+                {suggestedAnswers.map((answer, index) => {
+                    return (
                     <button key={index} onClick={() => handleSuggestAnswerClick(answer)}>{answer}</button>
-                )
-            })
-
-            return suggestedAnswerButtons
+                    )
+                })}
+            </div>
+            )
         } else {
             // Display input form if no suggested answers found
             return (
@@ -224,16 +226,24 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, sticky }) => {
         }
     }
 
-    // Component classes
+    // Component classes and style
     const componentClasses = classNames(
         "tw-chat-interface",
         { "sticky": sticky },
         { "embedded": !sticky }
     )
-    
+    let componentStyle = {}
+
+    if (width) {
+        componentStyle.width = width
+    }
+    if (height) {
+        componentStyle.height = height
+    }
+
     // Render component
     return (
-    <div className={componentClasses}>
+    <div className={componentClasses} style={componentStyle}>
         <div className="tw-chat-header">
             <span>{window.twChatWidgetSettings[widgetID].tw_chat_widget_name}</span>
         { sticky == 1 && 
