@@ -18,6 +18,7 @@ function SettingsManager() {
         tw_chat_disclaimer: twChatSettings.tw_chat_disclaimer,
         tw_chat_error_message: twChatSettings.tw_chat_error_message,
         tw_chat_is_enabled: twChatSettings.tw_chat_is_enabled,
+        tw_chat_is_debug: twChatSettings.tw_chat_is_debug,
         tw_chat_max_characters: twChatSettings.tw_chat_max_characters,
         tw_chat_global_widget_id: twChatSettings.tw_chat_global_widget_id
     });
@@ -103,6 +104,20 @@ function SettingsManager() {
                     <th scope="row">Maximum Characters Allowed</th>
                     <td>
                         <input className="regular-text" type="number" name="tw_chat_max_characters" onChange={handleInputChange} defaultValue={formData.tw_chat_max_characters} />
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Enable Debugging</th>
+                    <td>
+                        <input 
+                            type="checkbox" 
+                            id="tw_chat_is_debug" 
+                            name="tw_chat_is_debug" 
+                            defaultValue="enabled"
+                            defaultChecked={formData.tw_chat_is_debug ? true : false}
+                            onChange={handleCheckboxChange}
+                        /> 
+                        <label htmlFor="tw_chat_is_debug">Yes, enable debugging and plugin logging</label>
                     </td>
                 </tr>
             </tbody>

@@ -56,6 +56,7 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_error_message');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_enabled');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_is_debug');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_max_characters');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_global_widget_id');
     }
@@ -74,6 +75,7 @@
         delete_option('tw_chat_is_enabled');
         delete_option('tw_chat_max_characters');
         delete_option('tw_chat_global_widget_id');
+        delete_option('tw_chat_is_debug');
     }
 
     /**
@@ -92,7 +94,8 @@
             'tw_chat_error_message' => get_option('tw_chat_error_message', ''),
             'tw_chat_is_enabled' => get_option('tw_chat_is_enabled'),
             'tw_chat_max_characters' => get_option('tw_chat_max_characters'),
-            'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id')
+            'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id'),
+            'tw_chat_is_debug' => get_option('tw_chat_is_debug')
         );
     }
 
@@ -148,7 +151,8 @@
             update_option('tw_chat_error_message', sanitize_text_field($settings['tw_chat_error_message']));
             update_option('tw_chat_max_characters', sanitize_text_field($settings['tw_chat_max_characters']));
             update_option('tw_chat_global_widget_id', sanitize_text_field($settings['tw_chat_global_widget_id']));
-
+            update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
+            
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
         } catch (Exception $e) {

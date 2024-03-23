@@ -159,6 +159,24 @@ class TW_Chat_Plugin {
             'callback' => [ $this, 'handle_chat_response' ],
             'permission_callback' => function () { return true; }
         ]);
+
+        register_rest_route('tw-chat-assistant/v1', '/test', [
+            'methods' => ['GET', 'POST'],
+            'callback' => [ $this, 'handle_test' ],
+            'permission_callback' => function () { return true; }
+        ]);
+    }
+
+    /**
+     * Handles REST API test requests
+     */
+    public function handle_test($request) {
+
+        TW_Chat_Logger::log($request);
+
+        return new WP_REST_Response([
+            "message" => "Webhook Test Endpoint"
+        ], 200);
     }
 
     /**
@@ -168,12 +186,13 @@ class TW_Chat_Plugin {
      */
     public function handle_chat_response($request) {
 
-        // Log
-        // TW_Chat_Logger::log('New chat request');
-
+        // Log if debugging is enabled
+        TW_Chat_Logger::log(__('New chat request'));
+        
         // Verify nonce
         $nonce = $request->get_header('X-WP-Nonce');
         if ( !wp_verify_nonce($nonce, 'wp_rest') ) {
+            TW_Chat_Logger::log(__('Invalid nonce ' . $nonce));
             return new WP_Error('forbidden', __('Invalid nonce ' . $nonce), [ 'status' => 403 ]);
         }
 
@@ -184,6 +203,7 @@ class TW_Chat_Plugin {
         $server_domain = $parsed_url['host'];
 
         if ($request_domain != $server_domain) {
+            TW_Chat_Logger::log(__('Cross Origin access forbidden'));
             return new WP_Error('no_crossorigin', __('Cross Origin access forbidden'), [ 'status' => 403 ]);
         }
 
@@ -192,6 +212,7 @@ class TW_Chat_Plugin {
         $openai_key = $settings['tw_chat_openai_key'];
 
         if (empty($openai_key)) {
+            TW_Chat_Logger::log(__('Missing OpenAI API key'));
             return new WP_Error('missing_settings', 'The OpenAI API Key is not set.', [ 'status' => 400 ]);
         }
 
@@ -208,6 +229,7 @@ class TW_Chat_Plugin {
 
             // Check for widget ID
             if (empty($widget_id) || is_null($widget_id)) {
+                TW_Chat_Logger::log(__('Missing required parameters'));
                 return new WP_Error('missing_params', __('Missing required parameters'), ['status' => 400]);
             }
 
@@ -287,7 +309,7 @@ class TW_Chat_Plugin {
                     threadId: $thread_id,
                     runId: $run_id,
                 );
-                // Get the status
+                // Get the run status
                 $run_status = $run_response->status;
 
                 if ($run_status === 'completed' || $run_status === 'cancelled' || $run_status === 'failed' || $run_status === 'expired') {
@@ -339,25 +361,30 @@ class TW_Chat_Plugin {
                             $webhook_header = get_post_meta($widget_id, 'tw_chat_webhook_header', true);
                             $webhook_address = get_post_meta($widget_id, 'tw_chat_webhook_address', true);
 
+                            TW_Chat_Logger::log('Post Information');
+                            TW_Chat_Logger::log($webhook_address);
+                            TW_Chat_Logger::log($webhook_header);
 
                             // Arguments for the wp_remote_post function
                             $args = array(
-                                'body'    => $post_data,
-                                'headers' => json_decode($webhook_header),
+                                'body'    => $arguments[$param_name],
                                 'timeout' => '3', // Timeout in seconds
                             );
+
+                            if ($webhook_header) {
+                                $args['headers'] = json_decode($webhook_header, true);
+                            }
 
                             // Make the POST request
                             $response = wp_remote_post($webhook_address, $args);
 
                             // Check for errors
                             if (is_wp_error($response)) {
-                                $error_message = $response->get_error_message();
-                                echo "Something went wrong: $error_message";
+                                TW_Chat_Logger::log('Error sending data');
+                                $tool_output = "error";
                             } else {
-                                echo 'Response:<pre>';
-                                print_r($response);
-                                echo '</pre>';
+                                TW_Chat_Logger::log('Data sent successfully');
+                                $tool_output = "complete";
                             }
                             
                         }

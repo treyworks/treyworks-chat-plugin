@@ -12,7 +12,10 @@ class TW_Chat_Logger {
 
     // Logs a message to the log file
     public static function log($message) {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
+
+        $is_debug = get_option('tw_chat_is_debug');
+
+        if ($is_debug) {
             // Convert array or object to a readable string format
             if (is_array($message) || is_object($message)) {
                 $message = print_r($message, true);
