@@ -55,7 +55,7 @@ class TW_Chat_Plugin {
             'public' => true,
             'label'  => 'Chat Widgets',
             'supports' => [ 'title', 'editor' ],
-            'show_in_menu' => true, // This will hide it from the admin menu
+            'show_in_menu' => false, // This will hide it from the admin menu
         ];
         register_post_type('chat_widgets', $args);
     }
