@@ -1,6 +1,6 @@
 # Treyworks Chat Plugin for WordPress
 
-This plugin adds an OpenAI powered chatbot to your Wordpress website - giving your visitors instant answers and a boosted user experience. This plugin aims to strengthen website interaction, enhance customer support, and can be modified to fit your website's look and feel.
+This plugin lets you add chatbots powered by the OpenAI Assistants API to your Wordpress website - giving your visitors instant answers and a boosted user experience. This plugin aims to strengthen website interaction, enhance customer support, and can be modified to fit your website's look and feel.
 
 ## How to Install:
 
@@ -18,11 +18,63 @@ This plugin adds an OpenAI powered chatbot to your Wordpress website - giving yo
 * Chat widgets can also be added to pages using a shortcode: `[tw_chat_widget id=WIDGET_ID]`
 * Keep in mind that multiple chat widgets can be present on a page, but the same chat widget cannot be added more than once.
 
-## Additional Notes:
+## Setting up your OpenAI Assistant:
 
 * Make sure you have a valid OpenAI API account and API key.
 * Take into account the potential cost implications of using the OpenAI Assistant API.
-* Routinely check and adjust the chatbot prompts and settings to improve its performance.
+* Routinely check and adjust the chatbot prompts instructions and knowledge base to improve its performance.
+
+### Site Search Function Definition
+
+You can enable the site search functionality by adding this function definition to your OpenAI assistant:
+
+```json
+{
+  "name": "search_site",
+  "description": "Search the website for answers",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "search_term": {
+        "type": "string",
+        "description": "The search term to lookup on the website"
+      }
+    },
+    "required": [
+      "search_term"
+    ]
+  }
+}
+```
+
+Add this to your assistant instructions:
+`Use the search_site function to answer user questions by referring to website content. Always include a link for the user to learn more information.`
+
+
+### Send Email Message Function Definition
+
+You can enable the send  functionality by adding this function definition to your OpenAI assistant:
+```json
+{
+  "name": "send_message",
+  "description": "Send the user information as an email",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "body": {
+        "type": "string",
+        "description": "A summary of the user information"
+      }
+    },
+    "required": [
+      "body"
+    ]
+  }
+}
+```
+
+Add this to your assistant instructions:
+`Use the send_message function to email the provided information.`
 
 ## Style Customizations
 
@@ -53,10 +105,13 @@ The appearance of the plugin can be modified with CSS variables. You can adjust 
     --tw-chat-header-padding: 10px 20px;
     --tw-chat-header-close-size: 32px;
     --tw-chat-header-close-color: #fff;
+    --tw-chat-logo-width: 100px;
+    --tw-chat-logo-height: auto;
     --tw-chat-message-padding: 20px;
     --tw-chat-message-border-radius: 0;
     --tw-chat-message-box-shadow: -1px 1px rgba(0,0,0,0.5);
     --tw-chat-padding: 10px 20px;
+    --tw-chat-message-font-size: 1rem;
     --tw-chat-message-width: 85%;
     --tw-chat-message-background: #f0f0f0;
     --tw-chat-message-color: #333;

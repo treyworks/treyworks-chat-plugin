@@ -73,6 +73,10 @@ class TW_Chat_Widgets {
         if ($post) {
             $assistant_id = get_post_meta($post_id, 'tw_chat_assistant_id', true);
             $greeting = get_post_meta($post_id, 'tw_chat_greeting', true);
+            $suggested_answers = get_post_meta($post_id, 'tw_chat_suggested_answers', true);
+            $email_recipients = get_post_meta($post_id, 'tw_chat_email_recipients', true);
+            $webhook_address = get_post_meta($post_id, 'tw_chat_webhook_address', true);
+            $webhook_header = get_post_meta($post_id, 'tw_chat_webhook_header', true);
 
             if (empty($assistant_id) || is_null($assistant_id)) {
                 // No assistant ID found
@@ -82,7 +86,11 @@ class TW_Chat_Widgets {
             return array(
                 'tw_chat_widget_name' => $post['post_title'],
                 'tw_chat_assistant_id' => $assistant_id,
-                'tw_chat_greeting' => $greeting
+                'tw_chat_greeting' => $greeting,
+                'tw_chat_suggested_answers' => $suggested_answers,
+                'tw_chat_email_recipients' => $email_recipients,
+                'tw_chat_webhook_address' => $webhook_address,
+                'tw_chat_webhook_header' => $webhook_header
             );
 
         } else {

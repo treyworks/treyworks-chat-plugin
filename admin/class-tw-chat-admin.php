@@ -56,8 +56,10 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_error_message');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_enabled');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_is_debug');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_max_characters');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_global_widget_id');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_logo_url');
     }
 
     /**
@@ -74,6 +76,8 @@
         delete_option('tw_chat_is_enabled');
         delete_option('tw_chat_max_characters');
         delete_option('tw_chat_global_widget_id');
+        delete_option('tw_chat_is_debug');
+        delete_option('tw_chat_logo_url');
     }
 
     /**
@@ -92,7 +96,9 @@
             'tw_chat_error_message' => get_option('tw_chat_error_message', ''),
             'tw_chat_is_enabled' => get_option('tw_chat_is_enabled'),
             'tw_chat_max_characters' => get_option('tw_chat_max_characters'),
-            'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id')
+            'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id'),
+            'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
+            'tw_chat_logo_url' => get_option('tw_chat_logo_url')
         );
     }
 
@@ -127,6 +133,9 @@
             $script_data['chat_widgets'] = TW_Chat_Widgets::get_chat_widgets();
 
             wp_localize_script( 'tw-chat-admin', 'twChatSettings', $script_data );
+
+            // Enqueue the media uploader scripts
+            wp_enqueue_media(); 
         }
 	}
 
@@ -148,7 +157,9 @@
             update_option('tw_chat_error_message', sanitize_text_field($settings['tw_chat_error_message']));
             update_option('tw_chat_max_characters', sanitize_text_field($settings['tw_chat_max_characters']));
             update_option('tw_chat_global_widget_id', sanitize_text_field($settings['tw_chat_global_widget_id']));
-
+            update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
+            update_option('tw_chat_logo_url', sanitize_text_field($settings['tw_chat_logo_url']));
+            
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
         } catch (Exception $e) {
@@ -211,15 +222,19 @@
     }
 
     /**
-     * Create new chat_widget post
+     * Save chat_widget post
      */
     function save_chat_widget_callback() {
         try {
             // Get and sanitize post data
             $chat_widget_name = sanitize_text_field($_POST['tw_chat_widget_name']);
             $greeting = sanitize_text_field($_POST['tw_chat_greeting']);
+            $suggested_answers = sanitize_text_field($_POST['tw_chat_suggested_answers']);
             $assistant_id = sanitize_text_field($_POST['tw_chat_assistant_id']);
-        
+            $email_recipients = sanitize_text_field($_POST['tw_chat_email_recipients']);
+            $webhook_address = sanitize_text_field($_POST['tw_chat_webhook_address']);
+            $webhook_header = sanitize_text_field($_POST['tw_chat_webhook_header']);
+
             if (isset($_POST['id'])) {
                 $post_id = sanitize_text_field($_POST['id']);
                 // Post ID is passed, update fields
@@ -241,7 +256,11 @@
             // Add the meta fields
             update_post_meta($post_id, 'tw_chat_assistant_id', $assistant_id);
             update_post_meta($post_id, 'tw_chat_greeting', $greeting);
-        
+            update_post_meta($post_id, 'tw_chat_suggested_answers', $suggested_answers);
+            update_post_meta($post_id, 'tw_chat_webhook_address', $webhook_address);
+            update_post_meta($post_id, 'tw_chat_webhook_header', $webhook_header);
+            update_post_meta($post_id, 'tw_chat_email_recipients', $email_recipients);
+
             $response = TW_Chat_Widgets::get_chat_widgets();
             wp_send_json_success( $response );
         } catch (Exception $e) {

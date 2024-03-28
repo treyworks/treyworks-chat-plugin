@@ -4,6 +4,9 @@
  *
  */
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-widgets.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-functions.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-logger.php';
+
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-admin.php';
 
 class TW_Chat_Plugin {
@@ -14,6 +17,9 @@ class TW_Chat_Plugin {
      * Constructor for the TW_Chat_Plugin class.
      */
     public function __construct() {
+        // Initialize the logger
+        TW_Chat_Logger::initialize();
+        
         $this->setup_admin();
         $this->setup_actions();
     }
@@ -26,11 +32,11 @@ class TW_Chat_Plugin {
     }
 
     public function setup_actions() {
-        add_action('init', array($this, 'register_chat_widget_post_type'));
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-        add_action('wp_footer', array($this, 'add_footer_html'));
-        add_action('rest_api_init', array($this, 'register_chat_response_endpoint'));
-        add_shortcode('tw_chat_widget', array($this, 'tw_chat_widget_shortcode'));
+        add_action('init', [$this, 'register_chat_widget_post_type']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
+        add_action('wp_footer', [$this, 'add_footer_html']);
+        add_action('rest_api_init', [$this, 'register_chat_response_endpoint']);
+        add_shortcode('tw_chat_widget', [$this, 'tw_chat_widget_shortcode']);
     }
 
     /** 
@@ -45,12 +51,12 @@ class TW_Chat_Plugin {
      * Register Chat Widget Post Type
      */
     public function register_chat_widget_post_type() {
-        $args = array(
+        $args = [
             'public' => true,
             'label'  => 'Chat Widgets',
-            'supports' => array('title', 'editor'),
+            'supports' => [ 'title', 'editor' ],
             'show_in_menu' => true, // This will hide it from the admin menu
-        );
+        ];
         register_post_type('chat_widgets', $args);
     }
 
@@ -60,7 +66,7 @@ class TW_Chat_Plugin {
      */
     public function enqueue_scripts() {    
         if (!is_admin()) {
-            wp_enqueue_script('tw-chat-js', plugins_url('../component/dist/tw-chat.js', __FILE__), array(), '1.0.0', true);
+            wp_enqueue_script('tw-chat-js', plugins_url('../component/dist/tw-chat.js', __FILE__), [], '1.0.0', true);
             wp_enqueue_style('tw-chat-css', plugins_url('../component/dist/style.css', __FILE__));
 
             // Localize script with plugin settings
@@ -73,6 +79,7 @@ class TW_Chat_Plugin {
                 "tw_chat_error_message" => $settings["tw_chat_error_message"],
                 "tw_chat_assistant_name" => $settings["tw_chat_assistant_name"],       
                 "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
+                "tw_chat_logo_url" => $settings["tw_chat_logo_url"]
             ];
 
             wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
@@ -82,7 +89,7 @@ class TW_Chat_Plugin {
     /**
      * Render component
      */
-    public function render_component($post_id, $sticky = true) {
+    public function render_component($post_id, $width = null, $height = null, $sticky = true) {
         require plugin_dir_path( __FILE__ ) . 'partials/chat-widget-template.php';
     }
 
@@ -97,7 +104,7 @@ class TW_Chat_Plugin {
             $global_widget_id = get_option('tw_chat_global_widget_id');
 
             // Render component with post id and sticky 
-            echo $this->render_component($global_widget_id, 1);
+            echo $this->render_component($global_widget_id, null, null, 1);
         }
     }
 
@@ -108,15 +115,19 @@ class TW_Chat_Plugin {
         
         // Set up default attributes
         $atts = shortcode_atts(
-            array(
+            [
                 'id' => 0, // Default to 0 if no post_id is provided
-            ),
+                'height' => null, // Default to null
+                'width' => null
+            ],
             $atts,
             'tw_chat_widget'
         );
 
         // Access the post_id attribute
         $post_id = $atts['id'];
+        $width = $atts['width'];
+        $height = $atts['height'];
 
         // get the global widget id
         $global_widget_id = get_option('tw_chat_global_widget_id');
@@ -132,7 +143,7 @@ class TW_Chat_Plugin {
 
         // Store rendered component. Pass 0 for non-sticky
         ob_start();
-        $this->render_component($post_id, 0);
+        $this->render_component($post_id, $width, $height, 0);
         $output = ob_get_clean();
 
         return $output;
@@ -144,11 +155,29 @@ class TW_Chat_Plugin {
      * Defines the URL and handler for the 'chat-response' endpoint.
      */
     public function register_chat_response_endpoint() {
-        register_rest_route('tw-chat-assistant/v1', '/chat-response', array(
+        register_rest_route('tw-chat-assistant/v1', '/chat-response', [
             'methods' => 'POST',
-            'callback' => array($this, 'handle_chat_response'),
+            'callback' => [ $this, 'handle_chat_response' ],
             'permission_callback' => function () { return true; }
-        ));
+        ]);
+
+        register_rest_route('tw-chat-assistant/v1', '/test', [
+            'methods' => ['GET', 'POST'],
+            'callback' => [ $this, 'handle_test' ],
+            'permission_callback' => function () { return true; }
+        ]);
+    }
+
+    /**
+     * Handles REST API test requests
+     */
+    public function handle_test($request) {
+
+        TW_Chat_Logger::log($request);
+
+        return new WP_REST_Response([
+            "message" => "Webhook Test Endpoint"
+        ], 200);
     }
 
     /**
@@ -158,10 +187,14 @@ class TW_Chat_Plugin {
      */
     public function handle_chat_response($request) {
 
+        // Log if debugging is enabled
+        TW_Chat_Logger::log(__('New chat request'));
+        
         // Verify nonce
         $nonce = $request->get_header('X-WP-Nonce');
         if ( !wp_verify_nonce($nonce, 'wp_rest') ) {
-            return new WP_Error('forbidden', __('Invalid nonce ' . $nonce), array('status' => 403));
+            TW_Chat_Logger::log(__('Invalid nonce ' . $nonce));
+            return new WP_Error('forbidden', __('Invalid nonce ' . $nonce), [ 'status' => 403 ]);
         }
 
         // check request server
@@ -171,7 +204,8 @@ class TW_Chat_Plugin {
         $server_domain = $parsed_url['host'];
 
         if ($request_domain != $server_domain) {
-            return new WP_Error('no_crossorigin', __('Cross Origin access forbidden'), array('status' => 403));
+            TW_Chat_Logger::log(__('Cross Origin access forbidden'));
+            return new WP_Error('no_crossorigin', __('Cross Origin access forbidden'), [ 'status' => 403 ]);
         }
 
         // Get settings
@@ -179,7 +213,8 @@ class TW_Chat_Plugin {
         $openai_key = $settings['tw_chat_openai_key'];
 
         if (empty($openai_key)) {
-            return new WP_Error('missing_settings', 'The OpenAI API Key is not set.', array('status' => 400));
+            TW_Chat_Logger::log(__('Missing OpenAI API key'));
+            return new WP_Error('missing_settings', 'The OpenAI API Key is not set.', [ 'status' => 400 ]);
         }
 
         try {
@@ -195,12 +230,13 @@ class TW_Chat_Plugin {
 
             // Check for widget ID
             if (empty($widget_id) || is_null($widget_id)) {
-                return new WP_Error('missing_params', __('Missing required parameters'), array('status' => 400));
+                TW_Chat_Logger::log(__('Missing required parameters'));
+                return new WP_Error('missing_params', __('Missing required parameters'), ['status' => 400]);
             }
 
             // Check for message parameter
             if (empty($message) || is_null($message)) {
-                return new WP_Error('missing_params', __('Missing required parameters'), array('status' => 400));
+                return new WP_Error('missing_params', __('Missing required parameters'), ['status' => 400]);
             }
 
             // Get chat widget info
@@ -209,7 +245,7 @@ class TW_Chat_Plugin {
 
             // Return error if settings are not found
             if (is_null($chat_widget)) {
-                return new WP_Error('missing_settings', 'The assistant ID is not set.', array('status' => 400));
+                return new WP_Error('missing_settings', 'The assistant ID is not set.', ['status' => 400]);
             }
 
             $assistant_id = $chat_widget['tw_chat_assistant_id'];
@@ -225,43 +261,43 @@ class TW_Chat_Plugin {
             ]);
             
             // Loop moderation responses and checked for flagged status
-            foreach ($response->results as $result) {
+            foreach ($moderation_response->results as $result) {
                 if ($result->flagged) {
                     // true, return error
-                    return new WP_Error('moderation_error', 'Message violates OpenAI Content Policy', array('status' => 400));
+                    return new WP_Error('moderation_error', 'Message violates OpenAI Content Policy', ['status' => 400]);
                 } 
             }
 
             // Create a new thread if none is passed
             if (empty($thread_id) || is_null($thread_id)) {
                 $run_response = $client->threads()->createAndRun(
-                    array(
+                    [
                         'assistant_id' => $assistant_id,
-                        'thread' => array(
-                            'messages' => array(
-                                array(
+                        'thread' => [
+                            'messages' => [
+                                [
                                     'role' => 'user',
                                     'content' => $clean_message
-                                ),
-                            ),
-                        ),
-                    ),
+                                ],
+                            ],
+                        ],
+                    ],
                 );
                 $thread_id = $run_response->threadId;
                 $run_id = $run_response->id;
                 
             } else {
                 // Create a new message
-                $message_response = $client->threads()->messages()->create($thread_id, array(
+                $message_response = $client->threads()->messages()->create($thread_id, [
                     'role' => 'user',
                     'content' => $clean_message,
-                ));
+                ]);
 
                 $run_response = $client->threads()->runs()->create(
                     threadId: $thread_id, 
-                    parameters: array(
+                    parameters: [
                         'assistant_id' => $assistant_id,
-                    ),
+                    ],
                 );
                 $run_id = $run_response->id;
             }
@@ -274,14 +310,111 @@ class TW_Chat_Plugin {
                     threadId: $thread_id,
                     runId: $run_id,
                 );
+                // Get the run status
                 $run_status = $run_response->status;
 
                 if ($run_status === 'completed' || $run_status === 'cancelled' || $run_status === 'failed' || $run_status === 'expired') {
                     $completed_response = $run_response;
                     $is_complete = true;
                     break; 
+                } elseif ($run_status === 'requires_action') {
+                    // Get the tool call info
+                    $tool_call = $run_response->requiredAction->submitToolOutputs->toolCalls[0];
+                    
+                    $name = $tool_call->function->name;
+                    $arguments = json_decode($tool_call->function->arguments, true);
+                    $tool_output = "";
+
+                    TW_Chat_Logger::log('Function called: ' . $name);
+                    TW_Chat_Logger::log('Arguments:');
+                    TW_Chat_Logger::log($arguments);
+
+                    // Execute desired function call
+                    if ($name === 'send_message') {
+                        
+                        $email_recipients = get_post_meta($widget_id, 'tw_chat_email_recipients', true);
+                        // Send email 
+                        if (array_key_exists('body', $arguments) && $arguments['body'] !== null) {
+                            $sanitized_email_body = sanitize_text_field($arguments['body']);
+                            TW_Chat_Functions::send_message($email_recipients, $chat_widget['tw_chat_widget_name'], $sanitized_email_body);
+                        }
+
+                        // Set tool output
+                        $tool_output = "complete";
+
+                    } elseif ($name === 'search_site') {
+
+                        $search_results = [];
+
+                        // Get search term from argument
+                        if (array_key_exists('search_term', $arguments) && $arguments['search_term'] !== null) {
+                            $search_results = TW_Chat_Functions::search_site($arguments['search_term']);
+                        }
+
+                        // Set tool output
+                        $tool_output = json_encode($search_results);
+                    } elseif ($name === 'webhook') {
+                        $param_name = "post_data";
+
+                        // Get post data from argument
+                        if (array_key_exists($param_name, $arguments) && $arguments[$param_name] !== null) {
+                            // Get the webook url and header
+                            $webhook_header = get_post_meta($widget_id, 'tw_chat_webhook_header', true);
+                            $webhook_address = get_post_meta($widget_id, 'tw_chat_webhook_address', true);
+
+                            TW_Chat_Logger::log('Post Information');
+                            TW_Chat_Logger::log($webhook_address);
+                            TW_Chat_Logger::log($webhook_header);
+
+                            // Arguments for the wp_remote_post function
+                            $args = array(
+                                'body'    => $arguments[$param_name],
+                                'timeout' => '3', // Timeout in seconds
+                            );
+
+                            if ($webhook_header) {
+                                $args['headers'] = json_decode($webhook_header, true);
+                            }
+
+                            // Make the POST request
+                            $response = wp_remote_post($webhook_address, $args);
+
+                            // Check for errors
+                            if (is_wp_error($response)) {
+                                TW_Chat_Logger::log('Error sending data');
+                                $tool_output = "error";
+                            } else {
+                                TW_Chat_Logger::log('Data sent successfully');
+                                $tool_output = "complete";
+                            }
+                            
+                        }
+
+                    } else {
+                        TW_Chat_Logger::log('Unknown Function Request: ' . $name);
+                        // Default tool output
+                        $tool_output = "complete";
+                    }
+
+                    // Submit tool response
+                    $response = $client->threads()->runs()->submitToolOutputs(
+                        threadId: $thread_id,
+                        runId: $run_id,
+                        parameters: [
+                            'tool_outputs' => [
+                                [
+                                    'tool_call_id' => $tool_call->id,
+                                    'output' => $tool_output,
+                                ],
+                            ],
+                        ]
+                    );
+                    
+                    // Wait for 1 seconds before polling run again
+                    sleep(1);
                 } else {
-                    sleep(1);  // Wait for 1 seconds before checking again
+                    // Wait for 1 seconds before polling run again
+                    sleep(1);
                 }
             }
 
@@ -291,14 +424,14 @@ class TW_Chat_Plugin {
             ]);
 
             // Return response text and thread id
-            $messages_response = array(
+            $messages_response = [
                 'message' => $latest_message->data[0]->content[0]->text->value,
                 'thread_id' => $thread_id
-            );
+            ];
 
             return new WP_REST_Response($messages_response, 200);
         } catch (Exception $e) {
-            return new WP_Error('api_error', 'Error ' . $e->getMessage(), array('status' => 400));
+            return new WP_Error('api_error', 'Error ' . $e->getMessage(), ['status' => 400]);
         }
     }
 }

@@ -95,7 +95,11 @@ function ChatWidgetsManager() {
         const [saveWidgetData, setSaveWidgetData] = useState({
             tw_chat_widget_name: "",
             tw_chat_greeting: "",
-            tw_chat_assistant_id: ""
+            tw_chat_suggested_answers: "",
+            tw_chat_assistant_id: "",
+            tw_chat_webhook_address: "",
+            tw_chat_webhook_header: "",
+            tw_chat_email_recipients: ""
         });
 
         useEffect(() => {
@@ -106,7 +110,11 @@ function ChatWidgetsManager() {
                     id: currentWidget.id,
                     tw_chat_widget_name: currentWidget.name,
                     tw_chat_greeting: currentWidget.meta.tw_chat_greeting[0],
-                    tw_chat_assistant_id: currentWidget.meta.tw_chat_assistant_id[0]
+                    tw_chat_assistant_id: currentWidget.meta.tw_chat_assistant_id[0],
+                    tw_chat_suggested_answers: currentWidget.meta.tw_chat_suggested_answers ? currentWidget.meta.tw_chat_suggested_answers[0] : "",
+                    tw_chat_email_recipients: currentWidget.meta.tw_chat_email_recipients ? currentWidget.meta.tw_chat_email_recipients[0] : "",
+                    tw_chat_webhook_address: currentWidget.meta.tw_chat_webhook_address ? currentWidget.meta.tw_chat_webhook_address[0] : "",
+                    tw_chat_webhook_header: currentWidget.meta.tw_chat_webhook_header ? currentWidget.meta.tw_chat_webhook_header[0] : ""
                 });      
             }
         }, []);
@@ -124,7 +132,7 @@ function ChatWidgetsManager() {
             e.preventDefault();
             
             setIsSaving(true);
-
+            console.log(saveWidgetData)
             saveChatWidget(saveWidgetData,
                 function(response) {
                     // Success
@@ -166,6 +174,28 @@ function ChatWidgetsManager() {
                     <tr valign="top">
                         <th scope="row">Greeting</th>
                         <td><input className="regular-text" type="text" name="tw_chat_greeting" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_greeting} required="required" /></td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Suggested Answers</th>
+                        <td><input className="regular-text" type="text" name="tw_chat_suggested_answers" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_suggested_answers} /></td>
+                    </tr>
+                </tbody>                
+            </table>
+            <hr />
+            <h3>Functionality Settings</h3>
+            <table className="form-table">
+                <tbody>
+                    <tr valign="top">
+                        <th scope="row">Email Recipients</th>
+                        <td><input className="regular-text" type="text" name="tw_chat_email_recipients" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_email_recipients} /></td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Webhook Address</th>
+                        <td><input className="regular-text" type="text" name="tw_chat_webhook_address" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_webhook_address} /></td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Webhook Header</th>
+                        <td><textarea rows="4" className="regular-text" type="text" name="tw_chat_webhook_header" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_webhook_header}></textarea></td>
                     </tr>
                 </tbody>
             </table>
