@@ -105,10 +105,13 @@ The appearance of the plugin can be modified with CSS variables. You can adjust 
     --tw-chat-header-padding: 10px 20px;
     --tw-chat-header-close-size: 32px;
     --tw-chat-header-close-color: #fff;
+    --tw-chat-logo-width: 100px;
+    --tw-chat-logo-height: auto;
     --tw-chat-message-padding: 20px;
     --tw-chat-message-border-radius: 0;
     --tw-chat-message-box-shadow: -1px 1px rgba(0,0,0,0.5);
     --tw-chat-padding: 10px 20px;
+    --tw-chat-message-font-size: 1rem;
     --tw-chat-message-width: 85%;
     --tw-chat-message-background: #f0f0f0;
     --tw-chat-message-color: #333;

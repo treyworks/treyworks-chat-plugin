@@ -2,7 +2,6 @@ import './App.css'
 import { useState } from 'react';
 import ChatWidget from './ChatWidget';
 import ChatIcon from './icons/chatIcon';
-import { setFocus } from './utils/chat-utils';
 
 // Get icon color
 const rootStyle = getComputedStyle(document.documentElement);

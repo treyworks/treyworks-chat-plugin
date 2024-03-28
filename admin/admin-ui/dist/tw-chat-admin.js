@@ -24018,7 +24018,8 @@ function JL() {
     tw_chat_is_enabled: twChatSettings.tw_chat_is_enabled,
     tw_chat_is_debug: twChatSettings.tw_chat_is_debug,
     tw_chat_max_characters: twChatSettings.tw_chat_max_characters,
-    tw_chat_global_widget_id: twChatSettings.tw_chat_global_widget_id
+    tw_chat_global_widget_id: twChatSettings.tw_chat_global_widget_id,
+    tw_chat_logo_url: twChatSettings.tw_chat_logo_url
   }), [f, p] = Ct.useState(!1), [g, b] = Fb(iT), E = function(A) {
     A.preventDefault(), p(!0), Gn.post(twChatSettings.ajax_url, {
       action: "save_settings",
@@ -24052,8 +24053,8 @@ function JL() {
     /* @__PURE__ */ V.jsx("p", { children: "Global settings for chat widget functionality." }),
     /* @__PURE__ */ V.jsx("table", { className: "form-table", children: /* @__PURE__ */ V.jsxs("tbody", { children: [
       /* @__PURE__ */ V.jsxs("tr", { valign: "top", children: [
-        /* @__PURE__ */ V.jsx("th", { scope: "row", children: "Chat Error Message" }),
-        /* @__PURE__ */ V.jsx("td", { children: /* @__PURE__ */ V.jsx("input", { className: "regular-text", type: "text", name: "tw_chat_error_message", onChange: y, defaultValue: s.tw_chat_error_message }) })
+        /* @__PURE__ */ V.jsx("th", { scope: "row", children: "Custom Logo URL" }),
+        /* @__PURE__ */ V.jsx("td", { children: /* @__PURE__ */ V.jsx("input", { className: "regular-text", type: "text", name: "tw_chat_logo_url", onChange: y, defaultValue: s.tw_chat_logo_url }) })
       ] }),
       /* @__PURE__ */ V.jsxs("tr", { valign: "top", children: [
         /* @__PURE__ */ V.jsx("th", { scope: "row", children: "Disclaimer" }),
@@ -24062,6 +24063,10 @@ function JL() {
       /* @__PURE__ */ V.jsxs("tr", { valign: "top", children: [
         /* @__PURE__ */ V.jsx("th", { scope: "row", children: "Maximum Characters Allowed" }),
         /* @__PURE__ */ V.jsx("td", { children: /* @__PURE__ */ V.jsx("input", { className: "regular-text", type: "number", name: "tw_chat_max_characters", onChange: y, defaultValue: s.tw_chat_max_characters }) })
+      ] }),
+      /* @__PURE__ */ V.jsxs("tr", { valign: "top", children: [
+        /* @__PURE__ */ V.jsx("th", { scope: "row", children: "Chat Error Message" }),
+        /* @__PURE__ */ V.jsx("td", { children: /* @__PURE__ */ V.jsx("input", { className: "regular-text", type: "text", name: "tw_chat_error_message", onChange: y, defaultValue: s.tw_chat_error_message }) })
       ] }),
       /* @__PURE__ */ V.jsxs("tr", { children: [
         /* @__PURE__ */ V.jsx("th", { scope: "row", children: "Enable Debugging" }),
@@ -24077,7 +24082,7 @@ function JL() {
               onChange: T
             }
           ),
-          /* @__PURE__ */ V.jsx("label", { htmlFor: "tw_chat_is_debug", children: "Yes, enable debugging and plugin logging" })
+          /* @__PURE__ */ V.jsx("label", { htmlFor: "tw_chat_is_debug", children: "Yes, enable debugging and plugin logging." })
         ] })
       ] })
     ] }) }),
@@ -24098,7 +24103,7 @@ function JL() {
                 onChange: T
               }
             ),
-            /* @__PURE__ */ V.jsx("label", { htmlFor: "tw_chat_is_enabled", children: "Enable" })
+            /* @__PURE__ */ V.jsx("label", { htmlFor: "tw_chat_is_enabled", children: "Yes, enable the global chat widget." })
           ] })
         ] }),
         /* @__PURE__ */ V.jsxs("tr", { valign: "top", children: [

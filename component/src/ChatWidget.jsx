@@ -7,11 +7,7 @@ import { marked } from 'marked'
 
 import { newMessage, setFocus } from './utils/chat-utils'
 
-import logoUrl from './assets/powered-by-treyworks.png'
-
 import SendIcon from './icons/sendIcon'
-import ShowIcon from './icons/showIcon'
-import HideIcon from './icons/hideIcon'
 import CloseIcon from './icons/close'
 
 const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) => {
@@ -19,7 +15,6 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
     const [messages, setMessages] = useState(twChatMessages[widgetID])
     const [messageText, setMessageText] = useState('')
     const [isWaiting, setIsWaiting] = useState(false)
-    const [showDisclaimer, setShowDisclaimer] = useState(false)
     const [threadID, setThreadID] = useState(0)
     const [characterCount, setCharacterCount] = useState(0)
     const [suggestedAnswers, setSuggestedAnswers] = useState([])
@@ -37,12 +32,22 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
     
     // Set focus when instantiated
     useEffect(() => {
+        // Check to see if widget has a thread ID
+        if (window.twChatWidgetSettings[widgetID].thread_id === undefined) {
+            // No thread id set. Add default suggested answers
+            if (widgetSettings.tw_chat_suggested_answers) {
+                setSuggestedAnswers(widgetSettings.tw_chat_suggested_answers.split(','))
+            }
+        } else {
+            // Init widget with previous thread id and suggested answers
+            setThreadID(window.twChatWidgetSettings[widgetID].thread_id)
+            if (window.twChatWidgetSettings[widgetID].suggestedAnswers) {
+                setSuggestedAnswers(window.twChatWidgetSettings[widgetID].suggestedAnswers)
+            }
+        }
+
         if (sticky) {
             setFocus(widgetID)
-        }
-        if (widgetSettings.tw_chat_suggested_answers) {
-            setSuggestedAnswers(widgetSettings.tw_chat_suggested_answers.split(','))
-            // console.log(widgetSettings.tw_chat_suggested_answers)
         }
     }, [])
 
@@ -100,14 +105,12 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
             const responseMessage = response.data.message
             let replyText
             
-            console.log(responseMessage)
 
             // Check length of returned data
             if (responseMessage.length > 0) {
                 // is it a valid JSON response?
                 try {
                     const responseObject = JSON.parse(responseMessage)
-                    console.log(responseObject)
                     // get the message property value
                     replyText = responseObject.message
 
@@ -115,6 +118,7 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
                     if (responseObject.suggestedAnswers) {
                         setSuggestedAnswers(responseObject.suggestedAnswers)
                     }
+                    window.twChatWidgetSettings[widgetID].suggestedAnswers = responseObject.suggestedAnswers
                 } catch (error) {
                     // Treat it as a string
                     replyText = responseMessage
@@ -123,12 +127,16 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
                 // Remove annotations
                 const newText = replyText.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "")
                 // Add response to messages state to update UI
-                setMessages([...twChatMessages[widgetID], newMessage(newText, 'assistant')]) 
+                setMessages([...twChatMessages[widgetID], newMessage(newText, 'assistant')])
+                twChatMessages[widgetID] = [...twChatMessages[widgetID], newMessage(newText, 'assistant')]
             }
             setMessageText('')
             setCharacterCount(0)
             setIsWaiting(false)
+            // Success. Set widget thread id
+            window.twChatWidgetSettings[widgetID].thread_id = response.data.thread_id
             setThreadID(response.data.thread_id)
+            // Set input focus
             setFocus(widgetID)
             
           })
@@ -163,13 +171,6 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
 
         // Submit form with chosen answer
         handleMessageSubmit(null, answer)
-    }
-
-    // Toggle disclaimer text
-    const toggleDisclaimerText= () => {
-        return !showDisclaimer ? 
-            <><ShowIcon iconColor={iconColor} /> Show Disclaimer </> :
-            <><HideIcon iconColor={iconColor} /> Hide Disclaimer</>
     }
 
     // Render Messages
@@ -245,6 +246,9 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
     return (
     <div className={componentClasses} style={componentStyle}>
         <div className="tw-chat-header">
+        { chatSettings.tw_chat_logo_url &&
+            <img className="logo" src={chatSettings.tw_chat_logo_url} alt="Chat widget logo" />
+        }
             <span>{window.twChatWidgetSettings[widgetID].tw_chat_widget_name}</span>
         { sticky == 1 && 
             <button 
@@ -261,19 +265,9 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
         </div>
         { renderUserForm() }
         <div className='tw-chat-disclaimer-container'>
-            { showDisclaimer &&
+            { chatSettings.tw_chat_disclaimer &&
                 <div dangerouslySetInnerHTML={{__html: chatSettings.tw_chat_disclaimer}} />
             }
-            <div className='tw-chat-disclaimer-links'>
-                { chatSettings.tw_chat_disclaimer && 
-                <button onClick={() => setShowDisclaimer(!showDisclaimer) }>
-                    { toggleDisclaimerText() }
-                </button>
-                }
-                <a className='brand-link' href="https://treyworks.com/?utm_source=tw-chat-ui&utm_medium=referral" target="_blank">
-                    <img src={logoUrl} alt="Powered by Treyworks" />
-                </a>
-            </div>
         </div>
     </div>
     )

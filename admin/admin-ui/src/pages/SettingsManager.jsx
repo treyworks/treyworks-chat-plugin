@@ -20,7 +20,8 @@ function SettingsManager() {
         tw_chat_is_enabled: twChatSettings.tw_chat_is_enabled,
         tw_chat_is_debug: twChatSettings.tw_chat_is_debug,
         tw_chat_max_characters: twChatSettings.tw_chat_max_characters,
-        tw_chat_global_widget_id: twChatSettings.tw_chat_global_widget_id
+        tw_chat_global_widget_id: twChatSettings.tw_chat_global_widget_id,
+        tw_chat_logo_url: twChatSettings.tw_chat_logo_url
     });
     const [isSaving, setIsSaving] = useState(false);
     const [chatWidgets, setChatWidgets] = useAtom(chatWidgetsAtom);
@@ -90,9 +91,11 @@ function SettingsManager() {
         <p>Global settings for chat widget functionality.</p>
         <table className="form-table">
             <tbody>
-            <tr valign="top">
-                    <th scope="row">Chat Error Message</th>
-                    <td><input className="regular-text" type="text" name="tw_chat_error_message" onChange={handleInputChange} defaultValue={formData.tw_chat_error_message} /></td>
+                <tr valign="top">
+                    <th scope="row">Custom Logo URL</th>
+                    <td>
+                        <input className="regular-text" type="text" name="tw_chat_logo_url" onChange={handleInputChange} defaultValue={formData.tw_chat_logo_url} />
+                    </td>
                 </tr>
                 <tr valign="top">
                     <th scope="row">Disclaimer</th>
@@ -106,6 +109,10 @@ function SettingsManager() {
                         <input className="regular-text" type="number" name="tw_chat_max_characters" onChange={handleInputChange} defaultValue={formData.tw_chat_max_characters} />
                     </td>
                 </tr>
+                <tr valign="top">
+                    <th scope="row">Chat Error Message</th>
+                    <td><input className="regular-text" type="text" name="tw_chat_error_message" onChange={handleInputChange} defaultValue={formData.tw_chat_error_message} /></td>
+                </tr>
                 <tr>
                     <th scope="row">Enable Debugging</th>
                     <td>
@@ -117,7 +124,7 @@ function SettingsManager() {
                             defaultChecked={formData.tw_chat_is_debug ? true : false}
                             onChange={handleCheckboxChange}
                         /> 
-                        <label htmlFor="tw_chat_is_debug">Yes, enable debugging and plugin logging</label>
+                        <label htmlFor="tw_chat_is_debug">Yes, enable debugging and plugin logging.</label>
                     </td>
                 </tr>
             </tbody>
@@ -138,7 +145,7 @@ function SettingsManager() {
                                 defaultChecked={formData.tw_chat_is_enabled ? true : false}
                                 onChange={handleCheckboxChange}
                             /> 
-                            <label htmlFor="tw_chat_is_enabled">Enable</label>
+                            <label htmlFor="tw_chat_is_enabled">Yes, enable the global chat widget.</label>
                         </td>
                     </tr>
                     <tr valign="top">

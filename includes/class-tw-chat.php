@@ -79,6 +79,7 @@ class TW_Chat_Plugin {
                 "tw_chat_error_message" => $settings["tw_chat_error_message"],
                 "tw_chat_assistant_name" => $settings["tw_chat_assistant_name"],       
                 "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
+                "tw_chat_logo_url" => $settings["tw_chat_logo_url"]
             ];
 
             wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
