@@ -55,6 +55,43 @@ class TW_Chat_Functions {
     
         return $search_results;
     }
+
+    /* Product Search Function */
+    public static function search_products($search_term) {
+        $args = array(
+            's' => $search_term,
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'post_type'      => 'product', // Searching in products
+            'meta_query'     => array( // Meta query for stock status
+                array(
+                    'key'   => '_stock_status',
+                    'value' => 'instock', // Only select products that are in stock
+                ),
+            )
+        );
+    
+        $search_query = new WP_Query($args);
+        $search_results = array();
+    
+        if ($search_query->have_posts()) {
+            while ($search_query->have_posts()) {
+                $search_query->the_post();
+                global $product;
+
+                $search_results[] = array(
+                    'title' => get_the_title(),
+                    'permalink' => get_permalink(),
+                    'price' => $product->get_price()
+                );
+            }
+        }
+    
+        // Reset post data
+        wp_reset_postdata();
+    
+        return $search_results;
+    }
     
 }
 

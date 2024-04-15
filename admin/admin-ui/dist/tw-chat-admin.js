@@ -27422,7 +27422,7 @@ function lj() {
           /* @__PURE__ */ V.jsx("td", { children: /* @__PURE__ */ V.jsx("input", { className: "regular-text", type: "text", name: "tw_chat_webhook_address", onChange: X, defaultValue: I.tw_chat_webhook_address }) })
         ] }),
         /* @__PURE__ */ V.jsxs("tr", { valign: "top", children: [
-          /* @__PURE__ */ V.jsx("th", { scope: "row", children: "Webhook Header" }),
+          /* @__PURE__ */ V.jsx("th", { scope: "row", children: "Webhook Header (JSON)" }),
           /* @__PURE__ */ V.jsx("td", { children: /* @__PURE__ */ V.jsx("textarea", { rows: "4", className: "regular-text", type: "text", name: "tw_chat_webhook_header", onChange: X, defaultValue: I.tw_chat_webhook_header }) })
         ] })
       ] }) }),
