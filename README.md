@@ -24,7 +24,7 @@ This plugin lets you add chatbots powered by the OpenAI Assistants API to your W
 * Take into account the potential cost implications of using the OpenAI Assistant API.
 * Routinely check and adjust the chatbot prompts instructions and knowledge base to improve its performance.
 
-### Site Search Function Definition
+### How to add the site search function
 
 You can enable the site search functionality by adding this function definition to your OpenAI assistant:
 
@@ -51,9 +51,12 @@ Add this to your assistant instructions:
 `Use the search_site function to answer user questions by referring to website content. Always include a link for the user to learn more information.`
 
 
-### Send Email Message Function Definition
+### How to add the send email message function
 
-You can enable the send  functionality by adding this function definition to your OpenAI assistant:
+You can send email messages containing information collected from the user. To enable:
+1. Open your chat widget setting in the Treyworks Chat Plugin admin.
+2. Set the email recipients in a comma-separated list.
+3. Add this function definition to your OpenAI assistant:
 ```json
 {
   "name": "send_message",
@@ -75,6 +78,36 @@ You can enable the send  functionality by adding this function definition to you
 
 Add this to your assistant instructions:
 `Use the send_message function to email the provided information.`
+
+### How to add the webhook function
+You can send information collected from the user as a POST request. To enable this function:
+1. Open your chat widget setting in the Treyworks Chat Plugin admin.
+2. Set the webhook URL and any required headers needed for authentication. 
+3. Add this function definition to your OpenAI assistant:
+```json
+{
+  "name": "webhook",
+  "description": "Post data to an external URL",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "post_data": {
+        "type": "string",
+        "description": "Data to send to external URL."
+      }
+    },
+    "required": [
+      "post_data"
+    ]
+  }
+}
+```
+4. Add this to your assistant instructions:
+`Use the webhook function to send this information:`
+You will then need to provide a JSON object representing the user data that has been collected. Example:
+```json
+{ "message": "hello world" }
+```
 
 ## Style Customizations
 

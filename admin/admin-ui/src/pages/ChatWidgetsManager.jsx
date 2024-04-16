@@ -194,7 +194,7 @@ function ChatWidgetsManager() {
                         <td><input className="regular-text" type="text" name="tw_chat_webhook_address" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_webhook_address} /></td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row">Webhook Header</th>
+                        <th scope="row">Webhook Header (JSON)</th>
                         <td><textarea rows="4" className="regular-text" type="text" name="tw_chat_webhook_header" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_webhook_header}></textarea></td>
                     </tr>
                 </tbody>
