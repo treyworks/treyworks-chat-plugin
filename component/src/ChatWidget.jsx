@@ -4,6 +4,8 @@ import axios from 'axios'
 import PulseLoader from "react-spinners/PulseLoader"
 import classNames from 'classnames'
 import { marked } from 'marked'
+import markedCodePreview from 'marked-code-preview'
+
 
 import { newMessage, setFocus } from './utils/chat-utils'
 
@@ -125,7 +127,7 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
                 }
 
                 // Remove annotations
-                const newText = replyText.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【\d+†source】/g, "")
+                const newText = replyText.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【.*?†source】/g, "")
                 // Add response to messages state to update UI
                 setMessages([...twChatMessages[widgetID], newMessage(newText, 'assistant')])
                 twChatMessages[widgetID] = [...twChatMessages[widgetID], newMessage(newText, 'assistant')]
@@ -185,7 +187,11 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
                 id={`tw-chat-message-${widgetID}-${index}`} 
                 className={`message ${message.role}`}
             >
-                <span dangerouslySetInnerHTML={{__html: marked.parse(message.content)}}/>
+                <span dangerouslySetInnerHTML={{
+                    __html: marked
+                            .use(markedCodePreview)
+                            .parse(message.content)
+                }}/>
             </p>
             )
         })
