@@ -28,7 +28,7 @@ This plugin lets you add chatbots powered by the OpenAI Assistants API to your W
 
 You can enable the site search functionality by adding this function definition to your OpenAI assistant:
 
-```json
+```json preview
 {
   "name": "search_site",
   "description": "Search the website for answers",
@@ -48,8 +48,7 @@ You can enable the site search functionality by adding this function definition 
 ```
 
 Add this to your assistant instructions:
-`Use the search_site function to answer user questions by referring to website content. Always include a link for the user to learn more information.`
-
+**Use the search_site function to answer user questions by referring to website content. Always include a link for the user to learn more information.**
 
 ### How to add the send email message function
 
@@ -57,7 +56,7 @@ You can send email messages containing information collected from the user. To e
 1. Open your chat widget setting in the Treyworks Chat Plugin admin.
 2. Set the email recipients in a comma-separated list.
 3. Add this function definition to your OpenAI assistant:
-```json
+```json preview
 {
   "name": "send_message",
   "description": "Send the user information as an email",
@@ -77,14 +76,14 @@ You can send email messages containing information collected from the user. To e
 ```
 
 Add this to your assistant instructions:
-`Use the send_message function to email the provided information.`
+**Use the send_message function to email the provided information.**
 
 ### How to add the webhook function
 You can send information collected from the user as a POST request. To enable this function:
 1. Open your chat widget setting in the Treyworks Chat Plugin admin.
 2. Set the webhook URL and any required headers needed for authentication. 
 3. Add this function definition to your OpenAI assistant:
-```json
+```json preview
 {
   "name": "webhook",
   "description": "Post data to an external URL",
@@ -103,9 +102,10 @@ You can send information collected from the user as a POST request. To enable th
 }
 ```
 4. Add this to your assistant instructions:
-`Use the webhook function to send this information:`
-You will then need to provide a JSON object representing the user data that has been collected. Example:
-```json
+**Use the webhook function to send this information.**
+You will then need to provide a JSON object representing the user data that has been collected. 
+**Example:**
+```json preview
 { "message": "hello world" }
 ```
 
@@ -113,7 +113,7 @@ You will then need to provide a JSON object representing the user data that has 
 
 The appearance of the plugin can be modified with CSS variables. You can adjust elements like chat position, color, or bubble size to fit your website's design. Here is a list of CSS variable definitions and their default values:
 
-```css
+```css preview
 :root {
     --tw-chat-position-bottom: 25px;
     --tw-chat-position-right: 25px;
@@ -169,5 +169,4 @@ The appearance of the plugin can be modified with CSS variables. You can adjust 
 ## Links
 
 Github: https://github.com/treyworks/treyworks-chat-plugin
-
 Website: https://treyworks.com/chat-plugin/
