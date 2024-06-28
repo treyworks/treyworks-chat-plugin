@@ -153,7 +153,8 @@
             update_option('tw_chat_openai_key', sanitize_text_field($settings['tw_chat_openai_key']));
             update_option('tw_chat_is_enabled', sanitize_text_field($settings['tw_chat_is_enabled']));
             update_option('tw_chat_button_text', sanitize_text_field($settings['tw_chat_button_text']));
-            update_option('tw_chat_disclaimer', sanitize_text_field($settings['tw_chat_disclaimer']));
+            $disclaimer_text = stripslashes(strip_tags($settings['tw_chat_disclaimer'], '<a>'));
+            update_option('tw_chat_disclaimer', $disclaimer_text);
             update_option('tw_chat_error_message', sanitize_text_field($settings['tw_chat_error_message']));
             update_option('tw_chat_max_characters', sanitize_text_field($settings['tw_chat_max_characters']));
             update_option('tw_chat_global_widget_id', sanitize_text_field($settings['tw_chat_global_widget_id']));
