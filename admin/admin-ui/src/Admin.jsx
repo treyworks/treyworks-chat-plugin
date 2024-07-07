@@ -22,6 +22,9 @@ function Admin() {
       <Toaster
           position="bottom-center"
           reverseOrder={false}
+          toastOptions={{
+            className: "tw-admin-toaster"
+          }}
        />
     </>
   )

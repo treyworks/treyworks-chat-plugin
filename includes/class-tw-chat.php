@@ -172,7 +172,7 @@ class TW_Chat_Plugin {
      * Handles REST API test requests
      */
     public function handle_test($request) {
-
+        TW_Chat_Logger::log(__('+ Test API endpoint request'));
         TW_Chat_Logger::log($request);
 
         return new WP_REST_Response([
@@ -188,7 +188,7 @@ class TW_Chat_Plugin {
     public function handle_chat_response($request) {
 
         // Log if debugging is enabled
-        TW_Chat_Logger::log(__('New chat request'));
+        TW_Chat_Logger::log(__('+ New chat request'));
         
         // Verify nonce
         $nonce = $request->get_header('X-WP-Nonce');
@@ -232,6 +232,9 @@ class TW_Chat_Plugin {
             if (empty($widget_id) || is_null($widget_id)) {
                 TW_Chat_Logger::log(__('Missing required parameters'));
                 return new WP_Error('missing_params', __('Missing required parameters'), ['status' => 400]);
+            } else {
+                // Success: Log Widget ID
+                TW_Chat_Logger::log(__('Widget ID: ' . $widget_id));
             }
 
             // Check for message parameter
@@ -270,6 +273,7 @@ class TW_Chat_Plugin {
 
             // Create a new thread if none is passed
             if (empty($thread_id) || is_null($thread_id)) {
+                TW_Chat_Logger::log(__('New Chat Thread'));
                 $run_response = $client->threads()->createAndRun(
                     [
                         'assistant_id' => $assistant_id,
@@ -287,6 +291,8 @@ class TW_Chat_Plugin {
                 $run_id = $run_response->id;
                 
             } else {
+                TW_Chat_Logger::log(__('Thread ID: ' . $thread_id));
+
                 // Create a new message
                 $message_response = $client->threads()->messages()->create($thread_id, [
                     'role' => 'user',

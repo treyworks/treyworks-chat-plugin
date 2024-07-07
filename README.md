@@ -109,6 +109,29 @@ You will then need to provide a JSON object representing the user data that has 
 { "message": "hello world" }
 ```
 
+### How to add Suggested Answers to Assistant Output
+
+To enhance the interactivity and usability of your chat plugin, you can configure the assistant to provide responses formatted as JSON objects. This allows you to structure the output in a way that includes suggested answers for the user. These answers are presented as buttons, making the conversation more dynamic and helpful. 
+
+Go to [platform.openai.com](https://platform.openai.com) and follow these instructions to add suggested answers.
+
+#### Adding Text to the Assistant Prompt
+
+Include the following text in the assistant prompt instrcutions to format the output as a JSON object:
+
+```text preview
+Format all responses in JSON:
+{
+  "message": "[YOUR RESPONSE]",
+  "suggestedAnswers": [ARRAY OF SUGGESTED USER ANSWERS TO YOUR RESPONSE]
+}
+```
+
+#### Selecting JSON Object Checkbox in the Response Format
+
+* Navigate to **Response Settings** field in the **Model Configuration** section of the assistant editor.
+* Check the **JSON Object** checkbox. This setting ensures that all responses from the assistant are returned as JSON objects, which can be processed and displayed by the plugin.
+
 ## Style Customizations
 
 The appearance of the plugin can be modified with CSS variables. You can adjust elements like chat position, color, or bubble size to fit your website's design. Here is a list of CSS variable definitions and their default values:

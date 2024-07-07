@@ -62,6 +62,9 @@ button.nav-tab:focus {
   justify-content: space-between;
   align-items: center;
   margin: 0;
+  position: sticky;
+  top: 0;
+  background: white;
 }
 
 .tw-chat-admin-modal-header button {
@@ -89,7 +92,7 @@ button.nav-tab:focus {
 }
 
 .tw-chat-admin-overlay {
-  z-index: 9999;
+  z-index: 9998;
   position: fixed;
   top: 0;
   left: 0;
@@ -97,6 +100,9 @@ button.nav-tab:focus {
   bottom: 0;
   background-color: rgba(4, 34, 54, 0.75);
 }
+
+/* Toaster */
+/* .tw-admin-toaster {} */
 
 /* Table buttons */
 .wp-list-table button {
