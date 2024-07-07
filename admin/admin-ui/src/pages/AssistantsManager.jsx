@@ -5,10 +5,12 @@ import { useAtom } from 'jotai';
 import toast from "react-hot-toast";
 import { marked } from "marked";
 import Modal from "react-modal";
+import { Tooltip } from 'react-tooltip';
 import LoadingIndicator from "../components/LoadingIndicator";
 
 import { assistantsAtom } from '../atoms';
 import { getAssistants } from "../utils/assistantsService";
+import { copyToClipboard } from "../utils/clipboardService";
 
 function AssistantsManager() {
     
@@ -69,20 +71,6 @@ function AssistantsManager() {
         }
     };
 
-    const copyToClipboard = (textToCopy) => {
-        const textarea = document.createElement("textarea");
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-        textarea.style.top = "-9999px";
-        textarea.value = textToCopy;
-        document.body.appendChild(textarea);
-
-        // Select the text and copy it
-        textarea.select();
-        document.execCommand("copy");
-        toast.success("Copied to clipboard")
-    }
-
     const AssistantsList = () => {
         return (       
         <>
@@ -91,15 +79,33 @@ function AssistantsManager() {
                     <th>Assistant Name</th>
                     <th>Assistant ID</th>     
                     <th>Model</th>
-                    <th>Instructions</th>
                 </thead>
                 <tbody>
                 { assistants.map(assistant => (
                     <tr key={assistant.id}>
-                        <td>{assistant.name}</td>
-                        <td><a href="#" onClick={() => copyToClipboard(assistant.id)}>{assistant.id}</a></td>
+                        <td>
+                            <a href="#"
+                                onClick={() => openModal(assistant)}
+                                data-tooltip-id={`view-tooltip-${assistant.id}`}
+                                data-tooltip-content="Click to view instructions"
+                                data-tooltip-place="top"
+                            >
+                                {assistant.name}
+                            </a>
+                            <Tooltip id={`view-tooltip-${assistant.id}`} />
+                        </td>
+                        <td>
+                            <a href="#" 
+                                onClick={() => copyToClipboard(assistant.id)}
+                                data-tooltip-id={`copy-tooltip-${assistant.id}`}
+                                data-tooltip-content="Click to copy"
+                                data-tooltip-place="top"
+                            >
+                                {assistant.id}
+                            </a>
+                            <Tooltip id={`copy-tooltip-${assistant.id}`} />
+                        </td>
                         <td>{assistant.model}</td>
-                        <td><button onClick={() => openModal(assistant)} aria-label="View Instructions"><span className="dashicons dashicons-welcome-view-site"></span></button></td>
                     </tr>
                 ))}
                 </tbody>
@@ -111,8 +117,9 @@ function AssistantsManager() {
 
     return (
     <> 
+        <p>Click the <strong>Load Assistants</strong> button to show the assistants in your OpenAI account.</p>
         { !isLoading ? 
-            <p><a href="#" onClick={handleRefreshAssistants}>Refresh assistants list</a></p>
+            <p><a className="button button-primary" href="#" onClick={handleRefreshAssistants}>Load Assistants</a></p>
             : <p><LoadingIndicator /></p>
         }
         { assistants.length > 0 && <AssistantsList /> }
@@ -128,6 +135,7 @@ function AssistantsManager() {
                 <button onClick={closeModal}><span className="dashicons dashicons-no-alt"></span></button>
             </h2>
             <div className="tw-chat-admin-modal-content">
+                <p><strong>Assistant ID:</strong> {currentAssistant.id}</p>
                 <p><strong>Model:</strong> {currentAssistant.model}</p>
                 <div dangerouslySetInnerHTML={{__html: getAssistantInstructions()}} />
             </div>

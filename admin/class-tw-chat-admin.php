@@ -26,7 +26,7 @@
         add_action( 'wp_ajax_get_assistants', array($this, 'get_assistants_callback') );
         add_action( 'wp_ajax_save_chat_widget', array($this, 'save_chat_widget_callback'));
         add_action( 'wp_ajax_remove_chat_widget', array($this, 'remove_chat_widget_callback'));
-
+        add_action( 'wp_ajax_clear_log', array($this, 'clear_log_callback'));
         // Hook the function to the uninstall hook
         register_uninstall_hook(__FILE__, array($this, 'delete_options'));
     }
@@ -118,6 +118,19 @@
         }
 	}
 
+    private function get_plugin_directory_url() {
+        // Get the directory of the current file
+        $current_directory = dirname( __FILE__ );
+        
+        // Get the parent directory
+        $parent_directory = dirname( $current_directory );
+        
+        // Convert the parent directory path to a URL
+        $parent_directory_url = plugin_dir_url( $parent_directory . '/index.php' );
+        
+        return $parent_directory_url;
+    }
+
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
@@ -131,7 +144,7 @@
             $script_data['ajax_url'] = admin_url( 'admin-ajax.php' );
             $script_data['ajax_nonce'] =  wp_create_nonce( '_ajax_nonce' );
             $script_data['chat_widgets'] = TW_Chat_Widgets::get_chat_widgets();
-
+            $script_data['plugin_dir_url'] = $this->get_plugin_directory_url();
             wp_localize_script( 'tw-chat-admin', 'twChatSettings', $script_data );
 
             // Enqueue the media uploader scripts
@@ -294,6 +307,23 @@
             }
         } catch (Exception $e) {
             wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
+        }
+        wp_die();
+    }
+
+    /**
+     * Clear Log File
+     */
+    function clear_log_callback() {
+        // Call clear log
+        $clear_result = TW_Chat_Logger::clear_log();
+
+        // Check for errors
+        if ( $clear_result ) {
+            wp_send_json_success(array('message' => 'Log file cleared.'));
+        } else {
+            // Log file does not exist
+            wp_send_json_error( array( 'message' => 'Failed to clear log file.') );
         }
         wp_die();
     }

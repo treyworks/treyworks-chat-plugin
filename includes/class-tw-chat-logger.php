@@ -47,6 +47,38 @@ class TW_Chat_Logger {
         }
         return '';
     }
+
+    public static function clear_log() {
+        // Get the directory of the current file
+        $current_directory = dirname( __FILE__ );
+        
+        // Get the parent directory
+        $parent_directory = dirname( $current_directory );
+
+        // Define the path to the log file within the plugin directory
+        $log_file_path = $parent_directory . '/treyworks-chat.log';
+
+        // Check if the log file exists
+        if ( file_exists( $log_file_path ) ) {
+            // Open the file in write mode, which will truncate the file to zero length
+            $file = fopen( $log_file_path, 'w' );
+
+            // Check if the file was opened successfully
+            if ( $file ) {
+                fwrite( $file, 'Log cleared: ' . date( 'Y-m-d H:i:s' ) . PHP_EOL );
+                fclose( $file ); // Close the file
+
+                // Log file cleared successfully
+                return true;
+            } else {
+               // Failed to open the log file
+               return false;
+            }
+        } else {
+            // Log file does not exist
+            return false;
+        }
+    }
 }
 
 ?>

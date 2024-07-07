@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 
 import toast from "react-hot-toast";
 import Modal from "react-modal";
+import { Tooltip } from 'react-tooltip';
 
 import { useAtom } from 'jotai';
 import { chatWidgetsAtom } from '../atoms';
 import { saveChatWidget, removeChatWidget } from "../utils/chatWidgetsService";
+import { copyToClipboard } from "../utils/clipboardService";
 
 function ChatWidgetsManager() {
     const [chatWidgets, setChatWidgets] = useAtom(chatWidgetsAtom);
@@ -66,22 +68,61 @@ function ChatWidgetsManager() {
         return (        
         <table className="wp-list-table widefat fixed striped posts">
             <thead>
-                <th>ID</th>
                 <th>Name</th>
-                <th>Greeting</th>         
+                <th>Widget ID</th>
+                <th>Embed Code</th>
                 <th>OpenAI Assistant ID</th>
-                <th>Edit / Delete</th>
+                <th>Remove</th>
             </thead>
             <tbody>
             { chatWidgets.map(widget => (
-                <tr key={widget.id}>
-                    <td>{widget.id}</td>
-                    <td>{widget.name}</td>
-                    <td>{widget.meta.tw_chat_greeting}</td>
-                    <td>{widget.meta.tw_chat_assistant_id}</td>
+                <tr key={widget.id}> 
                     <td>
-                        <button aria-label="Edit Chat Widget" onClick={() => openModal(widget)}><span className="dashicons dashicons-edit"></span></button>
-                        <button aria-label="Remove Chat Widget" onClick={() => handleRemoveWidget(widget.id)}><span className="dashicons dashicons-trash"></span></button>
+                        <a href="#" 
+                            onClick={() => openModal(widget)}
+                            data-tooltip-id={`edit-tooltip-${widget.id}`}
+                            data-tooltip-content="Edit Chat Widget"
+                            data-tooltip-place="top"
+                        >
+                        {widget.name}
+                        </a>
+                        <Tooltip id={`edit-tooltip-${widget.id}`} />
+                    </td>
+                    <td>
+                        {widget.id}
+                    </td>
+                    <td>
+                        <a href="#"
+                            onClick={() => copyToClipboard(`[tw_chat_widget id=${widget.id}]`)}
+                            data-tooltip-id={`copy-widget-tooltip-${widget.id}`}
+                            data-tooltip-content="Click to copy"
+                            data-tooltip-place="top"
+                        >
+                        {`[tw_chat_widget id=${widget.id}]`}
+                        </a>
+                        <Tooltip id={`copy-widget-tooltip-${widget.id}`} />
+                    </td>
+                    <td>
+                    <a href="#"
+                            onClick={() => copyToClipboard(widget.meta.tw_chat_assistant_id)}
+                            data-tooltip-id={`copy-assistant-tooltip-${widget.id}`}
+                            data-tooltip-content="Click to copy"
+                            data-tooltip-place="top"
+                        >
+                        {widget.meta.tw_chat_assistant_id}
+                        </a>
+                        <Tooltip id={`copy-assistant-tooltip-${widget.id}`} />
+                    </td>
+                    <td>
+                        {/* <button  aria-label="Edit Chat Widget" onClick={() => openModal(widget)}><span className="dashicons dashicons-edit"></span></button> */}
+                        <a href="#" onClick={() => handleRemoveWidget(widget.id)}
+                            data-tooltip-id={`remove-tooltip-${widget.id}`}
+                            data-tooltip-content="Remove Chat Widget"
+                            data-tooltip-place="top"
+                        >
+                            <span className="dashicons dashicons-trash"></span>
+                            <Tooltip id={`remove-tooltip-${widget.id}`} />
+                        </a>
                     </td>
                 </tr>
             ))}
@@ -210,13 +251,14 @@ function ChatWidgetsManager() {
 
     return (
     <> 
+        <p>Click the <strong>widget name</strong> to edit a chat widget.</p>
         <p><button className="button button-primary"  onClick={() => openModal()}>Create New Chat Widget</button></p>
         { chatWidgets.length > 0 && <WidgetsList /> }
         <Modal
             isOpen={modalIsOpen}
             onAfterOpen={afterOpenModal}
             onRequestClose={closeModal}
-            contentLabel="Example Modal"
+            contentLabel="Edit Chat Widget"
             className="tw-chat-admin-modal"
             overlayClassName="tw-chat-admin-overlay"
         >

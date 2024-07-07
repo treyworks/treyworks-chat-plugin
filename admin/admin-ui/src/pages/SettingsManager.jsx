@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 import { useAtom } from "jotai";
 import { chatWidgetsAtom } from "../atoms";
 
+import LogFileModal from "../components/LogFileModal";
+
 function SettingsManager() {
 
     const [formData, setFormData] = useState({
@@ -25,6 +27,7 @@ function SettingsManager() {
     });
     const [isSaving, setIsSaving] = useState(false);
     const [chatWidgets, setChatWidgets] = useAtom(chatWidgetsAtom);
+    const [isLogModalOpen, setIsLogModalOpen] = useState(false);
 
     const handleSubmit = function(e) {
         e.preventDefault();
@@ -54,6 +57,7 @@ function SettingsManager() {
         });
     };
 
+    // Update state when input values change
     const handleInputChange = function(e) {
         const {name, value} = e.target;
         let newFormData = formData;
@@ -61,6 +65,7 @@ function SettingsManager() {
         setFormData(newFormData);
     };
 
+    // Update state when checkbox values change
     const handleCheckboxChange = function(e) {
         const {name, value, checked} = e.target;
         let newFormData = formData;
@@ -69,12 +74,17 @@ function SettingsManager() {
             console.log(e.target.value);
             newFormData[name] = value;
         } else {
-            console.log("Not checked");
+            // console.log("Not checked");
             newFormData[name] = "";
         }
 
         setFormData(newFormData);
     };
+
+    // Open log file
+    const handleOpenLog = function(e) {
+
+    }
 
     return (
         <>
@@ -111,7 +121,9 @@ function SettingsManager() {
                 </tr>
                 <tr valign="top">
                     <th scope="row">Chat Error Message</th>
-                    <td><input className="regular-text" type="text" name="tw_chat_error_message" onChange={handleInputChange} defaultValue={formData.tw_chat_error_message} /></td>
+                    <td>
+                        <textarea className="regular-text" name="tw_chat_error_message" rows="5" onChange={handleInputChange} defaultValue={formData.tw_chat_error_message} />
+                    </td>
                 </tr>
                 <tr>
                     <th scope="row">Enable Debugging</th>
@@ -125,6 +137,7 @@ function SettingsManager() {
                             onChange={handleCheckboxChange}
                         /> 
                         <label htmlFor="tw_chat_is_debug">Yes, enable debugging and plugin logging.</label>
+                        <p><a href="#" onClick={() => setIsLogModalOpen(true)}>Open Log File</a></p>
                     </td>
                 </tr>
             </tbody>
@@ -172,6 +185,10 @@ function SettingsManager() {
             <input className="button button-hero button-primary" type="submit"  value="Submit" /> :
             <p><span className="spinner is-active"></span> Saving</p>
         }
+        <LogFileModal 
+            isOpen={isLogModalOpen}
+            onRequestClose={() => setIsLogModalOpen(false)}
+        />
     </form>
     </>
     )
