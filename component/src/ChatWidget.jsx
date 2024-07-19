@@ -9,8 +9,10 @@ import markedCodePreview from 'marked-code-preview'
 
 import { newMessage, setFocus } from './utils/chat-utils'
 
+import ChatContent from './ChatContent'
 import SendIcon from './icons/sendIcon'
 import CloseIcon from './icons/close'
+
 
 const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) => {
     // Initialize state vars
@@ -187,11 +189,12 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
                 id={`tw-chat-message-${widgetID}-${index}`} 
                 className={`message ${message.role}`}
             >
-                <span dangerouslySetInnerHTML={{
+                {/* <span dangerouslySetInnerHTML={{
                     __html: marked
                             .use(markedCodePreview)
                             .parse(message.content)
-                }}/>
+                }}/> */}
+                <ChatContent html={marked.use(markedCodePreview).parse(message.content)} />
             </p>
             )
         })
@@ -247,6 +250,8 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
     if (height) {
         componentStyle.height = height
     }
+
+    // 
 
     // Render component
     return (
