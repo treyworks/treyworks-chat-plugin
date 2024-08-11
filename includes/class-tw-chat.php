@@ -221,6 +221,7 @@ class TW_Chat_Plugin {
             // OpenAI API client
             $client = OpenAI::client($openai_key);
             $run_id = null;
+            $total_tokens = null;
 
             // Get request parameters
             $params = $request->get_json_params();
@@ -288,8 +289,7 @@ class TW_Chat_Plugin {
                     ],
                 );
                 $thread_id = $run_response->threadId;
-                $run_id = $run_response->id;
-                
+                $run_id = $run_response->id;                
             } else {
                 TW_Chat_Logger::log(__('Thread ID: ' . $thread_id));
 
@@ -306,6 +306,7 @@ class TW_Chat_Plugin {
                     ],
                 );
                 $run_id = $run_response->id;
+                
             }
 
             // poll for response
@@ -322,6 +323,10 @@ class TW_Chat_Plugin {
                 if ($run_status === 'completed' || $run_status === 'cancelled' || $run_status === 'failed' || $run_status === 'expired') {
                     $completed_response = $run_response;
                     $is_complete = true;
+
+                    $total_tokens = $run_response->usage->totalTokens;
+                    TW_Chat_Logger::log(__('RUN COMPLETED'));
+                    TW_Chat_Logger::log(__('Total tokens: ' . $total_tokens));
                     break; 
                 } elseif ($run_status === 'requires_action') {
                     // Get the tool call info
