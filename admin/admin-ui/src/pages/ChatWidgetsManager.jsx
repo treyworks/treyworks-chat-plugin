@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Modal from "react-modal";
 import { Tooltip } from 'react-tooltip';
+import ListInput from "../components/ListInput";
 
 import { useAtom } from 'jotai';
 import { chatWidgetsAtom } from '../atoms';
@@ -168,6 +169,15 @@ function ChatWidgetsManager() {
             updatedData[name] = value;
             setSaveWidgetData(updatedData);
         };
+
+        const handleSuggestedAnswersChange = (answers) => {
+            // grab current form data
+            let updatedData = saveWidgetData;
+            // update suggested answers field with new value
+            updatedData.tw_chat_suggested_answers = answers.join(',');
+            setSaveWidgetData(updatedData);
+            // Update your form state or send to an API, etc.
+        };
     
         const handleSaveWidgetSubmit = function(e) {
             e.preventDefault();
@@ -218,7 +228,8 @@ function ChatWidgetsManager() {
                     </tr>
                     <tr valign="top">
                         <th scope="row">Suggested Answers</th>
-                        <td><input className="regular-text" type="text" name="tw_chat_suggested_answers" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_suggested_answers} /></td>
+                        {/* <td><input className="regular-text" type="text" name="tw_chat_suggested_answers" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_suggested_answers} /></td> */}
+                        <td><ListInput onChange={handleSuggestedAnswersChange} defaultValues={saveWidgetData.tw_chat_suggested_answers} maxItems={4} /></td>
                     </tr>
                 </tbody>                
             </table>

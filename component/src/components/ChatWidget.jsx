@@ -7,14 +7,14 @@ import { marked } from 'marked'
 import markedCodePreview from 'marked-code-preview'
 
 
-import { newMessage, setFocus } from './utils/chat-utils'
+import { newMessage, setFocus } from '../utils/chat-utils'
 
 import ChatContent from './ChatContent'
-import SendIcon from './icons/sendIcon'
-import CloseIcon from './icons/close'
+import SendIcon from '../icons/sendIcon'
+import CloseIcon from '../icons/close'
 
 
-const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) => {
+const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     // Initialize state vars
     const [messages, setMessages] = useState(twChatMessages[widgetID])
     const [messageText, setMessageText] = useState('')
@@ -29,6 +29,7 @@ const ChatWidget = ({ iconColor, toggleChat, widgetID, width, height, sticky }) 
     const chatSettings = window.twChatPluginSettings
     const widgetSettings = window.twChatWidgetSettings[widgetID]
     const maxCharacters = chatSettings.tw_chat_max_characters
+    const iconColor = window.twChatPluginSettings.iconColor
 
     // Close SVG color
     const rootStyle = getComputedStyle(document.documentElement)
