@@ -228,7 +228,6 @@ function ChatWidgetsManager() {
                     </tr>
                     <tr valign="top">
                         <th scope="row">Suggested Answers</th>
-                        {/* <td><input className="regular-text" type="text" name="tw_chat_suggested_answers" onChange={handleSaveWidgetInputChange} defaultValue={saveWidgetData.tw_chat_suggested_answers} /></td> */}
                         <td><ListInput onChange={handleSuggestedAnswersChange} defaultValues={saveWidgetData.tw_chat_suggested_answers} maxItems={4} /></td>
                     </tr>
                 </tbody>                

@@ -52,7 +52,7 @@ const ListInput = ({ onChange, defaultValues = '', maxItems = 99 }) => {
         <div key={index}>
           <input
             className="regular-text"
-            text="text"
+            type="text"
             value={item}
             onChange={(event) => handleChange(index, event.target.value)}
             onKeyDown={(event) => handleKeyDown(event, index)}

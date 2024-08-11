@@ -28195,7 +28195,7 @@ const lF = ({ onChange: u, defaultValues: l = "", maxItems: c = 99 }) => {
         "input",
         {
           className: "regular-text",
-          text: "text",
+          type: "text",
           value: R,
           onChange: (j) => y(D, j.target.value),
           onKeyDown: (j) => k(j, D),
