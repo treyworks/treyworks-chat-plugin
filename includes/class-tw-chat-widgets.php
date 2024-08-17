@@ -74,6 +74,8 @@ class TW_Chat_Widgets {
             $assistant_id = get_post_meta($post_id, 'tw_chat_assistant_id', true);
             $greeting = get_post_meta($post_id, 'tw_chat_greeting', true);
             $suggested_answers = get_post_meta($post_id, 'tw_chat_suggested_answers', true);
+            $dismiss_answers = get_post_meta($post_id, 'tw_chat_dismiss_answers', true);
+            $dismiss_answers_text = get_post_meta($post_id, 'tw_chat_dismiss_answers_text', true);
             $email_recipients = get_post_meta($post_id, 'tw_chat_email_recipients', true);
             $webhook_address = get_post_meta($post_id, 'tw_chat_webhook_address', true);
             $webhook_header = get_post_meta($post_id, 'tw_chat_webhook_header', true);
@@ -88,6 +90,8 @@ class TW_Chat_Widgets {
                 'tw_chat_assistant_id' => $assistant_id,
                 'tw_chat_greeting' => $greeting,
                 'tw_chat_suggested_answers' => $suggested_answers,
+                'tw_chat_dismiss_answers' => $dismiss_answers,
+                'tw_chat_dismiss_answers_text' => $dismiss_answers_text,
                 'tw_chat_email_recipients' => $email_recipients,
                 'tw_chat_webhook_address' => $webhook_address,
                 'tw_chat_webhook_header' => $webhook_header
