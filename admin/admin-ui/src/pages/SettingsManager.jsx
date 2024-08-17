@@ -1,22 +1,14 @@
-import React from "react";
-import { useState } from "react";
-
+import React, { useState } from "react";
 import axios from 'axios';
 import toast from "react-hot-toast";
-
 import { useAtom } from "jotai";
 import { chatWidgetsAtom } from "../atoms";
-
 import LogFileModal from "../components/LogFileModal";
 
-function SettingsManager() {
-
+const SettingsManager = () => {
     const [formData, setFormData] = useState({
         tw_chat_button_text: twChatSettings.tw_chat_button_text,
-        // tw_chat_assistant_name: twChatSettings.tw_chat_assistant_name,
         tw_chat_openai_key: twChatSettings.tw_chat_openai_key,
-        // tw_chat_assistant_id: twChatSettings.tw_chat_assistant_id,
-        // tw_chat_greeting: twChatSettings.tw_chat_greeting,
         tw_chat_disclaimer: twChatSettings.tw_chat_disclaimer,
         tw_chat_error_message: twChatSettings.tw_chat_error_message,
         tw_chat_is_enabled: twChatSettings.tw_chat_is_enabled,
@@ -26,172 +18,168 @@ function SettingsManager() {
         tw_chat_logo_url: twChatSettings.tw_chat_logo_url
     });
     const [isSaving, setIsSaving] = useState(false);
-    const [chatWidgets, setChatWidgets] = useAtom(chatWidgetsAtom);
+    const [chatWidgets] = useAtom(chatWidgetsAtom);
     const [isLogModalOpen, setIsLogModalOpen] = useState(false);
 
-    const handleSubmit = function(e) {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
         setIsSaving(true);
 
-        axios.post(twChatSettings.ajax_url, {
-            action: 'save_settings',
-            _ajax_nonce: twChatSettings.ajax_nonce,
-            data: formData
-        }, {
-            headers: {
-                'Content-Type': 'multipart/form-data' // Set content type for FormData
-            }
-        })
-        .then(function(response) {
-            // Handle success response (e.g., display success message)
-
+        try {
+            await axios.post(twChatSettings.ajax_url, {
+                action: 'save_settings',
+                _ajax_nonce: twChatSettings.ajax_nonce,
+                data: formData
+            }, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             toast.success('Settings saved successfully!');
-            setIsSaving(false);
-            console.log('Settings saved successfully!');
-        })
-        .catch(function(error) {
-            // Handle error response (e.g., display error message)
+        } catch (error) {
             toast.error('There was an error saving settings.');
-            console.log(`Error saving settings: ${error}`);
-        });
-    };
-
-    // Update state when input values change
-    const handleInputChange = function(e) {
-        const {name, value} = e.target;
-        let newFormData = formData;
-        newFormData[name] = value;
-        setFormData(newFormData);
-    };
-
-    // Update state when checkbox values change
-    const handleCheckboxChange = function(e) {
-        const {name, value, checked} = e.target;
-        let newFormData = formData;
-
-        if (checked) {
-            console.log(e.target.value);
-            newFormData[name] = value;
-        } else {
-            // console.log("Not checked");
-            newFormData[name] = "";
+            console.error('Error saving settings:', error);
+        } finally {
+            setIsSaving(false);
         }
-
-        setFormData(newFormData);
     };
 
-    // Open log file
-    const handleOpenLog = function(e) {
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevData => ({ ...prevData, [name]: value }));
+    };
 
-    }
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
+        setFormData(prevData => ({ ...prevData, [name]: checked ? "enabled" : "" }));
+    };
 
     return (
         <>
-        <form id="tw-chat-settings-form" onSubmit={handleSubmit}>
-        <p>Enter your OpenAI API key to connect to your account.</p>
-        <table className="form-table">
-            <tbody>
-                <tr valign="top">
-                    <th scope="row">OpenAI Key</th>
-                    <td><input className="regular-text" type="text" name="tw_chat_openai_key" onChange={handleInputChange} defaultValue={formData.tw_chat_openai_key} /></td>
-                </tr>
-            </tbody>
-        </table>
-        <p>Global settings for chat widget functionality.</p>
-        <table className="form-table">
-            <tbody>
-                <tr valign="top">
-                    <th scope="row">Custom Logo URL</th>
-                    <td>
-                        <input className="regular-text" type="text" name="tw_chat_logo_url" onChange={handleInputChange} defaultValue={formData.tw_chat_logo_url} />
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Disclaimer</th>
-                    <td>
-                        <textarea className="regular-text" name="tw_chat_disclaimer" rows="5" onChange={handleInputChange} defaultValue={formData.tw_chat_disclaimer} />
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Maximum Characters Allowed</th>
-                    <td>
-                        <input className="regular-text" type="number" name="tw_chat_max_characters" onChange={handleInputChange} defaultValue={formData.tw_chat_max_characters} />
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Chat Error Message</th>
-                    <td>
-                        <textarea className="regular-text" name="tw_chat_error_message" rows="5" onChange={handleInputChange} defaultValue={formData.tw_chat_error_message} />
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">Enable Debugging</th>
-                    <td>
-                        <input 
-                            type="checkbox" 
-                            id="tw_chat_is_debug" 
-                            name="tw_chat_is_debug" 
-                            defaultValue="enabled"
-                            defaultChecked={formData.tw_chat_is_debug ? true : false}
-                            onChange={handleCheckboxChange}
-                        /> 
-                        <label htmlFor="tw_chat_is_debug">Yes, enable debugging and plugin logging.</label>
-                        <p><a href="#" onClick={() => setIsLogModalOpen(true)}>Open Log File</a></p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        { chatWidgets.length > 0 &&
-        <>
-            <p>Set up your global chat widget that appears in the lower right corner of the screen.</p>
-            <table className="form-table">
-                <tbody>
-                    <tr>
-                        <th scope="row">Enable Global Chat Widget</th>
-                        <td>
-                            <input 
-                                type="checkbox" 
-                                id="tw_chat_is_enabled" 
-                                name="tw_chat_is_enabled" 
-                                defaultValue="enabled"
-                                defaultChecked={formData.tw_chat_is_enabled ? true : false}
-                                onChange={handleCheckboxChange}
-                            /> 
-                            <label htmlFor="tw_chat_is_enabled">Yes, enable the global chat widget.</label>
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row">Global Chat Widget</th>
-                        <td>
-                            <select name="tw_chat_global_widget_id" onChange={handleInputChange} defaultValue={formData.tw_chat_global_widget_id}>
-                                <option value="">Select a chat widget</option>
-                            { chatWidgets.map(widget => (
-                                <option key={widget.id} value={widget.id}>{widget.name}</option>
-                            ))}
-                            </select>   
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row">Chat Button Text</th>
-                        <td><input className="regular-text" type="text" name="tw_chat_button_text" onChange={handleInputChange} defaultValue={formData.tw_chat_button_text} /></td>
-                    </tr>
-                </tbody>
-            </table>
+            <form id="tw-chat-settings-form" onSubmit={handleSubmit}>
+                <section>
+                    <h2>OpenAI API Key</h2>
+                    <p>Enter your OpenAI API key to connect to your account.</p>
+                    <input
+                        className="regular-text"
+                        type="text"
+                        name="tw_chat_openai_key"
+                        onChange={handleInputChange}
+                        value={formData.tw_chat_openai_key}
+                    />
+                </section>
+
+                <section>
+                    <h2>Global Settings</h2>
+                    <p>Global settings for chat widget functionality.</p>
+                    <table className="form-table">
+                        <tbody>
+                            {renderFormField("Custom Logo URL", "tw_chat_logo_url", "text")}
+                            {renderFormField("Disclaimer", "tw_chat_disclaimer", "textarea")}
+                            {renderFormField("Maximum Characters Allowed", "tw_chat_max_characters", "number")}
+                            {renderFormField("Chat Error Message", "tw_chat_error_message", "textarea")}
+                            {renderCheckboxField("Enable Debugging", "tw_chat_is_debug")}
+                            <tr>
+                                <th></th>
+                                <td><button type="button" onClick={() => setIsLogModalOpen(true)}>Open Log File</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                </section>
+
+                {chatWidgets.length > 0 && (
+                    <section>
+                        <h2>Global Chat Widget</h2>
+                        <p>Set up your global chat widget that appears in the lower right corner of the screen.</p>
+                        <table className="form-table">
+                            <tbody>
+                                {renderCheckboxField("Enable Global Chat Widget", "tw_chat_is_enabled")}
+                                {renderSelectField("Global Chat Widget", "tw_chat_global_widget_id", chatWidgets)}
+                                {renderFormField("Chat Button Text", "tw_chat_button_text", "text")}
+                            </tbody>
+                        </table>
+                    </section>
+                )}
+
+                <button 
+                    className="button button-hero button-primary" 
+                    type="submit" 
+                    disabled={isSaving}
+                >
+                    {isSaving ? 'Saving...' : 'Submit'}
+                </button>
+            </form>
+
+            <LogFileModal 
+                isOpen={isLogModalOpen}
+                onRequestClose={() => setIsLogModalOpen(false)}
+            />
         </>
-        }
-        {
-        !isSaving ? 
-            <input className="button button-hero button-primary" type="submit"  value="Submit" /> :
-            <p><span className="spinner is-active"></span> Saving</p>
-        }
-        <LogFileModal 
-            isOpen={isLogModalOpen}
-            onRequestClose={() => setIsLogModalOpen(false)}
-        />
-    </form>
-    </>
-    )
-}
+    );
+
+    function renderFormField(label, name, type) {
+        return (
+            <tr>
+                <th scope="row">{label}</th>
+                <td>
+                    {type === 'textarea' ? (
+                        <textarea
+                            className="regular-text"
+                            name={name}
+                            rows="5"
+                            onChange={handleInputChange}
+                            value={formData[name]}
+                        />
+                    ) : (
+                        <input
+                            className="regular-text"
+                            type={type}
+                            name={name}
+                            onChange={handleInputChange}
+                            value={formData[name]}
+                        />
+                    )}
+                </td>
+            </tr>
+        );
+    }
+
+    function renderCheckboxField(label, name) {
+        return (
+            <tr>
+                <th scope="row">{label}</th>
+                <td>
+                    <input 
+                        type="checkbox" 
+                        id={name} 
+                        name={name} 
+                        checked={formData[name] === "enabled"}
+                        onChange={handleCheckboxChange}
+                    /> 
+                    <label htmlFor={name}>Yes, {label.toLowerCase()}.</label>
+                </td>
+            </tr>
+        );
+    }
+
+    function renderSelectField(label, name, options) {
+        return (
+            <tr>
+                <th scope="row">{label}</th>
+                <td>
+                    <select 
+                        name={name} 
+                        onChange={handleInputChange} 
+                        value={formData[name]}
+                    >
+                        <option value="">Select a chat widget</option>
+                        {options.map(widget => (
+                            <option key={widget.id} value={widget.id}>{widget.name}</option>
+                        ))}
+                    </select>   
+                </td>
+            </tr>
+        );
+    }
+};
 
 export default SettingsManager;

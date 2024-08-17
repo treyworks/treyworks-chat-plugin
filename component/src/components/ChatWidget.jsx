@@ -190,11 +190,6 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                 id={`tw-chat-message-${widgetID}-${index}`} 
                 className={`message ${message.role}`}
             >
-                {/* <span dangerouslySetInnerHTML={{
-                    __html: marked
-                            .use(markedCodePreview)
-                            .parse(message.content)
-                }}/> */}
                 <ChatContent html={marked.use(markedCodePreview).parse(message.content)} />
             </p>
             )
@@ -213,6 +208,14 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                     <button key={index} onClick={() => handleSuggestAnswerClick(answer)}>{answer}</button>
                     )
                 })}
+                { widgetSettings.tw_chat_dismiss_answers == "enabled" &&
+                <button className="tw-chat-suggested-answers--clear" onClick={() => setSuggestedAnswers([])}>
+                    { widgetSettings.tw_chat_dismiss_answers_text ?
+                        widgetSettings.tw_chat_dismiss_answers_text
+                    : "Type a different response."
+                    }
+                </button>
+                }
             </div>
             )
         } else {

@@ -9,7 +9,7 @@ const headers = {
 export const logUrl = `${window.twChatSettings.plugin_dir_url}treyworks-chat.log`;
 
 export function getLogFile(success, error) {
-    axios.get(logUrl)
+    axios.get(`${logUrl}?dt=${Date.now()}`)
         .then(success)
         .catch(error);
 }
