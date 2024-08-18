@@ -22,8 +22,8 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
             setFormData({
                 id: currentWidget.id,
                 tw_chat_widget_name: currentWidget.name,
-                tw_chat_greeting: currentWidget.meta.tw_chat_greeting[0],
-                tw_chat_assistant_id: currentWidget.meta.tw_chat_assistant_id[0],
+                tw_chat_greeting: currentWidget.meta.tw_chat_greeting ? currentWidget.meta.tw_chat_greeting[0] : '',
+                tw_chat_assistant_id: currentWidget.meta.tw_chat_assistant_id ? currentWidget.meta.tw_chat_assistant_id[0] : '',
                 tw_chat_suggested_answers: currentWidget.meta.tw_chat_suggested_answers ? currentWidget.meta.tw_chat_suggested_answers[0] : '',
                 tw_chat_dismiss_answers: currentWidget.meta.tw_chat_dismiss_answers ? currentWidget.meta.tw_chat_dismiss_answers[0] : '',
                 tw_chat_dismiss_answers_text: currentWidget.meta.tw_chat_dismiss_answers_text ? currentWidget.meta.tw_chat_dismiss_answers_text[0] : '',

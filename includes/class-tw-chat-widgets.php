@@ -10,23 +10,21 @@ class TW_Chat_Widgets {
      */
     public static function get_chat_widgets() {
         // Query for chat assistant posts
-        $args = array(
+        $args = [
             'post_type' => 'chat_widgets', // Replace with your actual post type name
             'posts_per_page' => -1,
-        );
+        ];
         $posts = get_posts( $args );
 
         // Prepare the output array
-        $data = array();
+        $data = [];
 
         // Loop through each post and its meta fields
         foreach ( $posts as $post ) {
-            $post_data = array(
+            $post_data = [
                 'id' => $post->ID,
                 'name' => $post->post_title,
-                // 'content' => $post->post_content,
-                // Add any other post fields you need
-            );
+            ];
 
             // Get all post meta fields
             $post_meta = get_post_meta( $post->ID );
@@ -46,14 +44,14 @@ class TW_Chat_Widgets {
      */
     public static function get_chat_widget_ids() {
         // Query for chat assistant posts
-        $args = array(
+        $args = [
             'post_type' => 'chat_widgets', // Replace with your actual post type name
             'posts_per_page' => -1,
-        );
+        ];
         $posts = get_posts( $args );
 
         // Prepare the output array
-        $data = array();
+        $data = [];
 
         // Loop through each post and add the post ID
         foreach ( $posts as $post ) {
@@ -85,7 +83,7 @@ class TW_Chat_Widgets {
                 return null;
             }
 
-            return array(
+            return [
                 'tw_chat_widget_name' => $post['post_title'],
                 'tw_chat_assistant_id' => $assistant_id,
                 'tw_chat_greeting' => $greeting,
@@ -95,7 +93,7 @@ class TW_Chat_Widgets {
                 'tw_chat_email_recipients' => $email_recipients,
                 'tw_chat_webhook_address' => $webhook_address,
                 'tw_chat_webhook_header' => $webhook_header
-            );
+            ];
 
         } else {
             // Handle the case where the post is not found

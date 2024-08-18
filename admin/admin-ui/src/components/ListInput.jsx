@@ -6,7 +6,8 @@ const ListInput = ({ onChange, defaultValues = '', maxItems = 99 }) => {
 
   useEffect(() => {
     if (defaultValues) {
-      const initialItems = defaultValues.split(',').map(item => item.trim()).filter(item => item !== '');
+      // const initialItems = defaultValues.split(',').map(item => item.trim()).filter(item => item !== '');
+      const initialItems = defaultValues.split(',').slice(0, maxItems);
       const limitedItems = initialItems.slice(0, maxItems);
       setItems(limitedItems.length > 0 ? limitedItems : ['']);
       onChange(limitedItems);
@@ -18,7 +19,7 @@ const ListInput = ({ onChange, defaultValues = '', maxItems = 99 }) => {
     const newItems = [...items];
     newItems[index] = value;
     setItems(newItems);
-    onChange(newItems.filter(item => item.trim() !== ''));
+    onChange(newItems.filter(item => item !== ''));
   };
 
   const addItem = (event) => {

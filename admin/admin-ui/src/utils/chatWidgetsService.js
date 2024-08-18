@@ -16,6 +16,9 @@ export function getChatWidgets(success, error) {
 }
 
 export function saveChatWidget(data, success, error) {
+    console.log('Saving chat data');
+    console.log(data)
+
     axios.post(twChatSettings.ajax_url, {
         action: "save_chat_widget",
         _ajax_nonce: twChatSettings.ajax_nonce,

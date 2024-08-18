@@ -93,6 +93,48 @@ class TW_Chat_Functions {
         return $search_results;
     }
     
+    /* Get Custom Posts */
+    public static function get_custom_posts($post_type = 'post', $order = 'DESC', $orderby = 'date', $number_of_posts = 5) {
+        // Set up the query arguments
+        $args = array(
+            'post_type'      => $post_type,
+            'posts_per_page' => $number_of_posts,
+            'order'          => $order
+        );
+        
+        // Execute the query
+        $query = new WP_Query($args);
+        
+        // Initialize an array to hold post data
+        $posts_data = [];
+        
+        // Loop through the posts
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $post_data = [
+                    'ID'    => get_the_ID(),
+                    'title' => get_the_title(),
+                    'date'  => get_the_date(),
+                    'link'  => get_permalink(),
+                ];
+                
+                // Get all post meta fields
+                $post_meta = get_post_meta( $post_data['ID'] );
+
+                // Merge post meta with post data
+                $post_data['meta'] = $post_meta;
+                
+                $posts_data[] = $post_data;
+            }
+        }
+        
+        // Reset post data
+        wp_reset_postdata();
+        
+        return $posts_data;
+    }
+    
 }
 
 ?>
