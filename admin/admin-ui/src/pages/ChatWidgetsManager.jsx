@@ -47,6 +47,8 @@ const ChatWidgetsManager = () => {
     }, [setChatWidgets]);
 
     const handleSaveWidget = useCallback((saveWidgetData) => {
+        
+
         saveChatWidget(
             saveWidgetData,
             (response) => {
@@ -66,6 +68,11 @@ const ChatWidgetsManager = () => {
         );
     }, [setChatWidgets, closeModal]);
 
+    const handleCreateNewChatWidget = useCallback( () => {
+        setCurrentWidget(null);
+        openModal();
+    }, [currentWidget, openModal]);
+
     const modalContent = useMemo(() => (
         <div className="tw-chat-admin-modal-content">
             <SaveWidgetForm
@@ -79,7 +86,7 @@ const ChatWidgetsManager = () => {
         <>
             <p>Click the <strong>widget name</strong> to edit a chat widget.</p>
             <p>
-                <button className="button button-primary" onClick={() => openModal()}>
+                <button className="button button-primary" onClick={() => handleCreateNewChatWidget()}>
                     Create New Chat Widget
                 </button>
             </p>

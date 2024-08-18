@@ -244,14 +244,16 @@
             $chat_widget_name = sanitize_text_field($_POST['tw_chat_widget_name']);
             $greeting = sanitize_text_field($_POST['tw_chat_greeting']);
             $suggested_answers = sanitize_text_field($_POST['tw_chat_suggested_answers']);
-            $dismiss_answers = sanitize_text_Field($_POST['tw_chat_dismiss_answers']);
-            $dismiss_answers_text = sanitize_text_Field($_POST['tw_chat_dismiss_answers_text']);
+            $dismiss_answers = sanitize_text_field($_POST['tw_chat_dismiss_answers']);
+            $dismiss_answers_text = sanitize_text_field($_POST['tw_chat_dismiss_answers_text']);
             $assistant_id = sanitize_text_field($_POST['tw_chat_assistant_id']);
             $email_recipients = sanitize_text_field($_POST['tw_chat_email_recipients']);
             $webhook_address = sanitize_text_field($_POST['tw_chat_webhook_address']);
             $webhook_header = sanitize_text_field($_POST['tw_chat_webhook_header']);
 
-            if (isset($_POST['id'])) {
+            if (isset($_POST['id']) && $_POST['id'] !== '') {
+                TW_Chat_Logger::log('Updating widget post: ' . $_POST['id']);
+
                 $post_id = sanitize_text_field($_POST['id']);
                 // Post ID is passed, update fields
                 $post_args = array(
@@ -260,6 +262,8 @@
                 );
                 wp_update_post($post_args);
             } else {
+                TW_Chat_Logger::log('Creating new widget post.');
+
                 // Create the new post
                 $post_args = array(
                     'post_type' => 'chat_widgets',

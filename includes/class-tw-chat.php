@@ -56,6 +56,9 @@ class TW_Chat_Plugin {
             'label'  => 'Chat Widgets',
             'supports' => [ 'title', 'editor' ],
             'show_in_menu' => false, // This will hide it from the admin menu
+            'exclude_from_search'   => true,   // Exclude from search results
+            'publicly_queryable'    => false,
+            'has_archive'           => false
         ];
         register_post_type('chat_widgets', $args);
     }
@@ -336,13 +339,13 @@ class TW_Chat_Plugin {
                     $arguments = json_decode($tool_call->function->arguments, true);
                     $tool_output = "";
 
-                    TW_Chat_Logger::log('Function called: ' . $name);
-                    TW_Chat_Logger::log('Arguments:');
+                    TW_Chat_Logger::log(__('Function called: ' . $name));
+                    TW_Chat_Logger::log(__('Arguments:'));
                     TW_Chat_Logger::log($arguments);
 
                     // Execute desired function call
                     if ($name === 'send_message') {
-                        
+                        // Send Message Function Call
                         $email_recipients = get_post_meta($widget_id, 'tw_chat_email_recipients', true);
                         // Send email 
                         if (array_key_exists('body', $arguments) && $arguments['body'] !== null) {
@@ -354,7 +357,7 @@ class TW_Chat_Plugin {
                         $tool_output = "complete";
 
                     } elseif ($name === 'search_site') {
-
+                        // Search Site Function Call
                         $search_results = [];
 
                         // Get search term from argument
@@ -364,7 +367,36 @@ class TW_Chat_Plugin {
 
                         // Set tool output
                         $tool_output = json_encode($search_results);
+                    } elseif ($name === 'get_posts') {
+                        // Get Posts Function Call
+                        $posts = [];
+
+                        // Variables for aruments
+                        $post_type = 'post';
+                        $order = 'DESC';
+                        $number_of_posts = 5;
+                        $orderby = 'date';
+
+                        // Get function parameters from tool call argument
+                        if (array_key_exists('post_type', $arguments) && $arguments['post_type'] !== null) {
+                            $post_type = $arguments['post_type'];
+                        }
+                        if (array_key_exists('order', $arguments) && $arguments['order'] !== null) {
+                            $order = $arguments['order'];
+                        }
+                        if (array_key_exists('number_of_posts', $arguments) && $arguments['number_of_posts'] !== null) {
+                            $number_of_posts = $arguments['number_of_posts'];
+                        }
+                        if (array_key_exists('orderby', $arguments) && $arguments['orderby'] !== null) {
+                            $orderby = $arguments['orderby'];
+                        }
+
+                        $posts = TW_Chat_Functions::get_custom_posts($post_type, $order, $orderby, $number_of_posts);
+
+                        // Set tool output
+                        $tool_output = json_encode($posts);
                     } elseif ($name === 'webhook') {
+                        // Webhook Function Call
                         $param_name = "post_data";
 
                         // Get post data from argument

@@ -50,6 +50,44 @@ You can enable the site search functionality by adding this function definition 
 Add this to your assistant instructions:
 **Use the search_site function to answer user questions by referring to website content. Always include a link for the user to learn more information.**
 
+### How to add the get posts function
+
+You can enable the get posts functionality by adding this function definition to your OpenAI assistant:
+
+```json preview
+{
+  "name": "get_posts",
+  "description": "List posts by post type.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "post_type": {
+        "type": "string",
+        "description": "The post type of the posts to query."
+      },
+      "order": {
+        "type": "string",
+        "description": "Query order."
+      },
+      "orderby": {
+        "type": "string",
+        "description": "Order the query by date, title, etc."
+      },
+      "number_of_posts": {
+        "type": "string",
+        "description": "The number of posts to query."
+      }
+    },
+    "required": [
+    ]
+  }
+}
+```
+
+Add this to your assistant instructions:
+**Use the get_posts function to retrieve a list of posts. Summarize the results.**
+
+
 ### How to add the send email message function
 
 You can send email messages containing information collected from the user. To enable:

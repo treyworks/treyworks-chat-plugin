@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 1.2.3
+- Fix ListInput from trimming trailing spaces
+- Fix Save Widget form when creating new widget
+- Fix Save Widget modal when creating a new chat widget
+- Add get_posts function and custom tool call
+
 ## 1.2.2
 - Added ListInput component for better management of the suggest answers field in the chat widget admin form.
 - Added widget fields to allow users to clear suggested answers.
