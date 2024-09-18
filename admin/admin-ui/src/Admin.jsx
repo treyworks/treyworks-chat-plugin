@@ -13,7 +13,6 @@ function Admin() {
     { title: 'Plugin Settings', content: SettingsManager },
     { title: 'Chat Widgets', content: ChatWidgetsManager},
     { title: 'OpenAI Assistants', content: AssistantsManager }
-    // Add more tabs as needed
   ];
 
   return (

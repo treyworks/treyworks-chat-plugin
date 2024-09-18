@@ -37,6 +37,8 @@ class TW_Chat_Plugin {
         add_action('wp_footer', [$this, 'add_footer_html']);
         add_action('rest_api_init', [$this, 'register_chat_response_endpoint']);
         add_shortcode('tw_chat_widget', [$this, 'tw_chat_widget_shortcode']);
+        add_action('tw_test_action', [$this,'test_action_callback'], 10, 2);
+        add_filter('tw_test_filter', [$this,'test_filter_callback'], 10, 2);
     }
 
     /** 
@@ -184,10 +186,52 @@ class TW_Chat_Plugin {
     }
 
     /**
+     * Test Custom Action
+     */
+    public function test_action_callback($first_name, $last_name) {
+        
+        $log_message = "";
+        
+        if (( empty($first_name) || is_null($first_name) ) || ( empty($first_name) || is_null($first_name) )) {
+            $log_message = "";
+        } else {
+            $log_message = "Hello, " . $first_name . " " . $last_name;
+        }
+
+        TW_Chat_Logger::log($log_message);
+        echo $log_message;
+    }
+
+    /**
+     * Test Filter Action
+     */
+    public function test_filter_callback($first_name, $last_name) {
+        
+        $log_message = "";
+        
+        if (( empty($first_name) || is_null($first_name) ) || ( empty($last_name) || is_null($last_name) )) {
+            $log_message = "";
+        } else {
+            $log_message = "Goodbye, " . $first_name . " " . $last_name;
+        }
+
+        TW_Chat_Logger::log($log_message);
+        return $log_message;
+    }
+    
+    /* Is string in a comma-separated list
+     * Returns a boolean
+    */    
+    function isInList($needle, $haystack) {
+        return stripos(',' . $haystack . ',', ',' . $needle . ',') !== false;
+    }
+
+    /**
      * Handles the REST API request for chat responses.
      * Processes the 'messageHistory' and 'message' from POST data.
      * Returns a REST response.
      */
+    
     public function handle_chat_response($request) {
 
         // Log if debugging is enabled
@@ -405,7 +449,7 @@ class TW_Chat_Plugin {
                             $webhook_header = get_post_meta($widget_id, 'tw_chat_webhook_header', true);
                             $webhook_address = get_post_meta($widget_id, 'tw_chat_webhook_address', true);
 
-                            TW_Chat_Logger::log('Post Information');
+                            TW_Chat_Logger::log(__('Post Information'));
                             TW_Chat_Logger::log($webhook_address);
                             TW_Chat_Logger::log($webhook_header);
 
@@ -424,17 +468,80 @@ class TW_Chat_Plugin {
 
                             // Check for errors
                             if (is_wp_error($response)) {
-                                TW_Chat_Logger::log('Error sending data');
+                                TW_Chat_Logger::log(__('Error sending data'));
                                 $tool_output = "error";
                             } else {
-                                TW_Chat_Logger::log('Data sent successfully');
+                                TW_Chat_Logger::log(__('Data sent successfully'));
                                 $tool_output = "complete";
                             }
                             
                         }
 
+                    } elseif ( $name === 'wp_action' ) { 
+                        // Call WordPress Action
+                        // Enables developers to create and call custom actions from assistant
+                        $action_output = "";
+                        $valid_arguments = true;
+                        $action_arguments = [];
+                        $action_type = 'action';
+                        $action_name = '';
+
+                        $allowed_actions = $settings['tw_chat_allowed_actions'];
+
+                        // Get function parameters from tool call argument
+                        if (array_key_exists('action_name', $arguments) && $arguments['action_name'] !== null) {
+                            $action_name = $arguments["action_name"];
+
+                            // Check allowed actions
+                            if ($this->isInList($action_name, $allowed_actions) === false) {
+                                // Action not found in list
+                                $valid_arguments = false;
+                                TW_Chat_Logger::log(__("Action ** " . $action_name . " ** not found in list"));
+                            }
+
+                        } else {
+                            TW_Chat_Logger::log(__("Missing action_name call argument"));
+                            $valid_arguments = false;
+                        }
+
+                        if (array_key_exists('action_arguments', $arguments) && $arguments['action_arguments'] !== null) {
+                            $action_arguments = json_decode($arguments["action_arguments"]);
+                        } else {
+                            TW_Chat_Logger::log(__("Missing action_arguments call argument"));
+                            $valid_arguments = false;
+                        }
+
+                        if (array_key_exists('action_type', $arguments) && $arguments['action_type'] !== null) {
+                            if (strtolower($arguments["action_type"]) === 'filter') {
+                                $action_type = $arguments["action_type"];
+                            }
+                        }
+
+                        if ($valid_arguments) {
+
+                            if ($action_type === 'filter') {
+                                // Call the filter hook
+                                TW_Chat_Logger::log(__("Run filter: " . $action_name));
+                                $action_output = apply_filters($action_name, ...$action_arguments);
+                            } else {
+                                // Call the action
+                                TW_Chat_Logger::log(__("Run action: " . $action_name));
+                                // Start output buffering
+                                ob_start();
+
+                                do_action($action_name, ...$action_arguments);
+
+                                // Get the output
+                                $action_output = ob_get_clean();
+                            }
+
+                            TW_Chat_Logger::log(__("Result: " . $action_output));
+                        }
+
+                        $tool_output = $action_output;
+
                     } else {
-                        TW_Chat_Logger::log('Unknown Function Request: ' . $name);
+                        TW_Chat_Logger::log(__('Unknown Function Request: ' . $name));
                         // Default tool output
                         $tool_output = "complete";
                     }

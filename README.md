@@ -1,34 +1,61 @@
 # Treyworks Chat Plugin for WordPress
 
-This plugin lets you add chatbots powered by the OpenAI Assistants API to your Wordpress website - giving your visitors instant answers and a boosted user experience. This plugin aims to strengthen website interaction, enhance customer support, and can be modified to fit your website's look and feel.
+## Overview
 
-## How to Install:
+The Treyworks Chat Plugin empowers your WordPress website with intelligent chatbots powered by the OpenAI Assistants API. Enhance user experience, provide instant answers, and boost engagement with this versatile and customizable plugin.
 
-* Clone or download the repository as a zip file:
-`git clone https://github.com/treyworks/treyworks-chat-plugin.git`
-* Upload and install the plugin on the Add Plugins page.
-* Activate the plugin in your WordPress admin panel.
-* Go to the plugin's settings page and enter your OpenAI API key
-* Go to the Chat Widgets tab and create a new widget. Enter a name, assistants ID, and greeting text.
-* Go to the Assistants tab to view the assistants in your OpenAI account.
+## Key Features
 
-## Usage:
+- Seamless integration with OpenAI Assistants API
+- Multiple chat widgets per page
+- Customizable appearance to match your website's design
+- Advanced functions for site search, post retrieval, and more
+- Email and webhook capabilities for lead generation
+- WordPress action and filter integration
 
-* A global chat widget can be set up on the Settings tab after a chat widget has been created.
-* Chat widgets can also be added to pages using a shortcode: `[tw_chat_widget id=WIDGET_ID]`
-* Keep in mind that multiple chat widgets can be present on a page, but the same chat widget cannot be added more than once.
+## Installation
 
-## Setting up your OpenAI Assistant:
+1. Clone or download the repository:
+   ```
+   git clone https://github.com/treyworks/treyworks-chat-plugin.git
+   ```
+2. Upload and install the plugin via the WordPress Admin Panel.
+3. Activate the plugin.
+4. Navigate to the plugin's settings page and enter your OpenAI API key.
+5. Create a new chat widget in the Chat Widgets tab.
+6. View and manage your OpenAI assistants in the Assistants tab.
 
-* Make sure you have a valid OpenAI API account and API key.
-* Take into account the potential cost implications of using the OpenAI Assistant API.
-* Routinely check and adjust the chatbot prompts instructions and knowledge base to improve its performance.
+## Usage
 
-### How to add the site search function
+### Global Chat Widget
+Set up a global chat widget in the Settings tab after creating a chat widget.
 
-You can enable the site search functionality by adding this function definition to your OpenAI assistant:
+### Page-Specific Chat Widgets
+Add chat widgets to specific pages using the shortcode:
+```
+[tw_chat_widget id=WIDGET_ID]
+```
 
-```json preview
+Optionally, specify the widget height:
+```
+[tw_chat_widget id=WIDGET_ID height="500px"]
+```
+
+**Note:** Multiple widgets can be added to a page, but each widget can only be used once per page.
+
+## OpenAI Assistant Setup
+
+1. Ensure you have a valid OpenAI API account and API key.
+2. Consider the potential costs associated with using the OpenAI Assistant API.
+3. Regularly review and optimize your chatbot's prompts and knowledge base.
+
+## Advanced Features
+
+### Site Search Function
+
+Enable site search by adding this function to your OpenAI assistant:
+
+```json
 {
   "name": "search_site",
   "description": "Search the website for answers",
@@ -47,14 +74,31 @@ You can enable the site search functionality by adding this function definition 
 }
 ```
 
-Add this to your assistant instructions:
-**Use the search_site function to answer user questions by referring to website content. Always include a link for the user to learn more information.**
+Add to assistant instructions:
+```
+Use the search_site function to answer user questions by referring to website content. Always include a link for the user to learn more information.
+```
 
-### How to add the get posts function
+#### Parameters for search_site
 
-You can enable the get posts functionality by adding this function definition to your OpenAI assistant:
+1. `search_term` (string, required):
+   - The keyword or phrase to search for on the website.
+   - Example: "WordPress plugin installation"
 
-```json preview
+Example usage in assistant instructions:
+```
+To find information about plugin installation:
+Use the search_site function with these parameters:
+search_term: "WordPress plugin installation"
+
+Summarize the search results and provide a relevant link for more information.
+```
+
+### Post Retrieval Function
+
+Add this function to your OpenAI assistant:
+
+```json
 {
   "name": "get_posts",
   "description": "List posts by post type.",
@@ -78,23 +122,58 @@ You can enable the get posts functionality by adding this function definition to
         "description": "The number of posts to query."
       }
     },
-    "required": [
-    ]
+    "required": []
   }
 }
 ```
 
-Add this to your assistant instructions:
-**Use the get_posts function to retrieve a list of posts. Summarize the results.**
+Add to assistant instructions:
+```
+Use the get_posts function to retrieve a list of posts. Summarize the results.
+```
 
+#### Parameters for get_posts
 
-### How to add the send email message function
+1. `post_type` (string, optional):
+   - Specifies the type of post to retrieve.
+   - Default: 'post'
+   - Examples: 'page', 'product', or any custom post type.
 
-You can send email messages containing information collected from the user. To enable:
-1. Open your chat widget setting in the Treyworks Chat Plugin admin.
-2. Set the email recipients in a comma-separated list.
-3. Add this function definition to your OpenAI assistant:
-```json preview
+2. `order` (string, optional):
+   - Sets the order of the retrieved posts.
+   - Options: 'ASC' (ascending) or 'DESC' (descending)
+   - Default: 'DESC'
+
+3. `orderby` (string, optional):
+   - Determines the field to order the posts by.
+   - Common options: 'date', 'title', 'author', 'modified'
+   - Default: 'date'
+
+4. `number_of_posts` (string, optional):
+   - Limits the number of posts to retrieve.
+   - Use '-1' to retrieve all posts (use with caution on large sites).
+   - Default: '10'
+
+Example usage in assistant instructions:
+```
+To get the 5 most recent products, ordered by title:
+Use the get_posts function with these parameters:
+post_type: 'product'
+order: 'DESC'
+orderby: 'title'
+number_of_posts: '5'
+
+Summarize the results, including the product titles and publication dates.
+```
+
+### Email Function
+
+To enable email functionality:
+
+1. Set email recipients in the chat widget settings.
+2. Add this function to your OpenAI assistant:
+
+```json
 {
   "name": "send_message",
   "description": "Send the user information as an email",
@@ -113,15 +192,34 @@ You can send email messages containing information collected from the user. To e
 }
 ```
 
-Add this to your assistant instructions:
-**Use the send_message function to email the provided information.**
+Add to assistant instructions:
+```
+Use the send_message function to email the provided information.
+```
 
-### How to add the webhook function
-You can send information collected from the user as a POST request. To enable this function:
-1. Open your chat widget setting in the Treyworks Chat Plugin admin.
-2. Set the webhook URL and any required headers needed for authentication. 
-3. Add this function definition to your OpenAI assistant:
-```json preview
+#### Parameters for send_message
+
+1. `body` (string, required):
+   - The content of the email to be sent.
+   - Should contain a summary of the user information or query.
+
+Example usage in assistant instructions:
+```
+To send an email with user information:
+Use the send_message function with these parameters:
+body: "New customer inquiry: Name: John Doe, Email: john@example.com, Question: How do I install the chat plugin?"
+
+Confirm to the user that their message has been sent to our support team.
+```
+
+### Webhook Function
+
+To enable webhook functionality:
+
+1. Set the webhook URL and required headers in the chat widget settings.
+2. Add this function to your OpenAI assistant:
+
+```json
 {
   "name": "webhook",
   "description": "Post data to an external URL",
@@ -139,25 +237,92 @@ You can send information collected from the user as a POST request. To enable th
   }
 }
 ```
-4. Add this to your assistant instructions:
-**Use the webhook function to send this information.**
-You will then need to provide a JSON object representing the user data that has been collected. 
-**Example:**
-```json preview
-{ "message": "hello world" }
+
+Add to assistant instructions:
+```
+Use the webhook function to send this information.
 ```
 
-### How to add Suggested Answers to Assistant Output
+#### Parameters for webhook
 
-To enhance the interactivity and usability of your chat plugin, you can configure the assistant to provide responses formatted as JSON objects. This allows you to structure the output in a way that includes suggested answers for the user. These answers are presented as buttons, making the conversation more dynamic and helpful. 
+1. `post_data` (string, required):
+   - The data to be sent to the external URL.
+   - Should be formatted as a JSON string.
 
-Go to [platform.openai.com](https://platform.openai.com) and follow these instructions to add suggested answers.
+Example usage in assistant instructions:
+```
+To send user information to an external CRM:
+Use the webhook function with these parameters:
+post_data: '{"name": "Jane Smith", "email": "jane@example.com", "interest": "AI chatbot"}'
 
-#### Adding Text to the Assistant Prompt
+Confirm to the user that their information has been received and a representative will contact them soon.
+```
 
-Include the following text in the assistant prompt instrcutions to format the output as a JSON object:
+### WordPress Actions and Filters
 
-```text preview
+Add this function to your OpenAI assistant:
+
+```json
+{
+  "name": "wp_action",
+  "description": "Calls a WordPress action and returns the result.",
+  "strict": false,
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "action_name": {
+        "type": "string",
+        "description": "The name of the action."
+      },
+      "action_type": {
+        "type": "string",
+        "description": "The type of the action, filter or action."
+      },
+      "action_arguments": {
+        "type": "string",
+        "description": "The arguments to pass to the action. Formatted as a JSON array"
+      }
+    },
+    "required": [
+      "action_name",
+      "action_type",
+      "action_arguments"
+    ]
+  }
+}
+```
+
+#### Parameters for wp_action
+
+1. `action_name` (string, required):
+   - The name of the WordPress action or filter to call.
+   - Example: "the_content" or "wp_mail"
+
+2. `action_type` (string, required):
+   - Specifies whether it's an action or a filter.
+   - Options: "action" or "filter"
+
+3. `action_arguments` (string, required):
+   - The arguments to pass to the action or filter.
+   - Should be formatted as a JSON array.
+
+Example usage in assistant instructions:
+```
+To modify the content of a post:
+Use the wp_action function with these parameters:
+action_name: "your_custom_filter"
+action_type: "filter"
+action_arguments: ["John", "Smith"]
+
+Process the result and provide a summary of how the content was modified.
+```
+
+## Suggested Answers
+
+Enhance interactivity by configuring your assistant to provide suggested answers:
+
+1. Add to assistant instructions:
+```
 Format all responses in JSON:
 {
   "message": "[YOUR RESPONSE]",
@@ -165,14 +330,11 @@ Format all responses in JSON:
 }
 ```
 
-#### Selecting JSON Object Checkbox in the Response Format
+2. In the OpenAI platform, navigate to Response Settings in the Model Configuration section and check the JSON Object checkbox.
 
-* Navigate to **Response Settings** field in the **Model Configuration** section of the assistant editor.
-* Check the **JSON Object** checkbox. This setting ensures that all responses from the assistant are returned as JSON objects, which can be processed and displayed by the plugin.
+## Customization
 
-## Style Customizations
-
-The appearance of the plugin can be modified with CSS variables. You can adjust elements like chat position, color, or bubble size to fit your website's design. Here is a list of CSS variable definitions and their default values:
+Customize the plugin's appearance using CSS variables. Example:
 
 ```css preview
 :root {
@@ -227,7 +389,14 @@ The appearance of the plugin can be modified with CSS variables. You can adjust 
 }
 ```
 
-## Links
+## Logging
 
-Github: https://github.com/treyworks/treyworks-chat-plugin
-Website: https://treyworks.com/chat-plugin/
+Enable logging from the plugin settings dashboard for debugging and tracking function calls. Refresh or clear logs directly from the dashboard.
+
+## Resources
+
+- GitHub Repository: [https://github.com/treyworks/treyworks-chat-plugin](https://github.com/treyworks/treyworks-chat-plugin)
+- Website: [https://treyworks.com/chat-plugin/](https://treyworks.com/chat-plugin/)
+- WordPress Plugin Handbook: [https://developer.wordpress.org/plugins/hooks/](https://developer.wordpress.org/plugins/hooks/)
+
+For additional support or feature requests, please open an issue on our GitHub repository.
