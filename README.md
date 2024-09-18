@@ -260,7 +260,8 @@ Confirm to the user that their information has been received and a representativ
 
 ### WordPress Actions and Filters
 
-Add this function to your OpenAI assistant:
+1. Navigate to the plugin settings dashboard and locate the "Allowed Actions" section. Add the specific WordPress action or filter you want to use to this list.
+2. Add this function to your OpenAI assistant:
 
 ```json
 {
