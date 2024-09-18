@@ -1,8 +1,11 @@
 # Project Changelog
 
+# 1.2.4
+- Added Call Action Tool: Allows the assistant to call an action and retrieve the result using the WordPress Hook system
+- Improved the email template for the send_message function
+
 ## 1.2.3
 - Fix ListInput from trimming trailing spaces
-- Fix Save Widget form when creating new widget
 - Fix Save Widget modal when creating a new chat widget
 - Add get_posts function and custom tool call
 

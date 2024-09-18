@@ -134,7 +134,7 @@ class TW_Chat_Functions {
         
         return $posts_data;
     }
-    
+
 }
 
 ?>

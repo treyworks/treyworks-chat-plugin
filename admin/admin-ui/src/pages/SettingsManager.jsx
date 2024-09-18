@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import axios from 'axios';
 import toast from "react-hot-toast";
 import { useAtom } from "jotai";
 import { chatWidgetsAtom } from "../atoms";
 import LogFileModal from "../components/LogFileModal";
+import ListInput from "../components/ListInput";
+import { renderFormField, renderCheckboxField, renderSelectField } from "../components/FormElements";
 
 const SettingsManager = () => {
     const [formData, setFormData] = useState({
@@ -15,7 +17,8 @@ const SettingsManager = () => {
         tw_chat_is_debug: twChatSettings.tw_chat_is_debug,
         tw_chat_max_characters: twChatSettings.tw_chat_max_characters,
         tw_chat_global_widget_id: twChatSettings.tw_chat_global_widget_id,
-        tw_chat_logo_url: twChatSettings.tw_chat_logo_url
+        tw_chat_logo_url: twChatSettings.tw_chat_logo_url,
+        tw_chat_allowed_actions: twChatSettings.tw_chat_allowed_actions
     });
     const [isSaving, setIsSaving] = useState(false);
     const [chatWidgets] = useAtom(chatWidgetsAtom);
@@ -52,6 +55,13 @@ const SettingsManager = () => {
         setFormData(prevData => ({ ...prevData, [name]: checked ? "enabled" : "" }));
     };
 
+    const handleActionsChange = useCallback((allowedActions) => {
+        setFormData(prevData => ({
+            ...prevData,
+            tw_chat_allowed_actions: allowedActions.join(',')
+        }));
+    }, []);
+
     return (
         <>
             <form id="tw-chat-settings-form" onSubmit={handleSubmit}>
@@ -72,18 +82,17 @@ const SettingsManager = () => {
                     <p>Global settings for chat widget functionality.</p>
                     <table className="form-table">
                         <tbody>
-                            {renderFormField("Custom Logo URL", "tw_chat_logo_url", "text")}
-                            {renderFormField("Disclaimer", "tw_chat_disclaimer", "textarea")}
-                            {renderFormField("Maximum Characters Allowed", "tw_chat_max_characters", "number")}
-                            {renderFormField("Chat Error Message", "tw_chat_error_message", "textarea")}
-                            {renderCheckboxField("Enable Debugging", "tw_chat_is_debug")}
+                            {renderFormField("Custom Logo URL", "tw_chat_logo_url", "text", formData, handleInputChange)}
+                            {renderFormField("Disclaimer", "tw_chat_disclaimer", "textarea", formData, handleInputChange)}
+                            {renderFormField("Maximum Characters Allowed", "tw_chat_max_characters", "number", formData, handleInputChange)}
+                            {renderFormField("Chat Error Message", "tw_chat_error_message", "textarea", formData, handleInputChange)}
+                            {renderCheckboxField("Enable Debugging", "tw_chat_is_debug", formData, handleCheckboxChange)}
                             <tr>
                                 <th></th>
                                 <td><button type="button" onClick={() => setIsLogModalOpen(true)}>Open Log File</button></td>
                             </tr>
                         </tbody>
                     </table>
-                    
                 </section>
 
                 {chatWidgets.length > 0 && (
@@ -92,13 +101,32 @@ const SettingsManager = () => {
                         <p>Set up your global chat widget that appears in the lower right corner of the screen.</p>
                         <table className="form-table">
                             <tbody>
-                                {renderCheckboxField("Enable Global Chat Widget", "tw_chat_is_enabled")}
-                                {renderSelectField("Global Chat Widget", "tw_chat_global_widget_id", chatWidgets)}
-                                {renderFormField("Chat Button Text", "tw_chat_button_text", "text")}
+                                {renderCheckboxField("Enable Global Chat Widget", "tw_chat_is_enabled", formData, handleCheckboxChange)}
+                                {renderSelectField("Global Chat Widget", "tw_chat_global_widget_id", chatWidgets, formData, handleInputChange)}
+                                {renderFormField("Chat Button Text", "tw_chat_button_text", "text", formData, handleInputChange)}
                             </tbody>
                         </table>
                     </section>
                 )}
+
+                <section>
+                    <h2>Functions Settings</h2>
+                    <table className="form-table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    Enter a list of actions and filters for the <code>wp_action</code> tool function.
+                                </th>
+                                <td>
+                                    <ListInput
+                                        onChange={handleActionsChange}
+                                        defaultValues={twChatSettings.tw_chat_allowed_actions}
+                                    />
+                                </td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
 
                 <button 
                     className="button button-hero button-primary" 
@@ -115,71 +143,6 @@ const SettingsManager = () => {
             />
         </>
     );
-
-    function renderFormField(label, name, type) {
-        return (
-            <tr>
-                <th scope="row">{label}</th>
-                <td>
-                    {type === 'textarea' ? (
-                        <textarea
-                            className="regular-text"
-                            name={name}
-                            rows="5"
-                            onChange={handleInputChange}
-                            value={formData[name]}
-                        />
-                    ) : (
-                        <input
-                            className="regular-text"
-                            type={type}
-                            name={name}
-                            onChange={handleInputChange}
-                            value={formData[name]}
-                        />
-                    )}
-                </td>
-            </tr>
-        );
-    }
-
-    function renderCheckboxField(label, name) {
-        return (
-            <tr>
-                <th scope="row">{label}</th>
-                <td>
-                    <input 
-                        type="checkbox" 
-                        id={name} 
-                        name={name} 
-                        checked={formData[name] === "enabled"}
-                        onChange={handleCheckboxChange}
-                    /> 
-                    <label htmlFor={name}>Yes, {label.toLowerCase()}.</label>
-                </td>
-            </tr>
-        );
-    }
-
-    function renderSelectField(label, name, options) {
-        return (
-            <tr>
-                <th scope="row">{label}</th>
-                <td>
-                    <select 
-                        name={name} 
-                        onChange={handleInputChange} 
-                        value={formData[name]}
-                    >
-                        <option value="">Select a chat widget</option>
-                        {options.map(widget => (
-                            <option key={widget.id} value={widget.id}>{widget.name}</option>
-                        ))}
-                    </select>   
-                </td>
-            </tr>
-        );
-    }
 };
 
 export default SettingsManager;

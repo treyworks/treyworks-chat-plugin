@@ -60,6 +60,7 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_max_characters');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_global_widget_id');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_logo_url');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
     }
 
     /**
@@ -98,7 +99,8 @@
             'tw_chat_max_characters' => get_option('tw_chat_max_characters'),
             'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id'),
             'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
-            'tw_chat_logo_url' => get_option('tw_chat_logo_url')
+            'tw_chat_logo_url' => get_option('tw_chat_logo_url'),
+            'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions')
         );
     }
 
@@ -173,7 +175,7 @@
             update_option('tw_chat_global_widget_id', sanitize_text_field($settings['tw_chat_global_widget_id']));
             update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
             update_option('tw_chat_logo_url', sanitize_text_field($settings['tw_chat_logo_url']));
-            
+            update_option('tw_chat_allowed_actions', sanitize_text_field($settings['tw_chat_allowed_actions']));
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
         } catch (Exception $e) {
@@ -250,6 +252,7 @@
             $email_recipients = sanitize_text_field($_POST['tw_chat_email_recipients']);
             $webhook_address = sanitize_text_field($_POST['tw_chat_webhook_address']);
             $webhook_header = sanitize_text_field($_POST['tw_chat_webhook_header']);
+            $allowed_actions = sanitize_text_field($_POST['tw_chat_allowed_actions']);
 
             if (isset($_POST['id']) && $_POST['id'] !== '') {
                 TW_Chat_Logger::log('Updating widget post: ' . $_POST['id']);
@@ -282,6 +285,8 @@
             update_post_meta($post_id, 'tw_chat_webhook_address', $webhook_address);
             update_post_meta($post_id, 'tw_chat_webhook_header', $webhook_header);
             update_post_meta($post_id, 'tw_chat_email_recipients', $email_recipients);
+            update_post_meta($post_id, 'tw_chat_allowed_actions', $allowed_actions);
+            //tw_chat_allowed_actions
 
             $response = TW_Chat_Widgets::get_chat_widgets();
             wp_send_json_success( $response );
