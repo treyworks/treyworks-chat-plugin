@@ -18,7 +18,8 @@ const SettingsManager = () => {
         tw_chat_max_characters: twChatSettings.tw_chat_max_characters,
         tw_chat_global_widget_id: twChatSettings.tw_chat_global_widget_id,
         tw_chat_logo_url: twChatSettings.tw_chat_logo_url,
-        tw_chat_allowed_actions: twChatSettings.tw_chat_allowed_actions
+        tw_chat_allowed_actions: twChatSettings.tw_chat_allowed_actions,
+        tw_chat_is_moderation: twChatSettings.tw_chat_is_moderation
     });
     const [isSaving, setIsSaving] = useState(false);
     const [chatWidgets] = useAtom(chatWidgetsAtom);
@@ -86,6 +87,11 @@ const SettingsManager = () => {
                             {renderFormField("Disclaimer", "tw_chat_disclaimer", "textarea", formData, handleInputChange)}
                             {renderFormField("Maximum Characters Allowed", "tw_chat_max_characters", "number", formData, handleInputChange)}
                             {renderFormField("Chat Error Message", "tw_chat_error_message", "textarea", formData, handleInputChange)}
+                            {renderCheckboxField("Enable Moderation", "tw_chat_is_moderation", formData, handleCheckboxChange)}
+                            <tr>
+                                <th></th>
+                                <td><p>Filter user messages with the <a href="https://github.com/ConsoleTVs/Profanity" target="_blank">Profanity PHP library</a> and enable the  <a href="https://platform.openai.com/docs/guides/moderation" target="_blank">OpenAI Moderation API</a>.</p></td>
+                            </tr>
                             {renderCheckboxField("Enable Debugging", "tw_chat_is_debug", formData, handleCheckboxChange)}
                             <tr>
                                 <th></th>
