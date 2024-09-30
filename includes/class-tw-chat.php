@@ -32,12 +32,39 @@ class TW_Chat_Plugin {
     }
 
     public function setup_actions() {
+        // Add a custom action hook that registers a custom post type for the chat widget
+        // The 'register_chat_widget_post_type' function will be executed on the 'init' action, 
+        // which is one of the earliest actions triggered in WordPress.
         add_action('init', [$this, 'register_chat_widget_post_type']);
+
+        // Enqueue plugin-specific scripts and styles
+        // The 'enqueue_scripts' function will be hooked to 'wp_enqueue_scripts', which runs at the appropriate
+        // time to add CSS and JS files to the front end.
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
+
+        // Add custom HTML to the footer section of the website
+        // The 'add_footer_html' function is hooked into 'wp_footer' to inject any necessary HTML 
+        // right before the closing </body> tag in the front end.
         add_action('wp_footer', [$this, 'add_footer_html']);
+
+        // Register a custom REST API endpoint for handling chat responses
+        // The 'register_chat_response_endpoint' function is executed during the 'rest_api_init' action,
+        // allowing you to create custom API routes within your plugin.
         add_action('rest_api_init', [$this, 'register_chat_response_endpoint']);
+
+        // Register a shortcode for displaying the chat widget in posts or pages
+        // The 'tw_chat_widget_shortcode' function is executed when the 'tw_chat_widget' shortcode is used
+        // in any WordPress post or page, enabling dynamic content generation.
         add_shortcode('tw_chat_widget', [$this, 'tw_chat_widget_shortcode']);
+
+        // Custom action hook for executing a function with specific parameters
+        // The 'test_action_callback' function will be triggered when the 'tw_test_action' action is fired,
+        // passing two parameters. This can be used to execute specific logic at custom points.
         add_action('tw_test_action', [$this,'test_action_callback'], 10, 2);
+
+        // Custom filter hook for modifying data with specific parameters
+        // The 'test_filter_callback' function is hooked into 'tw_test_filter', allowing the function to modify
+        // any data passed through the filter. The two parameters will be passed to the callback function.
         add_filter('tw_test_filter', [$this,'test_filter_callback'], 10, 2);
     }
 
@@ -302,21 +329,31 @@ class TW_Chat_Plugin {
             $assistant_id = $chat_widget['tw_chat_assistant_id'];
 
             // sanitize and block swear words
-            $sanitize_message = sanitize_text_field($message);
-            $clean_message = \ConsoleTVs\Profanity\Builder::blocker($sanitize_message)->filter();
+            // check moderation setting
+            $is_moderation = !empty($settings['tw_chat_is_moderation']);
 
-            // Moderation API call
-            $moderation_response = $client->moderations()->create([
-                'model' => 'text-moderation-latest',
-                'input' => $clean_message,
-            ]);
-            
-            // Loop moderation responses and checked for flagged status
-            foreach ($moderation_response->results as $result) {
-                if ($result->flagged) {
-                    // true, return error
-                    return new WP_Error('moderation_error', 'Message violates OpenAI Content Policy', ['status' => 400]);
-                } 
+            if ($is_moderation) {
+                // Moderation is enabled
+                $sanitize_message = sanitize_text_field($message);
+                $clean_message = \ConsoleTVs\Profanity\Builder::blocker($sanitize_message)->filter();
+
+                // Moderation API call
+                $moderation_response = $client->moderations()->create([
+                    'model' => 'text-moderation-latest',
+                    'input' => $clean_message,
+                ]);
+                
+                // Loop moderation responses and checked for flagged status
+                foreach ($moderation_response->results as $result) {
+                    if ($result->flagged) {
+                        // true, return error
+                        return new WP_Error('moderation_error', 'Message violates OpenAI Content Policy', ['status' => 400]);
+                    } 
+                }
+            } else{
+                // Moderation is not enabled.
+                TW_Chat_Logger::log(__('WARNING: Moderation is not enabled.'));
+                $clean_message = $message;
             }
 
             // Create a new thread if none is passed

@@ -8,6 +8,12 @@ class TW_Chat_Logger {
     public static function initialize() {
         // Set log file path in the plugin directory
         self::$log_file_path = plugin_dir_path(dirname( __FILE__ )) . 'treyworks-chat.log';
+
+        // Check if the log file already exists
+        if (!file_exists(self::$log_file_path)) {
+            // Create the log file and add an initial message
+            file_put_contents(self::$log_file_path, "Log file created on: " . date('Y-m-d H:i:s') . PHP_EOL);
+        }
     }
 
     // Logs a message to the log file
