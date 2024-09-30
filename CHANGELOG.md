@@ -1,5 +1,11 @@
 # Project Changelog
 
+# 1.2.5
+- Bug fix: Log file is created on plugin installation
+- Added checkbox to plugin settings to enable or disable message moderation
+    - Filter user messages with the Profanity PHP library
+    - Enabled the OpenAI Moderation API for content filtering
+
 # 1.2.4
 - Added Call Action Tool: Allows the assistant to call an action and retrieve the result using the WordPress Hook system
 - Improved the email template for the send_message function

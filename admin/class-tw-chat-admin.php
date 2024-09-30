@@ -61,6 +61,7 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_global_widget_id');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_logo_url');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_is_moderation');
     }
 
     /**
@@ -79,6 +80,7 @@
         delete_option('tw_chat_global_widget_id');
         delete_option('tw_chat_is_debug');
         delete_option('tw_chat_logo_url');
+        delete_option('tw_chat_is_moderation');
     }
 
     /**
@@ -100,7 +102,8 @@
             'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id'),
             'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
             'tw_chat_logo_url' => get_option('tw_chat_logo_url'),
-            'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions')
+            'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions'),
+            'tw_chat_is_moderation' => get_option('tw_chat_is_moderation')
         );
     }
 
@@ -176,6 +179,7 @@
             update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
             update_option('tw_chat_logo_url', sanitize_text_field($settings['tw_chat_logo_url']));
             update_option('tw_chat_allowed_actions', sanitize_text_field($settings['tw_chat_allowed_actions']));
+            update_option('tw_chat_is_moderation', sanitize_text_field($settings['tw_chat_is_moderation']));
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
         } catch (Exception $e) {
@@ -253,7 +257,7 @@
             $webhook_address = sanitize_text_field($_POST['tw_chat_webhook_address']);
             $webhook_header = sanitize_text_field($_POST['tw_chat_webhook_header']);
             $allowed_actions = sanitize_text_field($_POST['tw_chat_allowed_actions']);
-
+            
             if (isset($_POST['id']) && $_POST['id'] !== '') {
                 TW_Chat_Logger::log('Updating widget post: ' . $_POST['id']);
 

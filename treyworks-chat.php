@@ -3,7 +3,7 @@
  * Plugin Name: Treyworks Chat for WordPress
  * Plugin URI: https://treyworks.com
  * Description: A chat widget plugin for WordPress powered by the OpenAI Assistants API.
- * Version: 1.2.4
+ * Version: 1.2.5
  * Author: Treyworks LLC
  * Author URI: https://treyworks.com
  * License:           MIT

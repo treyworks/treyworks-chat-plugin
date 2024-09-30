@@ -12,6 +12,7 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 - Advanced functions for site search, post retrieval, and more
 - Email and webhook capabilities for lead generation
 - WordPress action and filter integration
+- Message moderation and profanity filtering
 
 ## Installation
 
@@ -22,8 +23,8 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 2. Upload and install the plugin via the WordPress Admin Panel.
 3. Activate the plugin.
 4. Navigate to the plugin's settings page and enter your OpenAI API key.
-5. Create a new chat widget in the Chat Widgets tab.
-6. View and manage your OpenAI assistants in the Assistants tab.
+5. View and manage your OpenAI assistants in the Assistants tab.
+6. Create a new chat widget in the Chat Widgets tab.
 
 ## Usage
 
@@ -166,7 +167,7 @@ number_of_posts: '5'
 Summarize the results, including the product titles and publication dates.
 ```
 
-### Email Function
+### Send Email Message Function
 
 To enable email functionality:
 
@@ -389,6 +390,11 @@ Customize the plugin's appearance using CSS variables. Example:
     --tw-chat-bubble-icon-size-mobile: 40px;
 }
 ```
+## Message Moderation
+
+Enable the message moderation feature from the plugin settings. This feature is designed to filter user messages with the [Profanity PHP library](https://github.com/ConsoleTVs/Profanity) and enable the [OpenAI Moderation API](https://platform.openai.com/docs/guides/moderation).
+
+
 
 ## Logging
 
