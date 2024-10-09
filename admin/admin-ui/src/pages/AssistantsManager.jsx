@@ -3,6 +3,7 @@ import { useAtom } from 'jotai';
 import toast from "react-hot-toast";
 import Modal from "react-modal";
 import { marked } from "marked";
+import _ from 'lodash';
 
 import { assistantsAtom } from '../atoms';
 import { getAssistants } from "../utils/assistantsService";
@@ -50,7 +51,8 @@ const AssistantsManager = () => {
     }, []);
 
     const getAssistantInstructions = useCallback(() => {
-        return currentAssistant.instructions ? marked.parse(currentAssistant.instructions) : "";
+        return currentAssistant.instructions ? marked.parse(_.escape(currentAssistant.instructions)) : "";
+        // return currentAssistant.instructions;
     }, [currentAssistant.instructions]);
 
     const modalContent = useMemo(() => (
