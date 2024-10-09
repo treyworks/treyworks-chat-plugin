@@ -1,5 +1,11 @@
 # Project Changelog
 
+# 1.2.6
+- Bug fix: Resolved an issue where the send_message function was incorrectly stripping all HTML tags from the body parameter.
+- Bug fix: Corrected the display of escaped HTML characters when viewing instructions in the Assistant Manager's admin page.
+- Bug fix: Implemented json_decode to correctly process incoming data in the webhook function.
+- Bug fix: Fixed scroll behavior when widget is loaded.
+
 # 1.2.5
 - Bug fix: Log file is created on plugin installation
 - Added checkbox to plugin settings to enable or disable message moderation

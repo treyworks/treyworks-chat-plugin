@@ -24869,7 +24869,7 @@ const qx = ({ toggleChat: p, widgetID: c, width: f, height: h, sticky: S }) => {
   wr.useEffect(() => {
     window.twChatWidgetSettings[c].thread_id === void 0 ? ze.tw_chat_suggested_answers && we(ze.tw_chat_suggested_answers.split(",")) : (I(window.twChatWidgetSettings[c].thread_id), window.twChatWidgetSettings[c].suggestedAnswers && we(window.twChatWidgetSettings[c].suggestedAnswers)), S && Qx(c);
   }, []), wr.useEffect(() => {
-    ut.current && ht.current && ut.current.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    ut.current && ht.current && x.length > 1 && ut.current.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
   }, [x]);
   const tn = (pe, ve) => {
     pe && pe.preventDefault(), M(!0);

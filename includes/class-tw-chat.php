@@ -430,8 +430,8 @@ class TW_Chat_Plugin {
                         $email_recipients = get_post_meta($widget_id, 'tw_chat_email_recipients', true);
                         // Send email 
                         if (array_key_exists('body', $arguments) && $arguments['body'] !== null) {
-                            $sanitized_email_body = sanitize_text_field($arguments['body']);
-                            TW_Chat_Functions::send_message($email_recipients, $chat_widget['tw_chat_widget_name'], $sanitized_email_body);
+                            // $sanitized_email_body = sanitize_text_field($arguments['body']);
+                            TW_Chat_Functions::send_message($email_recipients, $chat_widget['tw_chat_widget_name'], $arguments['body']);
                         }
 
                         // Set tool output
@@ -492,7 +492,7 @@ class TW_Chat_Plugin {
 
                             // Arguments for the wp_remote_post function
                             $args = array(
-                                'body'    => $arguments[$param_name],
+                                'body'    => json_decode($arguments[$param_name], true),
                                 'timeout' => '3', // Timeout in seconds
                             );
 

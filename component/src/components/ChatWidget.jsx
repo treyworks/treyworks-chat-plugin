@@ -59,8 +59,11 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     // Set up effect for new messages
     useEffect(() => {
         // Scroll to  new message
+        
         if (lastElementRef.current && parentRef.current) {
-            lastElementRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+            if (messages.length > 1) {
+                lastElementRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+            }
         }
     }, [messages])
 
