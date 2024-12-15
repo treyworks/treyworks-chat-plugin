@@ -266,10 +266,10 @@ class TW_Chat_Plugin {
         
         // Verify nonce
         $nonce = $request->get_header('X-WP-Nonce');
-        if ( !wp_verify_nonce($nonce, 'wp_rest') ) {
-            TW_Chat_Logger::log(__('Invalid nonce ' . $nonce));
-            return new WP_Error('forbidden', __('Invalid nonce ' . $nonce), [ 'status' => 403 ]);
-        }
+        // if ( !wp_verify_nonce($nonce, 'wp_rest') ) {
+        //     TW_Chat_Logger::log(__('Invalid nonce ' . $nonce));
+        //     return new WP_Error('forbidden', __('Invalid nonce ' . $nonce), [ 'status' => 403 ]);
+        // }
 
         // check request server
         $request_domain = $_SERVER['HTTP_HOST'];
