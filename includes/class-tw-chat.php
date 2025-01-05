@@ -293,7 +293,15 @@ class TW_Chat_Plugin {
 
         try {
             // OpenAI API client
-            $client = OpenAI::client($openai_key);
+            // $client = OpenAI::client($openai_key);
+            $client = OpenAI::factory()
+                ->withApiKey($openai_key)
+                // ->withOrganization('your-organization') // default: null
+                // ->withProject('Your Project') // default: null
+                // ->withBaseUri('api.openai.com/v1') // default: api.openai.com/v1
+                // ->withHttpClient($httpClient = new \GuzzleHttp\Client([])) // default: HTTP client found using PSR-18 HTTP Client Discovery
+                ->withHttpHeader('OpenAI-Beta', 'assistants=v2')
+                ->make();
             $run_id = null;
             $total_tokens = null;
 
