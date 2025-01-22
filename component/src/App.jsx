@@ -11,6 +11,7 @@ function App({ widgetID, sticky }) {
 
   const [isVisible, setIsVisible] = useState(false)
   const buttonText = window.twChatPluginSettings.tw_chat_button_text || "Chat"
+  const buttonImage = window.twChatPluginSettings.tw_chat_button_image || null
   const width = window.twChatWidgetSettings[widgetID].tw_chat_width || null
   const height = window.twChatWidgetSettings[widgetID].tw_chat_height || null
   const iconColor = window.twChatPluginSettings.iconColor
@@ -26,7 +27,11 @@ function App({ widgetID, sticky }) {
         <ChatWidget widgetID={widgetID} toggleChat={toggleChat} sticky={sticky} />
       </div>
         <button className="tw-chat-bubble" onClick={toggleChat} aria-label="Open chat interface">
-          <ChatIcon iconColor={iconColor} />
+          {buttonImage ? (
+            <img src={buttonImage} alt="Chat" className="tw-chat-button-image" />
+          ) : (
+            <ChatIcon iconColor={iconColor} />
+          )}
           {buttonText}
         </button>
     </div>

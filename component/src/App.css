@@ -41,7 +41,28 @@
 }
 
 .tw-chat-widget {
+  position: relative;
+  z-index: 1;
   max-width: 100%;
+}
+
+.tw-chat-widget-fullscreen {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: var(--tw-chat-interface-max-width, 100%) !important;
+  height: var(--tw-chat-interface-max-height, 100%) !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  z-index: 999999;
+  background: var(--tw-chat-background-color, #ffffff);
+}
+
+.tw-chat-widget-fullscreen .tw-chat-messages {
+  height: calc(100vh - 140px) !important;
+  max-height: none !important;
 }
 
 .tw-chat-interface {
@@ -81,16 +102,49 @@
   }
 }
 
-.tw-chat-header .close {
+.tw-chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   position: absolute;
-  background: none;
-  border: none;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
 
-.tw-chat-header .close svg {
+.tw-chat-header-fullscreen {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.tw-chat-header-fullscreen:hover {
+  opacity: 1;
+}
+
+.tw-chat-header-close {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.tw-chat-header-close:hover {
+  opacity: 1;
+}
+
+.tw-chat-header-close svg {
   width: var(--tw-chat-header-close-size, 32px);
   height: var(--tw-chat-header-close-size, 32px);
 }
@@ -282,6 +336,19 @@
   margin-right: 0.25rem;
   width: auto;
   height: 27px;
+}
+
+.tw-chat-button-image {
+  width: var(--tw-chat-bubble-icon-size, 48px);
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.tw-chat-send-button-image {
+  width: var(--tw-chat-send-button-image-size, 48px);
+  height: auto;
+  object-fit: contain;
 }
 
 /* mobile */
