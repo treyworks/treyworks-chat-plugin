@@ -6,13 +6,12 @@ import classNames from 'classnames'
 import { marked } from 'marked'
 import markedCodePreview from 'marked-code-preview'
 
-
 import { newMessage, setFocus } from '../utils/chat-utils'
 
 import ChatContent from './ChatContent'
 import SendIcon from '../icons/sendIcon'
 import CloseIcon from '../icons/close'
-
+import FullscreenIcon from '../icons/fullscreen'
 
 const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     // Initialize state vars
@@ -22,6 +21,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     const [threadID, setThreadID] = useState(0)
     const [characterCount, setCharacterCount] = useState(0)
     const [suggestedAnswers, setSuggestedAnswers] = useState([])
+    const [isFullscreen, setIsFullscreen] = useState(false)
     const lastElementRef = useRef(null)
     const parentRef = useRef(null)
 
@@ -30,11 +30,17 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     const widgetSettings = window.twChatWidgetSettings[widgetID]
     const maxCharacters = chatSettings.tw_chat_max_characters
     const iconColor = window.twChatPluginSettings.iconColor
+    const sendButtonImage = chatSettings.tw_chat_send_button_image || null
 
     // Close SVG color
     const rootStyle = getComputedStyle(document.documentElement)
     const closeColor = rootStyle.getPropertyValue('--tw-chat-header-close-color').trim()
-    
+
+    // Toggle fullscreen mode
+    const toggleFullscreen = () => {
+        setIsFullscreen(!isFullscreen);
+    };
+
     // Set focus when instantiated
     useEffect(() => {
         // Check to see if widget has a thread ID
@@ -237,7 +243,14 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                     </div>
                 }
                 </div>
-                <button><SendIcon iconColor={iconColor} /><span className="sr-only">Send Message</span></button>
+                <button>
+                    {sendButtonImage ? (
+                        <img src={sendButtonImage} alt="Send Message" className="tw-chat-send-button-image" />
+                    ) : (
+                        <SendIcon iconColor={iconColor} />
+                    )}
+                    <span className="sr-only">Send Message</span>
+                </button>
             </form>
             )
         }
@@ -247,7 +260,8 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     const componentClasses = classNames(
         "tw-chat-interface",
         { "sticky": sticky },
-        { "embedded": !sticky }
+        { "embedded": !sticky },
+        { "tw-chat-widget-fullscreen": isFullscreen }
     )
     let componentStyle = {}
 
@@ -258,8 +272,6 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
         componentStyle.height = height
     }
 
-    // 
-
     // Render component
     return (
     <div className={componentClasses} style={componentStyle}>
@@ -268,14 +280,25 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
             <img className="logo" src={chatSettings.tw_chat_logo_url} alt="Chat widget logo" />
         }
             <span>{window.twChatWidgetSettings[widgetID].tw_chat_widget_name}</span>
-        { sticky == 1 && 
-            <button 
-                className="close" 
-                onClick={() => toggleChat()}
-                aria-label="Close chat interface">
-                <CloseIcon iconColor={closeColor} />
-            </button>
-        }
+            <div class="tw-chat-header-actions">
+                { sticky == 1 && 
+                    <>
+                    <button 
+                        onClick={toggleFullscreen}
+                        className="tw-chat-header-fullscreen"
+                        aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                    >
+                        <FullscreenIcon isFullscreen={isFullscreen} color={closeColor} />
+                    </button>
+                    <button 
+                        className="tw-chat-header-close" 
+                        onClick={() => toggleChat()}
+                        aria-label="Close chat interface">
+                        <CloseIcon iconColor={closeColor} />
+                    </button>
+                    </>
+                }
+            </div>
         </div>
         <div ref={parentRef} className="tw-chat-messages" id={`tw-chat-messages-${widgetID}`}>
             { renderMessages() }
