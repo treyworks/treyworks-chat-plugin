@@ -1,5 +1,10 @@
 # Project Changelog
 
+# 1.2.8
+- Feature: Added metabox to override global chat widget on individual pages.
+- Feature: Added expand button to sticky chat widget header to make the widget fullscreen.
+- Feature: Added fields for customizing the chat button and send message button images.
+
 # 1.2.7
 - Bug fix: Changed OpenAI client instantiation to include header to support v2 of the Assistants API 
 

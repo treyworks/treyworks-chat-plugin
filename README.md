@@ -377,6 +377,7 @@ Customize the plugin's appearance using CSS variables. Example:
     --tw-chat-message-user-color: #fff;
     --tw-chat-message-error-background: transparent;
     --tw-chat-message-error-box-shadow: none;
+    --tw-chat-send-button-image-size: 64px;
     --tw-chat-input-border: 1px solid;
     --tw-chat-input-background: transparent;
     --tw-chat-disclaimer-font-size: 0.8rem;

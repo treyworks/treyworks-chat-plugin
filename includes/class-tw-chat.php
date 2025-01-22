@@ -6,6 +6,7 @@
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-widgets.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-functions.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-logger.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-meta.php';
 
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-admin.php';
 
@@ -21,6 +22,7 @@ class TW_Chat_Plugin {
         TW_Chat_Logger::initialize();
         
         $this->setup_admin();
+        $this->setup_meta();
         $this->setup_actions();
     }
 
@@ -29,6 +31,10 @@ class TW_Chat_Plugin {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		$this->plugin_admin = new TW_Chat_Admin();
+    }
+
+    public function setup_meta() {
+        new TW_Chat_Meta();
     }
 
     public function setup_actions() {
@@ -101,17 +107,30 @@ class TW_Chat_Plugin {
             wp_enqueue_script('tw-chat-js', plugins_url('../component/dist/tw-chat.js', __FILE__), [], '1.0.0', true);
             wp_enqueue_style('tw-chat-css', plugins_url('../component/dist/style.css', __FILE__));
 
+            // Get current post/page ID
+            $current_id = get_queried_object_id();
+            
+            // Check if current page has override settings
+            $override_global = get_post_meta($current_id, '_tw_chat_override_global', true);
+            $custom_button_text = '';
+            
+            if ($override_global === '1') {
+                $custom_button_text = get_post_meta($current_id, '_tw_chat_button_text', true);
+            }
+
             // Localize script with plugin settings
             $settings = $this->plugin_admin->get_plugin_settings();
             $localizeData = [
                 "root" => esc_url_raw( rest_url() ),
                 'nonce' => wp_create_nonce('wp_rest'),
-                "tw_chat_button_text" => $settings["tw_chat_button_text"],
+                "tw_chat_button_text" => !empty($custom_button_text) ? $custom_button_text : $settings["tw_chat_button_text"],
                 "tw_chat_disclaimer" => $settings["tw_chat_disclaimer"],
                 "tw_chat_error_message" => $settings["tw_chat_error_message"],
                 "tw_chat_assistant_name" => $settings["tw_chat_assistant_name"],       
                 "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
-                "tw_chat_logo_url" => $settings["tw_chat_logo_url"]
+                "tw_chat_logo_url" => $settings["tw_chat_logo_url"],
+                "tw_chat_send_button_image" => $settings["tw_chat_send_button_image"],
+                "tw_chat_button_image" => $settings["tw_chat_button_image"]
             ];
 
             wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
@@ -130,13 +149,29 @@ class TW_Chat_Plugin {
      * This function is hooked to 'wp_footer'.
      */
     public function add_footer_html() {
-        // Check to see if chat widget is enabled
-        if ($this->is_enabled()) {
-            // get the global widget id
-            $global_widget_id = get_option('tw_chat_global_widget_id');
-
-            // Render component with post id and sticky 
-            echo $this->render_component($global_widget_id, null, null, 1);
+        // Get current post/page ID
+        $current_id = get_queried_object_id();
+        
+        // Check if current page has override settings
+        $override_global = get_post_meta($current_id, '_tw_chat_override_global', true);
+        
+        if ($override_global === '1') {
+            // Get page-specific widget
+            $widget_id = get_post_meta($current_id, '_tw_chat_selected_widget', true);
+            
+            // Only render if a widget is selected
+            if (!empty($widget_id)) {
+                echo $this->render_component($widget_id, null, null, 1);
+            }
+        } else {
+            // Only show global widget if chat is globally enabled
+            if ($this->is_enabled()) {
+                // Use global widget
+                $global_widget_id = get_option('tw_chat_global_widget_id');
+                if (!empty($global_widget_id)) {
+                    echo $this->render_component($global_widget_id, null, null, 1);
+                }
+            }
         }
     }
 

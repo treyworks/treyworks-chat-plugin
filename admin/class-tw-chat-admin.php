@@ -62,6 +62,8 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_logo_url');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_moderation');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_button_image');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_send_button_image');
     }
 
     /**
@@ -103,7 +105,9 @@
             'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
             'tw_chat_logo_url' => get_option('tw_chat_logo_url'),
             'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions'),
-            'tw_chat_is_moderation' => get_option('tw_chat_is_moderation')
+            'tw_chat_is_moderation' => get_option('tw_chat_is_moderation'),
+            'tw_chat_button_image' => get_option('tw_chat_button_image'),
+            'tw_chat_send_button_image' => get_option('tw_chat_send_button_image')
         );
     }
 
@@ -142,6 +146,7 @@
 	 */
 	public function enqueue_scripts() {
         if ( isset( $_GET['page'] ) && $_GET['page'] === 'tw-chat-settings' ) {
+
             wp_enqueue_script( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/tw-chat-admin.js', array(), $this->version, false );
 
             // Localize script with current settings
@@ -180,6 +185,8 @@
             update_option('tw_chat_logo_url', sanitize_text_field($settings['tw_chat_logo_url']));
             update_option('tw_chat_allowed_actions', sanitize_text_field($settings['tw_chat_allowed_actions']));
             update_option('tw_chat_is_moderation', sanitize_text_field($settings['tw_chat_is_moderation']));
+            update_option('tw_chat_button_image', sanitize_text_field($settings['tw_chat_button_image']));
+            update_option('tw_chat_send_button_image', sanitize_text_field($settings['tw_chat_send_button_image']));
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
         } catch (Exception $e) {
