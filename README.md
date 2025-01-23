@@ -405,7 +405,7 @@ Enable logging from the plugin settings dashboard for debugging and tracking fun
 
 - WordPress 6.6 or higher
 - PHP 8.1 or higher
-- Valid API key for either OpenAI or Google Gemini
+- Valid API key for the OpenAI Assistants API
 
 ## Resources
 
