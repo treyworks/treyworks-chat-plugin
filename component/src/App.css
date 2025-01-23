@@ -124,6 +124,12 @@
   transition: opacity 0.2s ease;
 }
 
+@media screen and (max-width: 767px) {
+  .tw-chat-header-fullscreen {
+    display: none;
+  }
+}
+
 .tw-chat-header-fullscreen:hover {
   opacity: 1;
 }
@@ -342,7 +348,7 @@
   width: var(--tw-chat-bubble-icon-size, 48px);
   height: auto;
   object-fit: contain;
-  margin-bottom: 10px;
+  margin-bottom: 0.25rem;
 }
 
 .tw-chat-send-button-image {

@@ -401,6 +401,12 @@ Enable the message moderation feature from the plugin settings. This feature is 
 
 Enable logging from the plugin settings dashboard for debugging and tracking function calls. Refresh or clear logs directly from the dashboard.
 
+## System Requirements
+
+- WordPress 6.6 or higher
+- PHP 8.1 or higher
+- Valid API key for either OpenAI or Google Gemini
+
 ## Resources
 
 - GitHub Repository: [https://github.com/treyworks/treyworks-chat-plugin](https://github.com/treyworks/treyworks-chat-plugin)
