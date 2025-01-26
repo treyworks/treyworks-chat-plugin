@@ -1,18 +1,21 @@
 <?php
 /**
- * Define the functionality of the plugin.
- *
+ * The core plugin class that is used to define internationalization,
+ * admin-specific hooks, and public-facing site hooks.
  */
+
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-widgets.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-functions.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-logger.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-meta.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-github-plugin-updater.php';
 
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-admin.php';
 
 class TW_Chat_Plugin {
 
     private TW_Chat_Admin $plugin_admin;
+    private GitHubPluginUpdater $github_plugin_updater;
 
     /**
      * Constructor for the TW_Chat_Plugin class.
@@ -24,6 +27,7 @@ class TW_Chat_Plugin {
         $this->setup_admin();
         $this->setup_meta();
         $this->setup_actions();
+        $this->setup_github_plugin_updater();
     }
 
     public function setup_admin() {
@@ -72,6 +76,19 @@ class TW_Chat_Plugin {
         // The 'test_filter_callback' function is hooked into 'tw_test_filter', allowing the function to modify
         // any data passed through the filter. The two parameters will be passed to the callback function.
         add_filter('tw_test_filter', [$this,'test_filter_callback'], 10, 2);
+    }
+
+    public function setup_github_plugin_updater() {
+        // Check if the GitHub Plugin Updater class has already been instantiated
+        if (isset($this->github_plugin_updater)) {
+            return;
+        }
+        $this->github_plugin_updater = new GitHubPluginUpdater(
+            'treyworks-chat/treyworks-chat', // Plugin slug
+            TW_CHAT_VERSION, // Plugin version
+            'treyworks', // GitHub username
+            'treyworks/treyworks-chat-plugin', // Plugin repo
+        );
     }
 
     /** 

@@ -1,5 +1,9 @@
 # Project Changelog
 
+## 1.3.0
+- Feature: Added support for updating the plugin from the Github repository
+- Dependency updates
+
 ## 1.2.9
 - Bug fix: Fullscreen button is now hidden on small screens.
 - Bug fix: Fixed bottom margin of the global chat widget button image.

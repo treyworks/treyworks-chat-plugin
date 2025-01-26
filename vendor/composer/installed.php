@@ -1,22 +1,22 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => NULL,
+        'reference' => 'd6c1854da99b040eecade35c7bffd76728738ca6',
         'name' => '__root__',
         'dev' => true,
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => NULL,
+            'reference' => 'd6c1854da99b040eecade35c7bffd76728738ca6',
             'dev_requirement' => false,
         ),
         'carbonphp/carbon-doctrine-types' => array(
@@ -47,8 +47,8 @@
             'dev_requirement' => false,
         ),
         'illuminate/collections' => array(
-            'pretty_version' => 'v10.48.25',
-            'version' => '10.48.25.0',
+            'pretty_version' => 'v10.48.26',
+            'version' => '10.48.26.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../illuminate/collections',
             'aliases' => array(),
@@ -56,8 +56,8 @@
             'dev_requirement' => false,
         ),
         'illuminate/conditionable' => array(
-            'pretty_version' => 'v10.48.25',
-            'version' => '10.48.25.0',
+            'pretty_version' => 'v10.48.26',
+            'version' => '10.48.26.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../illuminate/conditionable',
             'aliases' => array(),
@@ -65,8 +65,8 @@
             'dev_requirement' => false,
         ),
         'illuminate/contracts' => array(
-            'pretty_version' => 'v10.48.25',
-            'version' => '10.48.25.0',
+            'pretty_version' => 'v10.48.26',
+            'version' => '10.48.26.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../illuminate/contracts',
             'aliases' => array(),
@@ -74,8 +74,8 @@
             'dev_requirement' => false,
         ),
         'illuminate/macroable' => array(
-            'pretty_version' => 'v10.48.25',
-            'version' => '10.48.25.0',
+            'pretty_version' => 'v10.48.26',
+            'version' => '10.48.26.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../illuminate/macroable',
             'aliases' => array(),
@@ -83,12 +83,12 @@
             'dev_requirement' => false,
         ),
         'illuminate/support' => array(
-            'pretty_version' => 'v10.48.25',
-            'version' => '10.48.25.0',
+            'pretty_version' => 'v10.48.26',
+            'version' => '10.48.26.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../illuminate/support',
             'aliases' => array(),
-            'reference' => '64b258f80175c658aef9e22dd3f2ba18c99b243c',
+            'reference' => '6d09b480d34846245d9288f4dcefb17a73ce6e6a',
             'dev_requirement' => false,
         ),
         'nesbot/carbon' => array(
