@@ -380,6 +380,9 @@ Customize the plugin's appearance using CSS variables. Example:
     --tw-chat-send-button-image-size: 64px;
     --tw-chat-input-border: 1px solid;
     --tw-chat-input-background: transparent;
+    --tw-chat-input-font-size: 1rem;
+    --tw-chat-input-color: #333;
+    --tw-chat-input-placeholder-color: #999;
     --tw-chat-disclaimer-font-size: 0.8rem;
     --tw-chat-disclaimer-background: #f0f0f0;
     --tw-chat-disclaimer-color: #000;

@@ -1,8 +1,10 @@
 # Project Changelog
 
 ## 1.3.0
-- Feature: Added support for updating the plugin from the Github repository
-- Dependency updates
+- Feature: Added CSS variables to allow customization of the chat widget input
+- Bug fix: Updated chat-utils.js to set focus on message input when the window is larger than 1024px
+- Bug fix: Changed chat input to use a textarea element instead of an input element
+- Composer dependency updates
 
 ## 1.2.9
 - Bug fix: Fullscreen button is now hidden on small screens.
