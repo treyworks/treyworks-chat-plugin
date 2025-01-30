@@ -161,6 +161,15 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
           })
     }
 
+    // Handle keypress in textarea
+    const handleKeyPress = (event) => {
+        // Submit form on Enter key, but not when Shift+Enter is pressed
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            handleMessageSubmit(event);
+        }
+    };
+
     // Handle message input change
     const handleMessageTextChange = (event) => {
         const newText = event.target.value
@@ -236,7 +245,16 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                 
                 <div className="tw-chat-input-container">
                     <label htmlFor={`message-text-${widgetID}`}>Send Message</label>
-                    <textarea placeholder="Enter your message..." id={`message-text-${widgetID}`} onChange={handleMessageTextChange} value={messageText} name="message" required="required" rows="1"></textarea>
+                    <textarea 
+                        placeholder="Enter your message..." 
+                        id={`message-text-${widgetID}`} 
+                        onChange={handleMessageTextChange} 
+                        onKeyPress={handleKeyPress}
+                        value={messageText} 
+                        name="message" 
+                        required="required" 
+                        rows="1"
+                    />
                 { maxCharacters && 
                     <div className="tw-chat-char-count">
                         <span className={characterCount == maxCharacters ? "tw-chat-max-characters" : ""}>{characterCount} / {maxCharacters} characters</span>

@@ -1,5 +1,8 @@
 # Project Changelog
 
+## 1.3.0.1
+- Bug fix: Added keypress event to textarea element to handle enter key press
+
 ## 1.3.0
 - Feature: Added CSS variables to allow customization of the chat widget input
 - Bug fix: Updated chat-utils.js to set focus on message input when the window is larger than 1024px
