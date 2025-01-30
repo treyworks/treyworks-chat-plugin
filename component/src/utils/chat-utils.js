@@ -9,5 +9,7 @@ export function newMessage(content, role) {
 
 // set keyboard focus on message input
 export function setFocus(widgetID) {
-    document.getElementById(`message-text-${widgetID}`).focus();
+    if (window.matchMedia("(min-width: 1025px)").matches) {
+        document.getElementById(`message-text-${widgetID}`).focus();
+    }
 }

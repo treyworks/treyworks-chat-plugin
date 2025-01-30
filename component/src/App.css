@@ -223,6 +223,12 @@
   margin: 1rem;
 }
 
+.tw-chat-messages .emoji {
+  width: auto;
+  height: 1rem;
+  margin-left: 0.25rem;
+}
+
 .tw-chat-form {
   display: flex;
   border-top: var(--tw-chat-input-border, 1px solid);
@@ -243,11 +249,17 @@
   border: 0;
 }
 
-.tw-chat-form input{
+.tw-chat-form textarea {
   width: 100%;
   background-color: transparent;
   border: none;
-  color: var(--tw-chat-primary);
+  color: var(--tw-chat-input-color, #333);
+  resize: none;
+  font-size: var(--tw-chat-input-font-size, 1rem);
+}
+
+.tw-chat-form textarea::placeholder {
+  color: var(--tw-chat-input-placeholder-color, #999);
 }
 
 .tw-chat-form button {

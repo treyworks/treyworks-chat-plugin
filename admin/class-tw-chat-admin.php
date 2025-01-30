@@ -6,7 +6,7 @@
  */
 
  class TW_Chat_Admin {
-    public string $version = '0.1.0';
+    public string $version = TW_CHAT_VERSION;
 
     /**
      * Constructor for the TW_Chat_Admin class.
@@ -123,7 +123,7 @@
 	 */
 	public function enqueue_styles() {
         if ( isset( $_GET['page'] ) && $_GET['page'] === 'tw-chat-settings' ) {
-		    wp_enqueue_style( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/style.css', array(), $this->version, 'all' );
+		    wp_enqueue_style( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/style.css', array(), TW_CHAT_VERSION, 'all' );
         }
 	}
 
@@ -147,7 +147,7 @@
 	public function enqueue_scripts() {
         if ( isset( $_GET['page'] ) && $_GET['page'] === 'tw-chat-settings' ) {
 
-            wp_enqueue_script( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/tw-chat-admin.js', array(), $this->version, false );
+            wp_enqueue_script( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/tw-chat-admin.js', array(), TW_CHAT_VERSION, false );
 
             // Localize script with current settings
             $script_data = $this->get_plugin_settings();
