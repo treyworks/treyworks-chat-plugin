@@ -24844,7 +24844,7 @@ function Sh(p, c) {
   };
 }
 function Qx(p) {
-  document.getElementById(`message-text-${p}`).focus();
+  window.matchMedia("(min-width: 1025px)").matches && document.getElementById(`message-text-${p}`).focus();
 }
 const pM = ({ html: p }) => {
   const c = lr.useRef(null);
@@ -24951,7 +24951,7 @@ const mM = ({ isFullscreen: p, color: c = "#000000" }) => p ? /* @__PURE__ */ rt
       children: [
         /* @__PURE__ */ rt.jsxs("div", { className: "tw-chat-input-container", children: [
           /* @__PURE__ */ rt.jsx("label", { htmlFor: `message-text-${c}`, children: "Send Message" }),
-          /* @__PURE__ */ rt.jsx("input", { placeholder: "Enter your message...", id: `message-text-${c}`, type: "text", onChange: ue, value: g, name: "message", required: "required" }),
+          /* @__PURE__ */ rt.jsx("textarea", { placeholder: "Enter your message...", id: `message-text-${c}`, onChange: ue, value: g, name: "message", required: "required", rows: "1" }),
           Pe && /* @__PURE__ */ rt.jsx("div", { className: "tw-chat-char-count", children: /* @__PURE__ */ rt.jsxs("span", { className: oe == Pe ? "tw-chat-max-characters" : "", children: [
             oe,
             " / ",

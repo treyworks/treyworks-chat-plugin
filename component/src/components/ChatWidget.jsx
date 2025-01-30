@@ -236,7 +236,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                 
                 <div className="tw-chat-input-container">
                     <label htmlFor={`message-text-${widgetID}`}>Send Message</label>
-                    <input placeholder="Enter your message..." id={`message-text-${widgetID}`} type="text" onChange={handleMessageTextChange} value={messageText} name="message" required="required" />
+                    <textarea placeholder="Enter your message..." id={`message-text-${widgetID}`} onChange={handleMessageTextChange} value={messageText} name="message" required="required" rows="1"></textarea>
                 { maxCharacters && 
                     <div className="tw-chat-char-count">
                         <span className={characterCount == maxCharacters ? "tw-chat-max-characters" : ""}>{characterCount} / {maxCharacters} characters</span>
