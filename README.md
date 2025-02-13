@@ -340,58 +340,130 @@ Customize the plugin's appearance using CSS variables. Example:
 
 ```css preview
 :root {
-    --tw-chat-position-bottom: 25px;
-    --tw-chat-position-right: 25px;
-    --tw-chat-icon-color: #3d4df0;
-    --tw-chat-bubble-size: 100px;
-    --tw-chat-bubble-border-radius: 100%;
-    --tw-chat-bubble-background: #fff;
-    --tw-chat-bubble-box-shadow: none;
-    --tw-chat-bubble-font-size: 16px;
-    --tw-chat-primary: #000;
-    --tw-chat-bubble-z-index: 1;
-    --tw-chat-bubble-icon-size: 50px;
-    --tw-chat-interface-width: 350px;
-    --tw-chat-interface-max-width: 85vw;
-    --tw-chat-interface-height: 500px;
-    --tw-chat-interface-max-height: 50vh;
-    --tw-chat-background: white;
-    --tw-chat-interface-border: 1px solid #ddd;
-    --tw-chat-interface-box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    --tw-chat-header-background: #333;
-    --tw-chat-header-color: #fff;
-    --tw-chat-header-padding: 10px 20px;
-    --tw-chat-header-close-size: 32px;
-    --tw-chat-header-close-color: #fff;
-    --tw-chat-logo-width: 100px;
-    --tw-chat-logo-height: auto;
-    --tw-chat-message-padding: 20px;
-    --tw-chat-message-border-radius: 0;
-    --tw-chat-message-box-shadow: -1px 1px rgba(0,0,0,0.5);
-    --tw-chat-padding: 10px 20px;
-    --tw-chat-message-font-size: 1rem;
-    --tw-chat-message-width: 85%;
-    --tw-chat-message-background: #f0f0f0;
-    --tw-chat-message-color: #333;
-    --tw-chat-message-user-background: #333;
-    --tw-chat-message-user-color: #fff;
-    --tw-chat-message-error-background: transparent;
-    --tw-chat-message-error-box-shadow: none;
-    --tw-chat-send-button-image-size: 64px;
-    --tw-chat-input-border: 1px solid;
-    --tw-chat-input-background: transparent;
-    --tw-chat-input-font-size: 1rem;
-    --tw-chat-input-color: #333;
-    --tw-chat-input-placeholder-color: #999;
-    --tw-chat-disclaimer-font-size: 0.8rem;
-    --tw-chat-disclaimer-background: #f0f0f0;
-    --tw-chat-disclaimer-color: #000;
-    --tw-chat-interface-width-mobile: 95vw;
-    --tw-chat-interface-width-height: 95vh;
-    --tw-chat-interface-z-index-mobile: 999;
-    --tw-chat-bubble-size-mobile: 80px;
-    --tw-chat-bubble-font-size-mobile: 14px;
-    --tw-chat-bubble-icon-size-mobile: 40px;
+  /* tw-chat-container */
+  --tw-chat-position-bottom: 25px;
+  --tw-chat-position-right: 25px;
+
+  /* tw-chat-bubble */
+  --tw-chat-bubble-size: 90px;
+  --tw-chat-bubble-border-radius: 100%;
+  --tw-chat-bubble-background: #fff;
+  --tw-chat-bubble-box-shadow: 0 0 5px rgba(0,0,0,.1);
+  --tw-chat-bubble-font-size: 16px;
+  --tw-chat-bubble-color: #052b43;
+  --tw-chat-bubble-z-index: 1;
+  --tw-chat-bubble-font-weight: 600;
+
+  /* tw-chat-bubble svg */
+  --tw-chat-bubble-icon-size: 45px;
+
+  /* tw-chat-widget-fullscreen */
+  --tw-chat-interface-max-width: 85vw;
+  --tw-chat-interface-max-height: 85vh;
+  --tw-chat-background-color: #ffffff;
+
+  /* tw-chat-interface */
+  --tw-chat-interface-width: 500px;
+  --tw-chat-interface-height: 550px;
+  --tw-chat-background: #f7f7f7;
+  --tw-chat-interface-border: 1px solid #f7f7f7;
+  --tw-chat-interface-box-shadow: 0 0 5px rgba(0,0,0,0.15);
+
+  /* tw-chat-interface.embedded */
+  --tw-chat-interface-embedded-width: 550px;
+  --tw-chat-interface-embedded-max-width: 100%;
+  --tw-chat-interface-embedded-height: 550px;
+  --tw-chat-interface-embedded-max-height: 75vh;
+
+  /* tw-chat-header */
+  --tw-chat-header-background: #052b43;
+  --tw-chat-header-color: #fff;
+  --tw-chat-header-padding: 10px 20px;
+  --tw-chat-header-button-color: #fff;
+
+  /* tw-chat-header-close svg */
+  --tw-chat-header-close-size: 32px;
+
+  /* tw-chat-header .logo */
+  --tw-chat-logo-width: 100px;
+  --tw-chat-logo-height: auto;
+
+  /* tw-chat-messages */
+  --tw-chat-message-padding: 20px;
+  --tw-chat-message-padding-bottom: 80px;
+
+  /* tw-chat-messages .message */
+  --tw-chat-message-border-radius: 10px;
+  --tw-chat-message-box-shadow: 0 0 5px rgba(0,0,0,0.15);
+  --tw-chat-message-border: 1px solid #ddd;
+  --tw-chat-padding: 10px 20px;
+  --tw-chat-message-spacing: 1rem;
+  --tw-chat-message-width: 85%;
+  --tw-chat-message-background: #fff;
+  --tw-chat-message-color: #1d1d1d;
+
+  /* tw-chat-messages .message, .tw-chat-messages .message * */
+  --tw-chat-message-font-size: 1rem;
+
+  /* tw-chat-messages .message h1, .tw-chat-messages .message h2, ... */
+  --tw-chat-message-heading-font-weight: 600;
+
+  /* tw-chat-messages .message a */
+  --tw-chat-message-link-font-weight: bold;
+
+  /* tw-chat-messages .message.user */
+  --tw-chat-message-user-background: #052b43;
+  --tw-chat-message-user-color: #fff;
+
+  /* tw-chat-messages .message.error */
+  --tw-chat-message-error-background: transparent;
+  --tw-chat-message-error-color: #a83235;
+  --tw-chat-message-error-box-shadow: none;
+
+  /* tw-chat-form */
+  --tw-chat-input-border: 1px solid #ddd;
+  --tw-chat-input-border-radius: 10px;
+  --tw-chat-input-box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  --tw-chat-input-background: #fff;
+  --tw-chat-input-max-width: 95%;
+
+  /* tw-chat-form textarea */
+  --tw-chat-input-color: #1d1d1d;
+  --tw-chat-input-font-size: 1rem;
+  --tw-chat-input-placeholder-color: #999;
+
+  /* tw-chat-input-container .tw-chat-char-count */
+  --tw-chat-char-count-font-size: 0.75rem;
+
+  /* tw-chat-suggested-answers */
+  --tw-chat-suggested-answer-spacing: 10px;
+
+  /* tw-chat-suggested-answers button */
+  --tw-chat-suggested-answer-font-size: 1rem;
+  --tw-chat-suggested-answer-padding: 10px;
+  --tw-chat-suggested-answer-border-radius: 10px;
+  --tw-chat-suggested-answer-box-shadow: none;
+  --tw-chat-suggested-answer-border: none;
+  --tw-chat-suggested-answer-transition: all 0.3s;
+  --tw-chat-suggested-answer-min-width: calc(50% - 10px);
+
+  /* tw-chat-disclaimer-container */
+  --tw-chat-disclaimer-text-align: center;
+  --tw-chat-disclaimer-padding: 10px;
+  --tw-chat-disclaimer-font-size: 0.8rem;
+  --tw-chat-disclaimer-background: transparent;
+  --tw-chat-disclaimer-color: #000;
+
+  /* tw-chat-button-image and tw-chat-send-button-image */
+  --tw-chat-send-button-image-size: 48px;
+
+  /* Mobile Styles */
+  --tw-chat-interface-width-mobile: 95vw;
+  --tw-chat-interface-width-height: 95vh;
+  --tw-chat-interface-z-index-mobile: 999;
+  --tw-chat-bubble-size-mobile: 80px;
+  --tw-chat-bubble-font-size-mobile: 14px;
+  --tw-chat-bubble-icon-size-mobile: 40px;
 }
 ```
 ## Message Moderation
