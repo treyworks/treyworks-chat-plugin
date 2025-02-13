@@ -32398,14 +32398,15 @@ const nA = ({ currentWidget: f, onSave: s }) => {
       /* @__PURE__ */ Q.jsxs("tr", { valign: "top", children: [
         /* @__PURE__ */ Q.jsx("th", { scope: "row", children: "Greeting" }),
         /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsx(
-          "input",
+          "textarea",
           {
             className: "regular-text",
-            type: "text",
             name: "tw_chat_greeting",
             onChange: _,
             value: y.tw_chat_greeting,
-            required: !0
+            required: !0,
+            rows: "3",
+            style: { width: "100%" }
           }
         ) })
       ] }),

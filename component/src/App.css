@@ -1,8 +1,6 @@
 :root {
-  --tw-chat-icon-color: #3d4df0;
-  --tw-chat-header-close-color: #fff;
+  --tw-chat-header-button-color: #fff;
 }
-
 .tw-chat-container {
   position: fixed;
   bottom: var(--tw-chat-position-bottom, 25px);
@@ -13,11 +11,11 @@
 }
 
 .tw-chat-bubble {
-  width: var(--tw-chat-bubble-size, 100px);
-  height: var(--tw-chat-bubble-size, 100px);
+  width: var(--tw-chat-bubble-size, 90px);
+  height: var(--tw-chat-bubble-size, 90px);
   border-radius: var(--tw-chat-bubble-border-radius, 100%);
   background-color: var(--tw-chat-bubble-background, #fff);
-  box-shadow: var(--tw-chat-bubble-box-shadow, none);
+  box-shadow: var(--tw-chat-bubble-box-shadow, 0 0 5px rgba(0,0,0,.1));
   font-size: var(--tw-chat-bubble-font-size, 16px);
   border: none;
   cursor: pointer;
@@ -25,12 +23,13 @@
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  color: var(--tw-chat-primary, #000);
+  color: var(--tw-chat-bubble-color, #052b43);
   z-index: var(--tw-chat-bubble-z-index, 1);
+  font-weight: var(--tw-chat-bubble-font-weight, 600);
 }
 
 .tw-chat-bubble svg {
-  width: var(--tw-chat-bubble-icon-size, 50px);
+  width: var(--tw-chat-bubble-icon-size, 45px);
   height: auto;
 }
 
@@ -53,8 +52,8 @@
   transform: translate(-50%, -50%) !important;
   width: var(--tw-chat-interface-max-width, 100%) !important;
   height: var(--tw-chat-interface-max-height, 100%) !important;
-  max-width: none !important;
-  max-height: none !important;
+  max-width: var(--tw-chat-interface-max-width, 85vw) !important;
+  max-height: var(--tw-chat-interface-max-height, 85vh) !important;
   margin: 0 !important;
   z-index: 999999;
   background: var(--tw-chat-background-color, #ffffff);
@@ -66,16 +65,17 @@
 }
 
 .tw-chat-interface {
-  width: var(--tw-chat-interface-width, 350px);
-  max-width: var(--tw-chat-interface-max-width, 85%);
-  height: var(--tw-chat-interface-height, 500px);
-  max-height: var(--tw-chat-interface-max-height, 50vh);
-  background-color: var(--tw-chat-background, white);
-  border: var(--tw-chat-interface-border, 1px solid #ddd);
-  box-shadow: var(--tw-chat-interface-box-shadow, 0 0 5px rgba(0,0,0,0.1));
-  margin-bottom: 2rem;
+  width: var(--tw-chat-interface-width, 500px);
+  max-width: var(--tw-chat-interface-max-width, 85vw);
+  height: var(--tw-chat-interface-height, 550px);
+  max-height: var(--tw-chat-interface-max-height, 75vh);
+  background-color: var(--tw-chat-background, #f7f7f7);
+  border: var(--tw-chat-interface-border, 1px solid #f7f7f7);
+  box-shadow: var(--tw-chat-interface-box-shadow, 0 0 5px rgba(0,0,0,0.15));
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .tw-chat-interface.embedded {
@@ -87,7 +87,7 @@
 
 .tw-chat-header {
   position: relative;
-  background-color: var(--tw-chat-header-background, #333);
+  background-color: var(--tw-chat-header-background, #052b43);
   color: var(--tw-chat-header-color, #fff);
   display: flex;
   flex-direction: column;
@@ -166,17 +166,21 @@
   height: 100%;
   flex-direction: column;
   overflow-y: auto;
-  padding: var(--tw-chat-message-padding, 20px);
+  padding-left: var(--tw-chat-message-padding, 20px);
+  padding-right: var(--tw-chat-message-padding, 20px);
+  padding-top: var(--tw-chat-message-padding, 20px);
+  padding-bottom: var(--tw-chat-message-padding-bottom, 80px);
 }
 
 .tw-chat-messages .message {
-  border-radius: var(--tw-chat-message-border-radius, 0);
-  box-shadow: var(--tw-chat-message-box-shadow, -1px 1px rgba(0,0,0,0.5));
+  border-radius: var(--tw-chat-message-border-radius, 10px);
+  box-shadow: var(--tw-chat-message-box-shadow, 0 0 5px rgba(0,0,0,0.15));
+  border: var(--tw-chat-message-border, 1px solid #ddd);
   padding: var(--tw-chat-padding, 10px 20px);
-  margin-bottom: 1rem;
+  margin-bottom: var(--tw-chat-message-spacing, 1rem);
   width: var(--tw-chat-message-width, 85%);
-  background: var(--tw-chat-message-background, #f0f0f0);
-  color: var(--tw-chat-message-color, #333);
+  background: var(--tw-chat-message-background, #fff);
+  color: var(--tw-chat-message-color, #1d1d1d);
 }
 
 .tw-chat-messages .message,
@@ -189,17 +193,21 @@
 .tw-chat-messages .message h3,
 .tw-chat-messages .message h4,
 .tw-chat-messages .message h5 {
-  font-weight: bold;
+  font-weight: var(--tw-chat-message-heading-font-weight, 600);
+}
+
+.tw-chat-messages .message p:last-child {
+    margin: 0;
 }
 
 .tw-chat-messages .message a {
-  color: var(--tw-chat-message-color, #333);
-  font-weight: bold;
+  color: var(--tw-chat-message-color, #1d1d1d);
+  font-weight: var(--tw-chat-message-link-font-weight, bold);
   text-decoration: underline;
 }
 
 .tw-chat-messages .message.user {
-  background: var(--tw-chat-message-user-background, #333);
+  background: var(--tw-chat-message-user-background, #052b43);
   color: var(--tw-chat-message-user-color, #fff);
   align-self: flex-end;
 }
@@ -210,7 +218,7 @@
 
 .tw-chat-messages .message.error {
   background: var(--tw-chat-message-error-background, transparent);
-  color: var(--tw-chat-message-error-background, #333);
+  color: var(--tw-chat-message-error-color, #a83235);
   box-shadow: var(--tw-chat-message-error-box-shadow, none);
   width: 100%;
   text-align: center;
@@ -231,10 +239,15 @@
 
 .tw-chat-form {
   display: flex;
-  border-top: var(--tw-chat-input-border, 1px solid);
-  border-bottom: var(--tw-chat-input-border,  1px solid );
-  padding: var(--tw-chat-padding, 10px 20px);
-  background: var(--tw-chat-input-background, transparent);
+  border: var(--tw-chat-input-border, 1px solid #ddd);
+  border-radius: var(--tw-chat-input-border-radius, var(--tw-chat-message-border-radius, 10px));
+  box-shadow: var(--tw-chat-input-box-shadow,  0 0 5px rgba(0,0,0,0.1) );
+  padding: var(--tw-chat-padding, 10px 5px 10px 10px);
+  background: var(--tw-chat-input-background, #fff);
+  width: 100%;
+  max-width: var(--tw-chat-input-max-width, 95%);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .tw-chat-form label, .tw-chat-interface .sr-only {
@@ -253,7 +266,7 @@
   width: 100%;
   background-color: transparent;
   border: none;
-  color: var(--tw-chat-input-color, #333);
+  color: var(--tw-chat-input-color, #1d1d1d);
   resize: none;
   font-size: var(--tw-chat-input-font-size, 1rem);
 }
@@ -296,20 +309,34 @@
 .tw-chat-suggested-answers {
   display: flex;
   flex-direction: column;
-  padding: var(--tw-chat-message-padding, 20px);
-  border-top: var(--tw-chat-input-border, 1px solid);
-  background: var(--tw-chat-input-background, transparent);
+  gap: var(--tw-chat-suggested-answer-spacing, 10px);
+  padding: var(--tw-chat-message-padding, 10px);
+  border-top: var(--tw-chat-input-border, 1px solid #ddd);
+  background: var(--tw-chat-input-background, #fff);
+}
+
+@media screen and (min-width: 768px) {
+	.tw-chat-suggested-answers {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
 }
 
 .tw-chat-suggested-answers button {
   font-size: var(--tw-chat-suggested-answer-font-size, 1rem);
-  padding: var(--tw-chat-suggested-answer-padding, 5px);
-  border-radius: var(--tw-chat-suggested-answer-border-radius, 0) !important;
+  padding: var(--tw-chat-suggested-answer-padding, 10px);
+  border-radius: var(--tw-chat-suggested-answer-border-radius, 10px) !important;
   color: var(--tw-chat-message-user-color, #fff);
-  background-color: var(--tw-chat-message-user-background, #333);
+  background-color: var(--tw-chat-message-user-background, #052b43);
   box-shadow: var(--tw-chat-suggested-answer-box-shadow, none);
   border: var(--tw-chat-suggested-answer-border, none);
   margin-bottom: var(--tw-chat-suggested-answer-spacing, 1rem);
+  transition: var(--tw-chat-suggested-answer-transition, all 0.3s);
+  min-width: var(--tw-chat-suggested-answer-min-width, calc(50% - 10px));
+	flex: 1 1;
+	margin: 0;
 }
 
 .tw-chat-suggested-answers button:last-of-type {
@@ -319,10 +346,10 @@
 .tw-chat-disclaimer-container {
   display: flex;
   flex-direction: column;
-  text-align: center;
-  padding: var(--tw-chat-padding, 10px 20px);
+  text-align: var(--tw-chat-disclaimer-text-align, center);
+  padding: var(--tw-chat-disclaimer-padding, 10px);
   font-size: var(--tw-chat-disclaimer-font-size, 0.8rem);
-  background-color: var(--tw-chat-disclaimer-background, #f0f0f0);
+  background-color: var(--tw-chat-disclaimer-background, transparent);
   color: var(--tw-chat-disclaimer-color, #000);
 }
 
@@ -381,6 +408,7 @@
   .tw-chat-interface {
     width: var(--tw-chat-interface-width-mobile, 95vw);
     height: var(--tw-chat-interface-width-height, 95vh);
+    max-height: 100%;
     max-width: 100%;
     z-index: var(--tw-chat-interface-z-index-mobile, 999);
   }

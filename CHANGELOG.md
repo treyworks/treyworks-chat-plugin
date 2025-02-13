@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 1.3.1
+- Feature: Updated default CSS variable values
+- Feature: Updated position and style of the chat message form
+- Feature: Added CSS variables to allow customization of the chat message form
+- Bug fix: Changed admin greeting input to use a textarea element instead of an input element
+
 ## 1.3.0.1
 - Bug fix: Added keypress event to textarea element to handle enter key press
 

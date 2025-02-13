@@ -95,13 +95,14 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                     <tr valign="top">
                         <th scope="row">Greeting</th>
                         <td>
-                            <input
+                            <textarea
                                 className="regular-text"
-                                type="text"
                                 name="tw_chat_greeting"
                                 onChange={handleInputChange}
                                 value={formData.tw_chat_greeting}
                                 required
+                                rows="3"
+                                style={{ width: '100%' }}
                             />
                         </td>
                     </tr>

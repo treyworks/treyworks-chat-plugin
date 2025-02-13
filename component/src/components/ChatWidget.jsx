@@ -24,6 +24,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     const [isFullscreen, setIsFullscreen] = useState(false)
     const lastElementRef = useRef(null)
     const parentRef = useRef(null)
+    const waitingIndicatorRef = useRef(null)
 
     // Get global settings 
     const chatSettings = window.twChatPluginSettings
@@ -34,7 +35,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
 
     // Close SVG color
     const rootStyle = getComputedStyle(document.documentElement)
-    const closeColor = rootStyle.getPropertyValue('--tw-chat-header-close-color').trim()
+    const headerButtonColor = rootStyle.getPropertyValue('--tw-chat-header-button-color').trim()
 
     // Toggle fullscreen mode
     const toggleFullscreen = () => {
@@ -65,13 +66,19 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     // Set up effect for new messages
     useEffect(() => {
         // Scroll to  new message
-        
         if (lastElementRef.current && parentRef.current) {
             if (messages.length > 1) {
                 lastElementRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
             }
         }
     }, [messages])
+
+    // Effect to scroll waiting indicator into view
+    useEffect(() => {
+        if (isWaiting && waitingIndicatorRef.current) {
+            waitingIndicatorRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+        }
+    }, [isWaiting])
 
     // Function to send a new message
     const handleMessageSubmit = (event, chosenAnswer) => {
@@ -202,14 +209,14 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
             const isLastElement = index === messages.length - 1
 
             return (
-            <p 
+            <div 
                 key={index} 
                 ref={isLastElement ? lastElementRef : null}
                 id={`tw-chat-message-${widgetID}-${index}`} 
                 className={`message ${message.role}`}
             >
                 <ChatContent html={marked.use(markedCodePreview).parse(message.content)} />
-            </p>
+            </div>
             )
         })
     }
@@ -306,13 +313,13 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                         className="tw-chat-header-fullscreen"
                         aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
                     >
-                        <FullscreenIcon isFullscreen={isFullscreen} color={closeColor} />
+                        <FullscreenIcon isFullscreen={isFullscreen} color={headerButtonColor} />
                     </button>
                     <button 
                         className="tw-chat-header-close" 
                         onClick={() => toggleChat()}
                         aria-label="Close chat interface">
-                        <CloseIcon iconColor={closeColor} />
+                        <CloseIcon iconColor={headerButtonColor} />
                     </button>
                     </>
                 }
@@ -320,13 +327,15 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
         </div>
         <div ref={parentRef} className="tw-chat-messages" id={`tw-chat-messages-${widgetID}`}>
             { renderMessages() }
-            {isWaiting && <div className="waiting-indicator"><PulseLoader color="#333" /></div>}
+            {isWaiting && <div ref={waitingIndicatorRef} className="waiting-indicator"><PulseLoader color="#333" /></div>}
         </div>
-        { renderUserForm() }
-        <div className='tw-chat-disclaimer-container'>
-            { chatSettings.tw_chat_disclaimer &&
-                <div dangerouslySetInnerHTML={{__html: chatSettings.tw_chat_disclaimer}} />
-            }
+        <div className="tw-chat-form-container">
+            { renderUserForm() }
+            <div className='tw-chat-disclaimer-container'>
+                { chatSettings.tw_chat_disclaimer &&
+                    <div dangerouslySetInnerHTML={{__html: chatSettings.tw_chat_disclaimer}} />
+                }
+            </div>
         </div>
     </div>
     )
