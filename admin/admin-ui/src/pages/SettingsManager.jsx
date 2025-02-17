@@ -6,6 +6,8 @@ import { chatWidgetsAtom } from "../atoms";
 import LogFileModal from "../components/LogFileModal";
 import ListInput from "../components/ListInput";
 import { renderFormField, renderCheckboxField, renderSelectField } from "../components/FormElements";
+import { Tooltip } from 'react-tooltip';
+
 
 const SettingsManager = () => {
     const [formData, setFormData] = useState({
@@ -26,6 +28,7 @@ const SettingsManager = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [chatWidgets] = useAtom(chatWidgetsAtom);
     const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+    const [showApiKey, setShowApiKey] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -69,15 +72,47 @@ const SettingsManager = () => {
         <>
             <form id="tw-chat-settings-form" onSubmit={handleSubmit}>
                 <section>
-                    <h2>OpenAI API Key</h2>
-                    <p>Enter your OpenAI API key to connect to your account.</p>
-                    <input
-                        className="regular-text"
-                        type="text"
-                        name="tw_chat_openai_key"
-                        onChange={handleInputChange}
-                        value={formData.tw_chat_openai_key}
-                    />
+                    <h2>OpenAI Settings</h2>
+                    <p>
+                        Visit the <a href="https://platform.openai.com/docs/quickstart" target="_blank" rel="noopener noreferrer">OpenAI Platform Developer quickstart</a> for information on how to obtain a new key.
+                    </p>
+                    <table className="form-table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">API Key</th>
+                                <td>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <input
+                                            className="regular-text"
+                                            type={showApiKey ? "text" : "password"}
+                                            name="tw_chat_openai_key"
+                                                onChange={handleInputChange}
+                                                value={formData.tw_chat_openai_key}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowApiKey(!showApiKey)}
+                                            data-tooltip-id="api-key-toggle"
+                                            data-tooltip-content="Toggle API Key"
+                                            style={{ 
+                                                padding: '4px 8px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            {showApiKey ? (
+                                                <span className="dashicons dashicons-hidden"></span>
+                                            ) : (
+                                                <span className="dashicons dashicons-visibility"></span>
+                                            )}
+                                        </button>
+                                        <Tooltip id="api-key-toggle" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </section>
 
                 <section>
