@@ -1,5 +1,9 @@
 # Project Changelog
 
+## 1.3.2
+- Feature: Add visibility toggle for API key input
+- Composer dependency updates
+
 ## 1.3.1
 - Feature: Updated default CSS variable values
 - Feature: Updated position and style of the chat message form

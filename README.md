@@ -31,18 +31,23 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 ### Global Chat Widget
 Set up a global chat widget in the Settings tab after creating a chat widget.
 
-### Page-Specific Chat Widgets
+You can override the global chat widget on a page using the **Chat Widget Settings** in the page editor.
+
+Each page can have a unique chat widget, but the global chat widget will be used if no widget is specified on the page.
+
+### Embedding a Chat Widget in a Page
 Add chat widgets to specific pages using the shortcode:
 ```
 [tw_chat_widget id=WIDGET_ID]
 ```
 
-Optionally, specify the widget height:
+Optionally, specify the widget height in CSS format:
 ```
 [tw_chat_widget id=WIDGET_ID height="500px"]
 ```
 
 **Note:** Multiple widgets can be added to a page, but each widget can only be used once per page.
+
 
 ## OpenAI Assistant Setup
 
