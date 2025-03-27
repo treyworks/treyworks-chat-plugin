@@ -24992,7 +24992,7 @@ const mM = ({ isFullscreen: p, color: c = "#000000" }) => p ? /* @__PURE__ */ nt
     /* @__PURE__ */ nt.jsxs("div", { className: "tw-chat-header", children: [
       ke.tw_chat_logo_url && /* @__PURE__ */ nt.jsx("img", { className: "logo", src: ke.tw_chat_logo_url, alt: "Chat widget logo" }),
       /* @__PURE__ */ nt.jsx("span", { children: window.twChatWidgetSettings[c].tw_chat_widget_name }),
-      /* @__PURE__ */ nt.jsx("div", { class: "tw-chat-header-actions", children: S == 1 && /* @__PURE__ */ nt.jsxs(nt.Fragment, { children: [
+      /* @__PURE__ */ nt.jsx("div", { className: "tw-chat-header-actions", children: S == 1 && /* @__PURE__ */ nt.jsxs(nt.Fragment, { children: [
         /* @__PURE__ */ nt.jsx(
           "button",
           {

@@ -1,5 +1,10 @@
 # Project Changelog
 
+## 1.4.0
+- Feature: Added support for Retell AI voice agents
+- Composer dependency updates
+- Organized project directory structure
+
 ## 1.3.2
 - Feature: Add visibility toggle for API key input
 - Composer dependency updates

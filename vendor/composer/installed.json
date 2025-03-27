@@ -74,32 +74,32 @@
         },
         {
             "name": "consoletvs/profanity",
-            "version": "3.5.0",
-            "version_normalized": "3.5.0.0",
+            "version": "3.5.1",
+            "version_normalized": "3.5.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ConsoleTVs/Profanity.git",
-                "reference": "88569bd5cd95ef90f672288b2c99099fccf298e6"
+                "reference": "1e02619cc10cddfd4a85ac8e30d72d2294092708"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ConsoleTVs/Profanity/zipball/88569bd5cd95ef90f672288b2c99099fccf298e6",
-                "reference": "88569bd5cd95ef90f672288b2c99099fccf298e6",
+                "url": "https://api.github.com/repos/ConsoleTVs/Profanity/zipball/1e02619cc10cddfd4a85ac8e30d72d2294092708",
+                "reference": "1e02619cc10cddfd4a85ac8e30d72d2294092708",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|9.*|10.*|11.*"
+                "illuminate/support": "5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|9.*|10.*|11.*|12.*"
             },
-            "time": "2024-07-03T20:59:42+00:00",
+            "time": "2025-03-04T19:57:34+00:00",
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "ConsoleTVs\\Profanity\\ProfanityServiceProvider"
-                    ],
                     "aliases": {
                         "Profanity": "ConsoleTVs\\Profanity\\Facades\\Profanity"
-                    }
+                    },
+                    "providers": [
+                        "ConsoleTVs\\Profanity\\ProfanityServiceProvider"
+                    ]
                 }
             },
             "installation-source": "dist",
@@ -121,7 +121,7 @@
             "description": "PHP library to block bad words in a string",
             "support": {
                 "issues": "https://github.com/ConsoleTVs/Profanity/issues",
-                "source": "https://github.com/ConsoleTVs/Profanity/tree/3.5.0"
+                "source": "https://github.com/ConsoleTVs/Profanity/tree/3.5.1"
             },
             "install-path": "../consoletvs/profanity"
         },
@@ -1381,17 +1381,17 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v6.4.18",
-            "version_normalized": "6.4.18.0",
+            "version": "v6.4.19",
+            "version_normalized": "6.4.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "394b440934056b8d9d6ba250001458e9d7998b7f"
+                "reference": "3294a433fc9d12ae58128174896b5b1822c28dad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/394b440934056b8d9d6ba250001458e9d7998b7f",
-                "reference": "394b440934056b8d9d6ba250001458e9d7998b7f",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/3294a433fc9d12ae58128174896b5b1822c28dad",
+                "reference": "3294a433fc9d12ae58128174896b5b1822c28dad",
                 "shasum": ""
             },
             "require": {
@@ -1426,7 +1426,7 @@
                 "symfony/process": "^5.4|^6.0|^7.0",
                 "symfony/stopwatch": "^5.4|^6.0|^7.0"
             },
-            "time": "2025-01-28T15:49:13+00:00",
+            "time": "2025-02-13T09:55:13+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1457,7 +1457,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v6.4.18"
+                "source": "https://github.com/symfony/http-client/tree/v6.4.19"
             },
             "funding": [
                 {
@@ -1810,17 +1810,17 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v6.4.13",
-            "version_normalized": "6.4.13.0",
+            "version": "v6.4.19",
+            "version_normalized": "6.4.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "bee9bfabfa8b4045a66bf82520e492cddbaffa66"
+                "reference": "3b9bf9f33997c064885a7bfc126c14b9daa0e00e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/bee9bfabfa8b4045a66bf82520e492cddbaffa66",
-                "reference": "bee9bfabfa8b4045a66bf82520e492cddbaffa66",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/3b9bf9f33997c064885a7bfc126c14b9daa0e00e",
+                "reference": "3b9bf9f33997c064885a7bfc126c14b9daa0e00e",
                 "shasum": ""
             },
             "require": {
@@ -1857,7 +1857,7 @@
                 "symfony/service-contracts": "^2.5|^3",
                 "symfony/yaml": "^5.4|^6.0|^7.0"
             },
-            "time": "2024-09-27T18:14:25+00:00",
+            "time": "2025-02-13T10:18:43+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1888,7 +1888,7 @@
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/translation/tree/v6.4.13"
+                "source": "https://github.com/symfony/translation/tree/v6.4.19"
             },
             "funding": [
                 {

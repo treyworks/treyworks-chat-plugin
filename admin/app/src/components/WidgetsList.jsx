@@ -2,6 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Tooltip } from 'react-tooltip';
 
+function getWidgetShortCode(widget) {
+    if (widget.meta.tw_chat_widget_type == 'voice') {
+        return `[tw_voice_widget id=${widget.id}]`;
+    } else {
+        // OpenAI assistant is default
+        return `[tw_chat_widget id=${widget.id}]`;
+    }
+}
+
 const WidgetsList = ({ widgets, onEdit, onRemove, onCopy }) => {
     return (
         <table className="wp-list-table widefat fixed striped posts">
@@ -9,8 +18,8 @@ const WidgetsList = ({ widgets, onEdit, onRemove, onCopy }) => {
                 <tr>
                     <th>Name</th>
                     <th>Widget ID</th>
+                    <th>Widget Type</th>
                     <th>Embed Code</th>
-                    <th>OpenAI Assistant ID</th>
                     <th>Remove</th>
                 </tr>
             </thead>
@@ -26,29 +35,18 @@ const WidgetsList = ({ widgets, onEdit, onRemove, onCopy }) => {
                             </a>
                         </td>
                         <td>{widget.id}</td>
+                        <td style={{ textTransform: 'capitalize' }}>{widget.meta.tw_chat_widget_type == 'voice' ? 'Voice Agent' : 'OpenAI Assistant'}</td>
                         <td>
                             <a
                                 href="#"
-                                onClick={() => onCopy(`[tw_chat_widget id=${widget.id}]`)}
+                                onClick={() => onCopy(getWidgetShortCode(widget))}
                                 data-tooltip-id={`copy-widget-tooltip-${widget.id}`}
                                 data-tooltip-content="Click to copy"
                                 data-tooltip-place="top"
                             >
-                                {`[tw_chat_widget id=${widget.id}]`}
+                                {getWidgetShortCode(widget)}
                             </a>
                             <Tooltip id={`copy-widget-tooltip-${widget.id}`} />
-                        </td>
-                        <td>
-                            <a
-                                href="#"
-                                onClick={() => onCopy(widget.meta.tw_chat_assistant_id)}
-                                data-tooltip-id={`copy-assistant-tooltip-${widget.id}`}
-                                data-tooltip-content="Click to copy"
-                                data-tooltip-place="top"
-                            >
-                                {widget.meta.tw_chat_assistant_id}
-                            </a>
-                            <Tooltip id={`copy-assistant-tooltip-${widget.id}`} />
                         </td>
                         <td>
                             <a
