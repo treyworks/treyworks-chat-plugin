@@ -85,8 +85,8 @@ const SettingsManager = () => {
                                             className="regular-text"
                                             type={showApiKey ? "text" : "password"}
                                             name="tw_chat_openai_key"
-                                                onChange={handleInputChange}
-                                                value={formData.tw_chat_openai_key}
+                                            onChange={handleInputChange}
+                                            value={formData.tw_chat_openai_key}
                                         />
                                         <button
                                             type="button"
@@ -185,10 +185,21 @@ const SettingsManager = () => {
                     <section>
                         <h2>Global Chat Widget</h2>
                         <p>Set up your global chat widget that appears in the lower right corner of the screen.</p>
+                        <p><strong>Note: Only text-based chat widgets are supported for the global chat widget.</strong></p>
                         <table className="form-table">
                             <tbody>
                                 {renderCheckboxField("Enable Global Chat Widget", "tw_chat_is_enabled", formData, handleCheckboxChange)}
-                                {renderSelectField("Global Chat Widget", "tw_chat_global_widget_id", chatWidgets, formData, handleInputChange)}
+                                {renderSelectField(
+                                    "Global Chat Widget", 
+                                    "tw_chat_global_widget_id", 
+                                    chatWidgets.filter(widget => 
+                                        widget.meta?.tw_chat_widget_type?.[0] === undefined || 
+                                        widget.meta?.tw_chat_widget_type?.[0] === '' || 
+                                        widget.meta?.tw_chat_widget_type?.[0] === 'assistant'
+                                    ),
+                                    formData, 
+                                    handleInputChange
+                                )}
                                 {renderFormField("Chat Button Text", "tw_chat_button_text", "text", formData, handleInputChange)}
                             </tbody>
                         </table>
