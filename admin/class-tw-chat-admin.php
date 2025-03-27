@@ -27,6 +27,7 @@
         add_action( 'wp_ajax_save_chat_widget', array($this, 'save_chat_widget_callback'));
         add_action( 'wp_ajax_remove_chat_widget', array($this, 'remove_chat_widget_callback'));
         add_action( 'wp_ajax_clear_log', array($this, 'clear_log_callback'));
+        add_action( 'wp_ajax_get_retell_agents', array($this, 'get_retell_agents_callback'));
         // Hook the function to the uninstall hook
         register_uninstall_hook(__FILE__, array($this, 'delete_options'));
     }
@@ -51,6 +52,7 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_assistant_name');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_assistant_id');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_openai_key');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_retell_key');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_button_text');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_greeting');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
@@ -73,6 +75,7 @@
         delete_option('tw_chat_assistant_name');
         delete_option('tw_chat_assistant_id');
         delete_option('tw_chat_openai_key');
+        delete_option('tw_chat_retell_key');
         delete_option('tw_chat_button_text');
         delete_option('tw_chat_greeting');
         delete_option('tw_chat_disclaimer');
@@ -95,6 +98,7 @@
             'tw_chat_button_text' => get_option('tw_chat_button_text', ''),
             'tw_chat_assistant_name' => get_option('tw_chat_assistant_name', ''),
             'tw_chat_openai_key' => get_option('tw_chat_openai_key', ''),
+            'tw_chat_retell_key' => get_option('tw_chat_retell_key', ''),
             'tw_chat_assistant_id' => get_option('tw_chat_assistant_id', ''),
             'tw_chat_greeting' => get_option('tw_chat_greeting', ''),
             'tw_chat_disclaimer' => get_option('tw_chat_disclaimer', ''),
@@ -123,7 +127,7 @@
 	 */
 	public function enqueue_styles() {
         if ( isset( $_GET['page'] ) && $_GET['page'] === 'tw-chat-settings' ) {
-		    wp_enqueue_style( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/style.css', array(), TW_CHAT_VERSION, 'all' );
+		    wp_enqueue_style( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'app/dist/style.css', array(), TW_CHAT_VERSION, 'all' );
         }
 	}
 
@@ -147,7 +151,7 @@
 	public function enqueue_scripts() {
         if ( isset( $_GET['page'] ) && $_GET['page'] === 'tw-chat-settings' ) {
 
-            wp_enqueue_script( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'admin-ui/dist/tw-chat-admin.js', array(), TW_CHAT_VERSION, false );
+            wp_enqueue_script( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'app/dist/tw-chat-admin.js', array(), TW_CHAT_VERSION, false );
 
             // Localize script with current settings
             $script_data = $this->get_plugin_settings();
@@ -174,6 +178,7 @@
         
             // Update settings 
             update_option('tw_chat_openai_key', sanitize_text_field($settings['tw_chat_openai_key']));
+            update_option('tw_chat_retell_key', sanitize_text_field($settings['tw_chat_retell_key']));
             update_option('tw_chat_is_enabled', sanitize_text_field($settings['tw_chat_is_enabled']));
             update_option('tw_chat_button_text', sanitize_text_field($settings['tw_chat_button_text']));
             $disclaimer_text = stripslashes(strip_tags($settings['tw_chat_disclaimer'], '<a>'));
@@ -272,6 +277,13 @@
             $webhook_address = sanitize_text_field($_POST['tw_chat_webhook_address']);
             $webhook_header = sanitize_text_field($_POST['tw_chat_webhook_header']);
             $allowed_actions = sanitize_text_field($_POST['tw_chat_allowed_actions']);
+            $chat_widget_type = sanitize_text_field($_POST['tw_chat_widget_type']);
+            $voice_agent_id = sanitize_text_field($_POST['tw_chat_voice_agent_id']);
+
+            // Validate chat_widget_type
+            if (!in_array($chat_widget_type, ['assistant', 'voice'])) {
+                $chat_widget_type = 'assistant';
+            }
             
             if (isset($_POST['id']) && $_POST['id'] !== '') {
                 TW_Chat_Logger::log('Updating widget post: ' . $_POST['id']);
@@ -305,7 +317,8 @@
             update_post_meta($post_id, 'tw_chat_webhook_header', $webhook_header);
             update_post_meta($post_id, 'tw_chat_email_recipients', $email_recipients);
             update_post_meta($post_id, 'tw_chat_allowed_actions', $allowed_actions);
-            //tw_chat_allowed_actions
+            update_post_meta($post_id, 'tw_chat_voice_agent_id', $voice_agent_id);
+            update_post_meta($post_id, 'tw_chat_widget_type', $chat_widget_type);
 
             $response = TW_Chat_Widgets::get_chat_widgets();
             wp_send_json_success( $response );
@@ -358,5 +371,47 @@
             wp_send_json_error( array( 'message' => 'Failed to clear log file.') );
         }
         wp_die();
+    }
+
+    /**
+     * Callback for fetching Retell AI voice agents
+     */
+    public function get_retell_agents_callback() {
+        
+        $retell_key = get_option('tw_chat_retell_key', '');
+        
+        if (empty($retell_key)) {
+            wp_send_json_error('Retell API key is not configured');
+            return;
+        }
+        
+        $response = wp_remote_get('https://api.retellai.com/list-agents', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $retell_key,
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        
+        if (is_wp_error($response)) {
+            wp_send_json_error($response->get_error_message());
+            return;
+        }
+        
+        $status_code = wp_remote_retrieve_response_code($response);
+        if ($status_code !== 200) {
+            $error_message = wp_remote_retrieve_response_message($response);
+            wp_send_json_error('Error fetching agents: ' . $error_message . ' (Status: ' . $status_code . ')');
+            return;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error('Error parsing response from Retell API');
+            return;
+        }
+        
+        wp_send_json_success($data);
     }
 }

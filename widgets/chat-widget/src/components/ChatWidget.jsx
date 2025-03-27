@@ -305,7 +305,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
             <img className="logo" src={chatSettings.tw_chat_logo_url} alt="Chat widget logo" />
         }
             <span>{window.twChatWidgetSettings[widgetID].tw_chat_widget_name}</span>
-            <div class="tw-chat-header-actions">
+            <div className="tw-chat-header-actions">
                 { sticky == 1 && 
                     <>
                     <button 

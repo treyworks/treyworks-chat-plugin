@@ -1,0 +1,15 @@
+{
+    "name": "tw-voice-widget",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "esbuild src/main.jsx --bundle --minify --outfile=dist/tw-voice-widget.js"
+    },
+    "dependencies": {
+        "retell-client-js-sdk": "latest"
+    },
+    "devDependencies": {
+        "esbuild": "0.25.1"
+    }
+}

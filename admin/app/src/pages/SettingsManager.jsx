@@ -13,6 +13,7 @@ const SettingsManager = () => {
     const [formData, setFormData] = useState({
         tw_chat_button_text: twChatSettings.tw_chat_button_text,
         tw_chat_openai_key: twChatSettings.tw_chat_openai_key,
+        tw_chat_retell_key: twChatSettings.tw_chat_retell_key,
         tw_chat_disclaimer: twChatSettings.tw_chat_disclaimer,
         tw_chat_error_message: twChatSettings.tw_chat_error_message,
         tw_chat_is_enabled: twChatSettings.tw_chat_is_enabled,
@@ -29,6 +30,7 @@ const SettingsManager = () => {
     const [chatWidgets] = useAtom(chatWidgetsAtom);
     const [isLogModalOpen, setIsLogModalOpen] = useState(false);
     const [showApiKey, setShowApiKey] = useState(false);
+    const [showRetellKey, setShowRetellKey] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -72,14 +74,11 @@ const SettingsManager = () => {
         <>
             <form id="tw-chat-settings-form" onSubmit={handleSubmit}>
                 <section>
-                    <h2>OpenAI Settings</h2>
-                    <p>
-                        Visit the <a href="https://platform.openai.com/docs/quickstart" target="_blank" rel="noopener noreferrer">OpenAI Platform Developer quickstart</a> for information on how to obtain a new key.
-                    </p>
+                    <h2>API Settings</h2>
                     <table className="form-table">
                         <tbody>
                             <tr>
-                                <th scope="row">API Key</th>
+                                <th scope="row">OpenAI API Key</th>
                                 <td>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <input
@@ -93,7 +92,7 @@ const SettingsManager = () => {
                                             type="button"
                                             onClick={() => setShowApiKey(!showApiKey)}
                                             data-tooltip-id="api-key-toggle"
-                                            data-tooltip-content="Toggle API Key"
+                                            data-tooltip-content="Toggle OpenAI API Key"
                                             style={{ 
                                                 padding: '4px 8px',
                                                 cursor: 'pointer',
@@ -113,8 +112,50 @@ const SettingsManager = () => {
                             </tr>
                         </tbody>
                     </table>
+                    <p>
+                        Visit the <a href="https://platform.openai.com/docs/quickstart" target="_blank" rel="noopener noreferrer">OpenAI Platform Developer quickstart</a> for information on how to obtain a new key.
+                    </p>
+                    <table className="form-table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Retell API Key</th>
+                                <td>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <input
+                                            className="regular-text"
+                                            type={showRetellKey ? "text" : "password"}
+                                            name="tw_chat_retell_key"
+                                            onChange={handleInputChange}
+                                            value={formData.tw_chat_retell_key}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowRetellKey(!showRetellKey)}
+                                            data-tooltip-id="retell-key-toggle"
+                                            data-tooltip-content="Toggle Retell API Key"
+                                            style={{ 
+                                                padding: '4px 8px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            {showRetellKey ? (
+                                                <span className="dashicons dashicons-hidden"></span>
+                                            ) : (
+                                                <span className="dashicons dashicons-visibility"></span>
+                                            )}
+                                        </button>
+                                        <Tooltip id="retell-key-toggle" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        Visit the <a href="https://docs.retellai.com/" target="_blank" rel="noopener noreferrer">Retell AI Documentation</a> for information on how to obtain a new key.
+                    </p>
                 </section>
-
                 <section>
                     <h2>Global Settings</h2>
                     <p>Global settings for chat widget functionality.</p>

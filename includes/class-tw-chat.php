@@ -40,38 +40,27 @@ class TW_Chat_Plugin {
 
     public function setup_actions() {
         // Add a custom action hook that registers a custom post type for the chat widget
-        // The 'register_chat_widget_post_type' function will be executed on the 'init' action, 
-        // which is one of the earliest actions triggered in WordPress.
         add_action('init', [$this, 'register_chat_widget_post_type']);
 
-        // Enqueue plugin-specific scripts and styles
-        // The 'enqueue_scripts' function will be hooked to 'wp_enqueue_scripts', which runs at the appropriate
-        // time to add CSS and JS files to the front end.
-        add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
+        // Enqueue scripts and styles for chat widget
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_chat_widget_scripts']);
 
-        // Add custom HTML to the footer section of the website
-        // The 'add_footer_html' function is hooked into 'wp_footer' to inject any necessary HTML 
-        // right before the closing </body> tag in the front end.
-        add_action('wp_footer', [$this, 'add_footer_html']);
+        // Add global chat widget to the footer section of the website
+        add_action('wp_footer', [$this, 'add_global_chat_widget']);
 
-        // Register a custom REST API endpoint for handling chat responses
-        // The 'register_chat_response_endpoint' function is executed during the 'rest_api_init' action,
-        // allowing you to create custom API routes within your plugin.
-        add_action('rest_api_init', [$this, 'register_chat_response_endpoint']);
+        // Register REST API endpoints used in the plugin
+        add_action('rest_api_init', [$this, 'register_rest_endpoints']);
 
         // Register a shortcode for displaying the chat widget in posts or pages
-        // The 'tw_chat_widget_shortcode' function is executed when the 'tw_chat_widget' shortcode is used
-        // in any WordPress post or page, enabling dynamic content generation.
         add_shortcode('tw_chat_widget', [$this, 'tw_chat_widget_shortcode']);
 
+        // Register a shortcode for displaying the voice widget in posts or pages
+        add_shortcode('tw_voice_widget', [$this, 'tw_voice_widget_shortcode']);
+
         // Custom action hook for executing a function with specific parameters
-        // The 'test_action_callback' function will be triggered when the 'tw_test_action' action is fired,
-        // passing two parameters. This can be used to execute specific logic at custom points.
         add_action('tw_test_action', [$this,'test_action_callback'], 10, 2);
 
         // Custom filter hook for modifying data with specific parameters
-        // The 'test_filter_callback' function is hooked into 'tw_test_filter', allowing the function to modify
-        // any data passed through the filter. The two parameters will be passed to the callback function.
         add_filter('tw_test_filter', [$this,'test_filter_callback'], 10, 2);
     }
 
@@ -103,53 +92,76 @@ class TW_Chat_Plugin {
      * Enqueues additional scripts in the footer of the page.
      * This function is hooked to 'wp_enqueue_scripts'.
      */
-    public function enqueue_scripts() {    
+    public function enqueue_chat_widget_scripts() {    
         if (!is_admin()) {
-            wp_enqueue_script('tw-chat-js', plugins_url('../component/dist/tw-chat.js', __FILE__), [], '1.0.0', true);
-            wp_enqueue_style('tw-chat-css', plugins_url('../component/dist/style.css', __FILE__));
 
-            // Get current post/page ID
-            $current_id = get_queried_object_id();
+            // Override global settings
+            $override_global = get_option('tw_chat_override_global');
             
-            // Check if current page has override settings
-            $override_global = get_post_meta($current_id, '_tw_chat_override_global', true);
-            $custom_button_text = '';
+            // Is global chat enabled or override is enabled
+            if ($this->is_enabled() || $override_global) {
+                wp_enqueue_script('tw-chat-js', plugins_url('../widgets/chat-widget/dist/tw-chat.js', __FILE__), [], '1.0.0', true);
+                wp_enqueue_style('tw-chat-css', plugins_url('../widgets/chat-widget/dist/style.css', __FILE__));
+
+                // Get current post/page ID
+                $current_id = get_queried_object_id();
             
-            if ($override_global === '1') {
-                $custom_button_text = get_post_meta($current_id, '_tw_chat_button_text', true);
+                // Check if current page has override settings
+                $custom_button_text = '';
+            
+                if ($override_global === '1') {
+                    $custom_button_text = get_post_meta($current_id, '_tw_chat_button_text', true);
+                }
+
+                // Localize script with plugin settings
+                $settings = $this->plugin_admin->get_plugin_settings();
+                $localizeData = [
+                    "root" => esc_url_raw( rest_url() ),
+                    'nonce' => wp_create_nonce('wp_rest'),
+                    "tw_chat_button_text" => !empty($custom_button_text) ? $custom_button_text : $settings["tw_chat_button_text"],
+                    "tw_chat_disclaimer" => $settings["tw_chat_disclaimer"],
+                    "tw_chat_error_message" => $settings["tw_chat_error_message"],
+                    "tw_chat_assistant_name" => $settings["tw_chat_assistant_name"],       
+                    "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
+                    "tw_chat_logo_url" => $settings["tw_chat_logo_url"],
+                    "tw_chat_send_button_image" => $settings["tw_chat_send_button_image"],
+                    "tw_chat_button_image" => $settings["tw_chat_button_image"]
+                ];
+
+                wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
             }
+        }
+    }
 
-            // Localize script with plugin settings
-            $settings = $this->plugin_admin->get_plugin_settings();
-            $localizeData = [
-                "root" => esc_url_raw( rest_url() ),
-                'nonce' => wp_create_nonce('wp_rest'),
-                "tw_chat_button_text" => !empty($custom_button_text) ? $custom_button_text : $settings["tw_chat_button_text"],
-                "tw_chat_disclaimer" => $settings["tw_chat_disclaimer"],
-                "tw_chat_error_message" => $settings["tw_chat_error_message"],
-                "tw_chat_assistant_name" => $settings["tw_chat_assistant_name"],       
-                "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
-                "tw_chat_logo_url" => $settings["tw_chat_logo_url"],
-                "tw_chat_send_button_image" => $settings["tw_chat_send_button_image"],
-                "tw_chat_button_image" => $settings["tw_chat_button_image"]
-            ];
-
-            wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
+    /*
+     * Enqueues voice widget scripts in the footer of the page.
+     */
+    public function enqueue_voice_widget_scripts() {    
+        if (!is_admin()) {
+            wp_enqueue_script('tw-voice-widget-js', plugins_url('../widgets/voice-widget/dist/tw-voice-widget.js', __FILE__), [], '1.0.0', true);
+            wp_enqueue_style('tw-voice-widget-css', plugins_url('../widgets/voice-widget/dist/tw-voice-widget.css', __FILE__));
         }
     }
 
     /**
-     * Render component
+     * Render chat widget
      */
-    public function render_component($post_id, $width = null, $height = null, $sticky = true) {
+    public function render_chat_widget($post_id, $width = null, $height = null, $sticky = true) {
         require plugin_dir_path( __FILE__ ) . 'partials/chat-widget-template.php';
+    }
+
+    /**
+     * Render voice widget
+     */
+    public function render_voice_widget($agent_id) {
+        require plugin_dir_path( __FILE__ ) . 'partials/voice-widget-template.php';
     }
 
     /**
      * Adds custom HTML content to the WordPress footer.
      * This function is hooked to 'wp_footer'.
      */
-    public function add_footer_html() {
+    public function add_global_chat_widget() {
         // Get current post/page ID
         $current_id = get_queried_object_id();
         
@@ -162,7 +174,7 @@ class TW_Chat_Plugin {
             
             // Only render if a widget is selected
             if (!empty($widget_id)) {
-                echo $this->render_component($widget_id, null, null, 1);
+                echo $this->render_chat_widget($widget_id, null, null, 1);
             }
         } else {
             // Only show global widget if chat is globally enabled
@@ -170,7 +182,7 @@ class TW_Chat_Plugin {
                 // Use global widget
                 $global_widget_id = get_option('tw_chat_global_widget_id');
                 if (!empty($global_widget_id)) {
-                    echo $this->render_component($global_widget_id, null, null, 1);
+                    echo $this->render_chat_widget($global_widget_id, null, null, 1);
                 }
             }
         }
@@ -204,31 +216,71 @@ class TW_Chat_Plugin {
             return "<p>This chat widget is available in the lower right corner of the screen.</p>";
         }
 
-        // Do not load scripts in admin
+        // Enqueue scripts only in frontend
         if (!is_admin()) {
-            $this->enqueue_scripts();
+            $this->enqueue_chat_widget_scripts();
         }
 
         // Store rendered component. Pass 0 for non-sticky
         ob_start();
-        $this->render_component($post_id, $width, $height, 0);
+        $this->render_chat_widget($post_id, $width, $height, 0);
         $output = ob_get_clean();
 
         return $output;
     }
     
-   
     /**
-     * Registers the REST API endpoint for chat responses.
-     * Defines the URL and handler for the 'chat-response' endpoint.
+     * Render voice widget shortcode
      */
-    public function register_chat_response_endpoint() {
+    function tw_voice_widget_shortcode($atts) {
+        
+        // Get widget by id
+        $post_id = $atts['id'];
+
+        // Get widget by id
+        $chat_widget = TW_Chat_Widgets::get_chat_widget_by_id($post_id);
+
+        if (!$chat_widget) {
+            return __("<p class=\"tw-chat-widget-not-found\">Chat widget not found.</p>");
+        }
+
+        $voice_agent_id = $chat_widget['tw_chat_voice_agent_id'];
+
+
+        // Enqueue scripts only in frontend
+        if (!is_admin()) {
+            $this->enqueue_voice_widget_scripts();
+        }
+
+        // Store rendered component
+        ob_start();
+        // Render voice widget
+        $this->render_voice_widget($voice_agent_id);
+        $output = ob_get_clean();
+
+        return $output;
+    }
+
+    /**
+     * Registers the REST API endpoints used in the plugin
+     * 
+    */
+    public function register_rest_endpoints() {
+        // Chat response endpoint
         register_rest_route('tw-chat-assistant/v1', '/chat-response', [
             'methods' => 'POST',
             'callback' => [ $this, 'handle_chat_response' ],
             'permission_callback' => function () { return true; }
         ]);
 
+        // Create Call Endpoint
+        register_rest_route('tw-chat-assistant/v1', '/create-call', [
+            'methods' => 'POST',
+            'callback' => [ $this, 'handle_create_call' ],
+            'permsission_callback' => function () { return true; }
+        ]);
+
+        // Test endpoint
         register_rest_route('tw-chat-assistant/v1', '/test', [
             'methods' => ['GET', 'POST'],
             'callback' => [ $this, 'handle_test' ],
@@ -246,6 +298,59 @@ class TW_Chat_Plugin {
         return new WP_REST_Response([
             "message" => "Webhook Test Endpoint"
         ], 200);
+    }
+
+    /**
+     * Handles REST API create Retell AI call requests
+     */
+    public function handle_create_call($request) {
+        TW_Chat_Logger::log(__('+ Create call API endpoint request'));
+        TW_Chat_Logger::log($request);
+
+        // Get Retell AI token
+        $token = get_option('tw_chat_retell_key');
+
+        // API Body
+        $body = [
+            'agent_id' => $request->get_params()['agent_id']
+        ];
+
+        // Build API request
+        $args = array(
+            'method' => 'POST',
+            'timeout' => 30,
+            'redirection' => 10,
+            'httpversion' => '1.1',
+            'blocking' => true,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json',
+            ],
+            'body' => json_encode($body)
+        );
+
+        // Send API request
+        $response = wp_remote_post('https://api.retellai.com/v2/create-web-call', $args);
+
+        // Check for errors
+        if (is_wp_error($response)) {
+            TW_Chat_Logger::log($response->get_error_message());
+            
+            // Get error message
+            $message = $response->get_error_message();
+
+            return new WP_REST_Response([
+                "message" => "Failed to create call",
+                "response" => $message
+            ], 500);
+        }
+
+        // Log response
+        $response_body = wp_remote_retrieve_body($response);
+        TW_Chat_Logger::log($response_body);
+
+        // Return response
+        return new WP_REST_Response(json_decode($response_body), 200);
     }
 
     /**
