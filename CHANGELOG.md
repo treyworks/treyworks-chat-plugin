@@ -1,5 +1,8 @@
 # Project Changelog
 
+## 1.4.0.1
+- Bug fix: Global Chat widget only accepts OpenAI Assistants now
+
 ## 1.4.0
 - Feature: Added support for Retell AI voice agents
 - Composer dependency updates
