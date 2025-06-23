@@ -1,5 +1,10 @@
 # Project Changelog
 
+## 1.4.1
+- Composer dependency updates
+- Improvements to Voice chat widget UI
+- Only dispay published voice agents in the settings page
+
 ## 1.4.0.1
 - Bug fix: Global Chat widget only accepts OpenAI Assistants now
 
