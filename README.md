@@ -2,17 +2,33 @@
 
 ## Overview
 
-The Treyworks Chat Plugin empowers your WordPress website with intelligent chatbots powered by the OpenAI Assistants API. Enhance user experience, provide instant answers, and boost engagement with this versatile and customizable plugin.
+The Treyworks Chat Plugin empowers your WordPress website with intelligent chatbots in two formats: text-based chat and voice-interactive conversations. Enhance user experience, provide instant answers, and boost engagement with these versatile and customizable widgets.
+
+### Two Chat Widget Options
+
+1. **Text Chat Widgets** - Powered by OpenAI Assistants API, providing intelligent text-based conversations
+2. **Voice Chat Widgets** - Powered by RetellAI, enabling interactive voice conversations
 
 ## Key Features
 
+### Text Chat Features (OpenAI)
 - Seamless integration with OpenAI Assistants API
-- Multiple chat widgets per page
-- Customizable appearance to match your website's design
+- Multiple text chat widgets per page
 - Advanced functions for site search, post retrieval, and more
 - Email and webhook capabilities for lead generation
 - WordPress action and filter integration
 - Message moderation and profanity filtering
+
+### Voice Chat Features (RetellAI)
+- Interactive voice conversations using RetellAI's technology
+- Selection of voice agents with unique characteristics
+- Voice activation options (button press or automatic)
+- Customizable voice recognition settings
+
+### General Features
+- Customizable appearance to match your website's design
+- Multiple widgets of either type per page
+- Embedding via shortcode or global widget setting
 
 ## Installation
 
@@ -22,9 +38,14 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
    ```
 2. Upload and install the plugin via the WordPress Admin Panel.
 3. Activate the plugin.
-4. Navigate to the plugin's settings page and enter your OpenAI API key.
-5. View and manage your OpenAI assistants in the Assistants tab.
-6. Create a new chat widget in the Chat Widgets tab.
+4. Navigate to the plugin's settings page.
+5. For text chat widgets:
+   - Enter your OpenAI API key
+   - View and manage your OpenAI assistants in the Assistants tab
+6. For voice chat widgets:
+   - Enter your RetellAI API key in the Voice Widget section
+   - Select from available RetellAI agents
+7. Create a new chat widget (text or voice) in the Chat Widgets tab.
 
 ## Usage
 
@@ -475,7 +496,52 @@ Customize the plugin's appearance using CSS variables. Example:
 
 Enable the message moderation feature from the plugin settings. This feature is designed to filter user messages with the [Profanity PHP library](https://github.com/ConsoleTVs/Profanity) and enable the [OpenAI Moderation API](https://platform.openai.com/docs/guides/moderation).
 
+## Voice Widget Feature
 
+The Voice Widget feature integrates [RetellAI](https://www.retellai.com/) with your chat widgets to provide interactive voice conversations on your WordPress site.
+
+### RetellAI Integration
+
+1. **RetellAI Account Setup**:
+   - Create an account at [RetellAI](https://www.retellai.com/)
+   - Obtain your RetellAI API key from your account dashboard
+
+2. **Adding Your RetellAI Key**:
+   - Navigate to the plugin settings page
+   - Enter your RetellAI API key in the designated field under the Voice Widget section
+   - Save your settings to enable voice capabilities
+
+3. **Viewing Available RetellAI Agents**:
+   - Once your API key is verified, you can view and select from your available RetellAI agents
+   - Available agents will appear in a dropdown list in the Voice Widget tab
+   - Each agent has unique voice characteristics and capabilities
+
+### Creating a Voice Chat Widget
+
+1. Navigate to the Chat Widgets tab and select "Add New Widget"
+2. Configure your widget as usual with an OpenAI assistant
+3. Enable the Voice feature by checking the "Enable Voice Widget" option
+4. Select a RetellAI agent from the dropdown to use with this widget
+5. Customize additional voice settings as needed:
+   - Initial greeting message
+   - Voice activation method (button press or automatic)
+   - Voice recognition sensitivity
+
+### Embedding the Voice Widget
+
+Add voice-enabled widgets to your pages or posts using the standard shortcode with the voice parameter:
+
+```
+[tw_chat_widget id=WIDGET_ID voice=true]
+```
+
+You can customize the widget height as with standard widgets:
+
+```
+[tw_chat_widget id=WIDGET_ID voice=true height="500px"]
+```
+
+**Note:** Voice widgets require a modern browser with microphone access. Users will be prompted to grant microphone permissions when interacting with the voice widget.
 
 ## Logging
 
