@@ -49,15 +49,17 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 
 ## Usage
 
-### Global Chat Widget
-Set up a global chat widget in the Settings tab after creating a chat widget.
+## Text Chat Widgets (OpenAI)
 
-You can override the global chat widget on a page using the **Chat Widget Settings** in the page editor.
+### Global Text Chat Widget
+Set up a global text chat widget in the Settings tab after creating a text chat widget with OpenAI.
+
+You can override the global text chat widget on a page using the **Chat Widget Settings** in the page editor.
 
 Each page can have a unique chat widget, but the global chat widget will be used if no widget is specified on the page.
 
-### Embedding a Chat Widget in a Page
-Add chat widgets to specific pages using the shortcode:
+### Embedding a Text Chat Widget in a Page
+Add text chat widgets to specific pages using the shortcode:
 ```
 [tw_chat_widget id=WIDGET_ID]
 ```
@@ -67,18 +69,41 @@ Optionally, specify the widget height in CSS format:
 [tw_chat_widget id=WIDGET_ID height="500px"]
 ```
 
-**Note:** Multiple widgets can be added to a page, but each widget can only be used once per page.
+## Voice Chat Widgets (RetellAI)
+
+### Global Voice Chat Widget
+After creating a voice chat widget with RetellAI, you can set it as the global voice chat widget in the Settings tab.
+
+You can override the global voice chat widget on a page using the **Chat Widget Settings** in the page editor.
+
+### Embedding a Voice Chat Widget in a Page
+Add voice chat widgets to specific pages using the shortcode with the voice parameter:
+```
+[tw_chat_widget id=WIDGET_ID voice=true]
+```
+
+Optionally, specify the widget height in CSS format:
+```
+[tw_chat_widget id=WIDGET_ID voice=true height="500px"]
+```
+
+### Voice Chat Permissions
+Voice chat widgets require microphone access. Users will be prompted to grant microphone permissions when interacting with a voice chat widget.
+
+**Note:** Multiple widgets (of either type) can be added to a page, but each widget can only be used once per page.
 
 
-## OpenAI Assistant Setup
+## Text Chat Configuration
+
+### OpenAI Assistant Setup
 
 1. Ensure you have a valid OpenAI API account and API key.
 2. Consider the potential costs associated with using the OpenAI Assistant API.
 3. Regularly review and optimize your chatbot's prompts and knowledge base.
 
-## Advanced Features
+## Advanced Text Chat Features
 
-### Site Search Function
+### Site Search Function (OpenAI Text Chat)
 
 Enable site search by adding this function to your OpenAI assistant:
 
@@ -121,7 +146,7 @@ search_term: "WordPress plugin installation"
 Summarize the search results and provide a relevant link for more information.
 ```
 
-### Post Retrieval Function
+### Post Retrieval Function (OpenAI Text Chat)
 
 Add this function to your OpenAI assistant:
 
@@ -193,11 +218,11 @@ number_of_posts: '5'
 Summarize the results, including the product titles and publication dates.
 ```
 
-### Send Email Message Function
+### Send Email Message Function (OpenAI Text Chat)
 
-To enable email functionality:
+To enable email functionality with text chat widgets:
 
-1. Set email recipients in the chat widget settings.
+1. Set email recipients in the text chat widget settings.
 2. Add this function to your OpenAI assistant:
 
 ```json
@@ -239,9 +264,9 @@ body: "New customer inquiry: Name: John Doe, Email: john@example.com, Question: 
 Confirm to the user that their message has been sent to our support team.
 ```
 
-### Webhook Function
+### Webhook Function (OpenAI Text Chat)
 
-To enable webhook functionality:
+To enable webhook functionality with text chat widgets:
 
 1. Set the webhook URL and required headers in the chat widget settings.
 2. Add this function to your OpenAI assistant:
@@ -285,10 +310,10 @@ post_data: '{"name": "Jane Smith", "email": "jane@example.com", "interest": "AI 
 Confirm to the user that their information has been received and a representative will contact them soon.
 ```
 
-### WordPress Actions and Filters
+### WordPress Actions and Filters (OpenAI Text Chat)
 
 1. Navigate to the plugin settings dashboard and locate the "Allowed Actions" section. Add the specific WordPress action or filter you want to use to this list.
-2. Add this function to your OpenAI assistant:
+2. Add this function to your OpenAI assistant for text chat widgets:
 
 ```json
 {
@@ -345,9 +370,9 @@ action_arguments: ["John", "Smith"]
 Process the result and provide a summary of how the content was modified.
 ```
 
-## Suggested Answers
+## Suggested Answers (OpenAI Text Chat)
 
-Enhance interactivity by configuring your assistant to provide suggested answers:
+Enhance text chat widget interactivity by configuring your OpenAI assistant to provide suggested answers:
 
 1. Add to assistant instructions:
 ```
@@ -362,7 +387,9 @@ Format all responses in JSON:
 
 ## Customization
 
-Customize the plugin's appearance using CSS variables. Example:
+### Widget Styling (Both Text and Voice)
+
+Customize the appearance of both text chat widgets and voice chat widgets using CSS variables. Most styling options apply to both widget types, while some are specific to each type as noted. Example:
 
 ```css preview
 :root {
@@ -492,9 +519,9 @@ Customize the plugin's appearance using CSS variables. Example:
   --tw-chat-bubble-icon-size-mobile: 40px;
 }
 ```
-## Message Moderation
+## Message Moderation (OpenAI Text Chat)
 
-Enable the message moderation feature from the plugin settings. This feature is designed to filter user messages with the [Profanity PHP library](https://github.com/ConsoleTVs/Profanity) and enable the [OpenAI Moderation API](https://platform.openai.com/docs/guides/moderation).
+Enable the message moderation feature from the plugin settings for text chat widgets. This feature is designed to filter user messages with the [Profanity PHP library](https://github.com/ConsoleTVs/Profanity) and enable the [OpenAI Moderation API](https://platform.openai.com/docs/guides/moderation).
 
 ## Voice Widget Feature
 
@@ -543,15 +570,16 @@ You can customize the widget height as with standard widgets:
 
 **Note:** Voice widgets require a modern browser with microphone access. Users will be prompted to grant microphone permissions when interacting with the voice widget.
 
-## Logging
+## Logging (Both Widget Types)
 
-Enable logging from the plugin settings dashboard for debugging and tracking function calls. Refresh or clear logs directly from the dashboard.
+Enable logging from the plugin settings dashboard for debugging and tracking function calls for both text chat and voice chat widgets. Refresh or clear logs directly from the dashboard.
 
 ## System Requirements
 
 - WordPress 6.6 or higher
 - PHP 8.1 or higher
-- Valid API key for the OpenAI Assistants API
+- Valid API key for the OpenAI Assistants API (for text chat widgets)
+- Valid API key for RetellAI (for voice chat widgets)
 
 ## Resources
 
