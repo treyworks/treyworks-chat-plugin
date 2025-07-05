@@ -32706,7 +32706,11 @@ const ZF = () => {
   const [f, s] = Ee.useState(!1), [u, p] = Ee.useState([]), g = Ee.useCallback(() => {
     s(!0), p([]), XF(
       (w) => {
-        w.data.success ? (p(w.data.data || []), po.success("Voice agents loaded successfully!"), s(!1)) : po.error("Failed to fetch Retell AI voice agents.");
+        if (w.data.success) {
+          const S = /* @__PURE__ */ new Set(), _ = (w.data.data || []).filter((k) => k.is_published === !0).filter((k) => S.has(k.agent_id) ? !1 : (S.add(k.agent_id), !0));
+          p(_), po.success("Voice agents loaded successfully!"), s(!1);
+        } else
+          po.error("Failed to fetch Retell AI voice agents.");
       },
       (w) => {
         po.error("Failed to fetch Retell AI voice agents.");

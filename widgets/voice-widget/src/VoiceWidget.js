@@ -117,10 +117,10 @@ export default class VoiceWidget {
     try {
       this.client.stopCall();
       this.updateCallStatus('Ending call...');
-// Reset call status to 'Ready' after 3 seconds
-setTimeout(() => {
-  this.updateCallStatus('Ready');
-}, 3000);
+      // Reset call status to 'Ready' after 1 second
+      setTimeout(() => {
+        this.updateCallStatus('Ready');
+      }, 1000);
       
     } catch (error) {
       console.error('Error stopping call:', error);

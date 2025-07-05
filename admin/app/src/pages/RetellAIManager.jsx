@@ -16,7 +16,20 @@ const RetellAIManager = () => {
         getRetellAgents(
             (response) => {
                 if (response.data.success) {
-                    setVoiceAgents(response.data.data || []);
+                    // Filter to only show published agents with no duplicates by agent_id
+                    const seenAgentIds = new Set();
+                    const uniquePublishedAgents = (response.data.data || [])
+                        .filter(agent => agent.is_published === true)
+                        .filter(agent => {
+                            // If we've already seen this agent_id, filter it out
+                            if (seenAgentIds.has(agent.agent_id)) {
+                                return false;
+                            }
+                            // Otherwise add it to our set and keep it
+                            seenAgentIds.add(agent.agent_id);
+                            return true;
+                        });
+                    setVoiceAgents(uniquePublishedAgents);
                     toast.success('Voice agents loaded successfully!');
                     setIsLoading(false);
                 } else {
