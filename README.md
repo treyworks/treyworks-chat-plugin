@@ -77,21 +77,29 @@ After creating a voice chat widget with RetellAI, you can set it as the global v
 You can override the global voice chat widget on a page using the **Chat Widget Settings** in the page editor.
 
 ### Embedding a Voice Chat Widget in a Page
-Add voice chat widgets to specific pages using the shortcode with the voice parameter:
+Add voice chat widgets to specific pages using the shortcode:
 ```
-[tw_chat_widget id=WIDGET_ID voice=true]
+[tw_voice_widget id=1]
 ```
 
-Optionally, specify the widget height in CSS format:
-```
-[tw_chat_widget id=WIDGET_ID voice=true height="500px"]
-```
+This shortcode has one required parameter:
+- `id`: The ID of the voice widget to embed
 
 ### Voice Chat Permissions
 Voice chat widgets require microphone access. Users will be prompted to grant microphone permissions when interacting with a voice chat widget.
 
 **Note:** Multiple widgets (of either type) can be added to a page, but each widget can only be used once per page.
 
+## Voice Chat Configuration
+
+### RetellAI API Setup
+
+1. Ensure you have a valid RetellAI account and API key.
+2. To obtain an API key, log in to your RetellAI dashboard.
+3. Navigate to the API Keys section in your account settings.
+4. Generate a new API key and securely store it.
+
+For more details on managing RetellAI API keys, visit: [RetellAI API Key Documentation](https://docs.retellai.com/accounts/manage-api-keys)
 
 ## Text Chat Configuration
 
