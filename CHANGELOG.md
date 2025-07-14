@@ -1,5 +1,10 @@
 # Project Changelog
 
+## 1.4.2
+- Feature: Added top-level admin menu for easier access to plugin settings
+- Bug fix: Fixed password update notifications when using API key fields
+- UI: Improved API key field handling to prevent browser password management interference
+
 ## 1.4.1
 - Composer dependency updates
 - Improvements to Voice chat widget UI

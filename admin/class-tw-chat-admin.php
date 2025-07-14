@@ -17,7 +17,7 @@
     }
 
     public function setup_actions() {
-        add_action('admin_menu', array($this, 'add_options_page'));
+        add_action('admin_menu', array($this, 'add_admin_menu_page'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -33,15 +33,17 @@
     }
 
     /**
-     * Add options page for configuring plugin 
+     * Add top-level admin menu page for configuring plugin
      */
-    public function add_options_page() {
-        add_options_page(
+    public function add_admin_menu_page() {
+        add_menu_page(
             'Treyworks Chat for WordPress', // Page title
             'Treyworks Chat',           // Menu title
             'manage_options',             // Capability required
             'tw-chat-settings',        // Menu slug
-            array($this, 'render_options_page') // Callback function to render the options page
+            array($this, 'render_options_page'), // Callback function to render the options page
+            'dashicons-format-chat',    // Icon URL/Dashicon class
+            30                           // Position in menu order
         );
     }
 
