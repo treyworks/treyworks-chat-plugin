@@ -232,12 +232,16 @@
         // $client = OpenAI::client($openai_key);
         $client = OpenAI::factory()
                 ->withApiKey($openai_key)
-            //     // ->withOrganization('your-organization') // default: null
-            //     // ->withProject('Your Project') // default: null
-            //     // ->withBaseUri('api.openai.com/v1') // default: api.openai.com/v1
-            //     // ->withHttpClient($httpClient = new \GuzzleHttp\Client([])) // default: HTTP client found using PSR-18 HTTP Client Discovery
-                ->withHttpHeader('OpenAI-Beta', 'assistants=v2')
+                ->withBaseUri('api.openai.com/v1') // default: api.openai.com/v1
+                ->withHttpClient($httpClient = new \GuzzleHttp\Client([])) // default: HTTP client found using PSR-18 HTTP Client Discovery
                 ->make();
+
+        // Check if client exists
+        if (!$client) {
+            return false;
+        }
+        
+            
         $response = $client->assistants()->list();
 
         return $response->data;
@@ -252,7 +256,10 @@
             $data = $this->get_assistants();
 
             if ($data == false) {
-                wp_send_json_error( array( 'message' => 'Error retrieving OpenAI API key') );
+                // Log error
+                TW_Chat_Logger::log('Error retrieving OpenAI Assistants');
+                // Return error response
+                wp_send_json_error( array( 'message' => 'Error retrieving OpenAI Assistants') );
             }
             
             // Return the data in a JSON success response
