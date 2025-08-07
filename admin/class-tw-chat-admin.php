@@ -23,7 +23,6 @@
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action( 'wp_ajax_save_settings', array($this, 'save_settings_callback') );
         add_action( 'wp_ajax_get_chat_widgets', array($this, 'get_chat_widgets_callback') );
-        add_action( 'wp_ajax_get_assistants', array($this, 'get_assistants_callback') );
         add_action( 'wp_ajax_save_chat_widget', array($this, 'save_chat_widget_callback'));
         add_action( 'wp_ajax_remove_chat_widget', array($this, 'remove_chat_widget_callback'));
         add_action( 'wp_ajax_clear_log', array($this, 'clear_log_callback'));
@@ -52,7 +51,6 @@
      */
     public function register_settings() {
         register_setting('tw-chat-ui-settings-group', 'tw_chat_assistant_name');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_assistant_id');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_openai_key');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_retell_key');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_button_text');
@@ -60,14 +58,15 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_disclaimer');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_error_message');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_enabled');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_is_debug');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_max_characters');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_global_widget_id');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_logo_url');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_moderation');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_button_image');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_send_button_image');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_is_debug');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_api_base_uri');
     }
 
     /**
@@ -75,7 +74,6 @@
      */
     public function delete_options() {
         delete_option('tw_chat_assistant_name');
-        delete_option('tw_chat_assistant_id');
         delete_option('tw_chat_openai_key');
         delete_option('tw_chat_retell_key');
         delete_option('tw_chat_button_text');
@@ -85,9 +83,13 @@
         delete_option('tw_chat_is_enabled');
         delete_option('tw_chat_max_characters');
         delete_option('tw_chat_global_widget_id');
-        delete_option('tw_chat_is_debug');
         delete_option('tw_chat_logo_url');
         delete_option('tw_chat_is_moderation');
+        delete_option('tw_chat_button_image');
+        delete_option('tw_chat_send_button_image');
+        delete_option('tw_chat_allowed_actions');
+        delete_option('tw_chat_is_debug');
+        delete_option('tw_chat_api_base_uri');
     }
 
     /**
@@ -101,19 +103,19 @@
             'tw_chat_assistant_name' => get_option('tw_chat_assistant_name', ''),
             'tw_chat_openai_key' => get_option('tw_chat_openai_key', ''),
             'tw_chat_retell_key' => get_option('tw_chat_retell_key', ''),
-            'tw_chat_assistant_id' => get_option('tw_chat_assistant_id', ''),
             'tw_chat_greeting' => get_option('tw_chat_greeting', ''),
             'tw_chat_disclaimer' => get_option('tw_chat_disclaimer', ''),
             'tw_chat_error_message' => get_option('tw_chat_error_message', ''),
             'tw_chat_is_enabled' => get_option('tw_chat_is_enabled'),
             'tw_chat_max_characters' => get_option('tw_chat_max_characters'),
             'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id'),
-            'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
             'tw_chat_logo_url' => get_option('tw_chat_logo_url'),
-            'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions'),
             'tw_chat_is_moderation' => get_option('tw_chat_is_moderation'),
             'tw_chat_button_image' => get_option('tw_chat_button_image'),
-            'tw_chat_send_button_image' => get_option('tw_chat_send_button_image')
+            'tw_chat_send_button_image' => get_option('tw_chat_send_button_image'),
+            'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions'),
+            'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
+            'tw_chat_api_base_uri' => get_option('tw_chat_api_base_uri')
         );
     }
 
@@ -188,12 +190,14 @@
             update_option('tw_chat_error_message', sanitize_text_field($settings['tw_chat_error_message']));
             update_option('tw_chat_max_characters', sanitize_text_field($settings['tw_chat_max_characters']));
             update_option('tw_chat_global_widget_id', sanitize_text_field($settings['tw_chat_global_widget_id']));
-            update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
             update_option('tw_chat_logo_url', sanitize_text_field($settings['tw_chat_logo_url']));
-            update_option('tw_chat_allowed_actions', sanitize_text_field($settings['tw_chat_allowed_actions']));
             update_option('tw_chat_is_moderation', sanitize_text_field($settings['tw_chat_is_moderation']));
             update_option('tw_chat_button_image', sanitize_text_field($settings['tw_chat_button_image']));
             update_option('tw_chat_send_button_image', sanitize_text_field($settings['tw_chat_send_button_image']));
+            update_option('tw_chat_allowed_actions', sanitize_text_field($settings['tw_chat_allowed_actions']));
+            update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
+            update_option('tw_chat_api_base_uri', sanitize_text_field($settings['tw_chat_api_base_uri']));
+
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
         } catch (Exception $e) {
@@ -215,84 +219,29 @@
         }
     }
 
-    /**
-     * Get Assistants using OpenAI API
-     */
-    public function get_assistants() {
-
-        /* Get API Key */
-        $settings = $this->get_plugin_settings();
-        $openai_key = $settings['tw_chat_openai_key'];
-
-        if (empty($openai_key)) {
-            return array();
-        }
-
-        // OpenAI API client
-        // $client = OpenAI::client($openai_key);
-        $client = OpenAI::factory()
-                ->withApiKey($openai_key)
-                ->withBaseUri('api.openai.com/v1') // default: api.openai.com/v1
-                ->withHttpClient($httpClient = new \GuzzleHttp\Client([])) // default: HTTP client found using PSR-18 HTTP Client Discovery
-                ->make();
-
-        // Check if client exists
-        if (!$client) {
-            return false;
-        }
-        
-            
-        $response = $client->assistants()->list();
-
-        return $response->data;
-    }
-
-    /**
-     * Get Assistants AJAX Callback
-     */
-    public function get_assistants_callback() {
-        try {
-            // Query for chat widget post
-            $data = $this->get_assistants();
-
-            if ($data == false) {
-                // Log error
-                TW_Chat_Logger::log('Error retrieving OpenAI Assistants');
-                // Return error response
-                wp_send_json_error( array( 'message' => 'Error retrieving OpenAI Assistants') );
-            }
-            
-            // Return the data in a JSON success response
-            wp_send_json_success( $data );
-        } catch (Exception $e) {
-            wp_send_json_error( array( 'message' => 'Exception: ' .  $e->getMessage() ) );
-        }
-        wp_die();
-    }
-
-    /**
+    /*
      * Save chat_widget post
      */
     function save_chat_widget_callback() {
         try {
             // Get and sanitize post data
-            $chat_widget_name = sanitize_text_field($_POST['tw_chat_widget_name']);
-            $greeting = sanitize_text_field($_POST['tw_chat_greeting']);
-            $suggested_answers = sanitize_text_field($_POST['tw_chat_suggested_answers']);
-            $dismiss_answers = sanitize_text_field($_POST['tw_chat_dismiss_answers']);
-            $dismiss_answers_text = sanitize_text_field($_POST['tw_chat_dismiss_answers_text']);
-            $assistant_id = sanitize_text_field($_POST['tw_chat_assistant_id']);
-            $email_recipients = sanitize_text_field($_POST['tw_chat_email_recipients']);
-            $webhook_address = sanitize_text_field($_POST['tw_chat_webhook_address']);
-            $webhook_header = sanitize_text_field($_POST['tw_chat_webhook_header']);
-            $allowed_actions = sanitize_text_field($_POST['tw_chat_allowed_actions']);
-            $chat_widget_type = sanitize_text_field($_POST['tw_chat_widget_type']);
-            $voice_agent_id = sanitize_text_field($_POST['tw_chat_voice_agent_id']);
+            $widget_name = isset($_POST['tw_chat_widget_name']) ? sanitize_text_field($_POST['tw_chat_widget_name']) : '';
+            $system_prompt = isset($_POST['tw_chat_system_prompt']) ? sanitize_textarea_field($_POST['tw_chat_system_prompt']) : '';
+            $model = isset($_POST['tw_chat_ai_model']) ? sanitize_text_field($_POST['tw_chat_ai_model']) : 'gpt-4o';
+            $greeting = isset($_POST['tw_chat_greeting']) ? sanitize_text_field($_POST['tw_chat_greeting']) : '';
+            $suggested_answers = isset($_POST['tw_chat_suggested_answers']) ? sanitize_text_field($_POST['tw_chat_suggested_answers']) : '';
+            $dismiss_answers = isset($_POST['tw_chat_dismiss_answers']) ? rest_sanitize_boolean($_POST['tw_chat_dismiss_answers']) : 0;
+            $dismiss_answers_text = isset($_POST['tw_chat_dismiss_answers_text']) ? sanitize_text_field($_POST['tw_chat_dismiss_answers_text']) : '';
+            $webhook_address = isset($_POST['tw_chat_webhook_address']) ? sanitize_text_field($_POST['tw_chat_webhook_address']) : '';
+            $webhook_header = isset($_POST['tw_chat_webhook_header']) ? sanitize_text_field($_POST['tw_chat_webhook_header']) : '';
+            $email_recipients = isset($_POST['tw_chat_email_recipients']) ? sanitize_text_field($_POST['tw_chat_email_recipients']) : '';
+            $voice_agent_id = isset($_POST['tw_chat_voice_agent_id']) ? sanitize_text_field($_POST['tw_chat_voice_agent_id']) : '';
+            $chat_widget_type = isset($_POST['tw_chat_widget_type']) ? sanitize_text_field($_POST['tw_chat_widget_type']) : 'text';
 
             // Validate chat_widget_type
-            if (!in_array($chat_widget_type, ['assistant', 'voice'])) {
-                $chat_widget_type = 'assistant';
-            }
+            // if (!in_array($chat_widget_type, ['text', 'voice'])) {
+            //     $chat_widget_type = 'text';
+            // }
             
             if (isset($_POST['id']) && $_POST['id'] !== '') {
                 TW_Chat_Logger::log('Updating widget post: ' . $_POST['id']);
@@ -301,7 +250,7 @@
                 // Post ID is passed, update fields
                 $post_args = array(
                     'ID' => $post_id,
-                    'post_title' => $chat_widget_name,
+                    'post_title' => $widget_name,
                 );
                 wp_update_post($post_args);
             } else {
@@ -310,14 +259,15 @@
                 // Create the new post
                 $post_args = array(
                     'post_type' => 'chat_widgets',
-                    'post_title' => $chat_widget_name,
+                    'post_title' => $widget_name,
                     'post_status' => 'publish',
                 );
                 $post_id = wp_insert_post($post_args);
             }
         
             // Add the meta fields
-            update_post_meta($post_id, 'tw_chat_assistant_id', $assistant_id);
+            update_post_meta($post_id, 'tw_chat_system_prompt', $system_prompt);
+            update_post_meta($post_id, 'tw_chat_ai_model', $model);
             update_post_meta($post_id, 'tw_chat_greeting', $greeting);
             update_post_meta($post_id, 'tw_chat_suggested_answers', $suggested_answers);
             update_post_meta($post_id, 'tw_chat_dismiss_answers', $dismiss_answers);
@@ -325,7 +275,6 @@
             update_post_meta($post_id, 'tw_chat_webhook_address', $webhook_address);
             update_post_meta($post_id, 'tw_chat_webhook_header', $webhook_header);
             update_post_meta($post_id, 'tw_chat_email_recipients', $email_recipients);
-            update_post_meta($post_id, 'tw_chat_allowed_actions', $allowed_actions);
             update_post_meta($post_id, 'tw_chat_voice_agent_id', $voice_agent_id);
             update_post_meta($post_id, 'tw_chat_widget_type', $chat_widget_type);
 

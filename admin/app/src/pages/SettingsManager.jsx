@@ -24,7 +24,8 @@ const SettingsManager = () => {
         tw_chat_allowed_actions: twChatSettings.tw_chat_allowed_actions,
         tw_chat_is_moderation: twChatSettings.tw_chat_is_moderation,
         tw_chat_button_image: twChatSettings.tw_chat_button_image,
-        tw_chat_send_button_image: twChatSettings.tw_chat_send_button_image
+        tw_chat_send_button_image: twChatSettings.tw_chat_send_button_image,
+        tw_chat_api_base_uri: twChatSettings.tw_chat_api_base_uri
     };
     const [formData, setFormData] = useState(initialFormData);
     const [formIsDirty, setFormIsDirty] = useState(false);
@@ -137,8 +138,12 @@ const SettingsManager = () => {
                                     </div>
                                 </td>
                             </tr>
+                            {renderFormField("API Base URI", "tw_chat_api_base_uri", "text", formData, handleInputChange, "api.openai.com/v1")}
                         </tbody>
                     </table>
+                    <p>
+                    <span style={{ fontWeight: 'bold' }}>Note:</span> The default API Base URI is <code>api.openai.com/v1</code>.
+                    </p>
                     <p>
                         Visit the <a href="https://platform.openai.com/docs/quickstart" target="_blank" rel="noopener noreferrer">OpenAI Platform Developer quickstart</a> for information on how to obtain a new key.
                     </p>
@@ -183,6 +188,7 @@ const SettingsManager = () => {
                                     </div>
                                 </td>
                             </tr>
+                            
                         </tbody>
                     </table>
                     <p>
@@ -228,7 +234,7 @@ const SettingsManager = () => {
                                     chatWidgets.filter(widget => 
                                         widget.meta?.tw_chat_widget_type?.[0] === undefined || 
                                         widget.meta?.tw_chat_widget_type?.[0] === '' || 
-                                        widget.meta?.tw_chat_widget_type?.[0] === 'assistant'
+                                        widget.meta?.tw_chat_widget_type?.[0] === 'text'
                                     ),
                                     formData, 
                                     handleInputChange

@@ -4,32 +4,81 @@
  */
 class TW_Chat_Functions {
 
-    /* Load the email template */
-    public static function get_email_content($widget_name, $body) {
-        // Start output buffering
-        ob_start();
-    
-        // Include the template file
-        include plugin_dir_path( __FILE__ ) . 'partials/email-template.php';
+    // Constructor
+    public function __construct() {
+        // Custom action hook for executing a function with specific parameters
+        add_action('tw_chat_test_action', [$this,'test_action_callback'], 10, 2);
 
-        // End buffering and return the content
-        $content = ob_get_clean();
-    
-        return $content;
+        // Custom filter hook for modifying data with specific parameters
+        add_filter('tw_chat_test_filter', [$this,'test_filter_callback'], 10, 2);
     }
 
-    /* Send Email Message  */
-    public static function send_message($to, $widget_name, $body) {
-        $subject = 'Treyworks Chat Widget Submission: ' . $widget_name;
-        $email_content = TW_Chat_Functions::get_email_content($widget_name, $body);
-        $headers = array('Content-Type: text/html; charset=UTF-8');
-        
-        // Send the email
-        wp_mail($to, $subject, $email_content, $headers);
+    /* Get Function Definitions */
+    public static function get_function_definitions() {
+        return [
+            [
+                "name" => "search_site",
+                "description" => "Search the website for answers",
+                "parameters" => [
+                    "type" => "object",
+                    "properties" => [
+                        "search_term" => [
+                            "type" => "string",
+                            "description" => "The search term to lookup on the website"
+                        ]
+                    ],
+                    "required" => [
+                        "search_term"
+                    ]
+                ]
+            ],
+            [
+                "name" => "webhook",
+                "description" => "Post data to an external URL",
+                "parameters" => [
+                    "type" => "object",
+                    "properties" => [
+                        "data" => [
+                            "type" => "string",
+                            "description" => "Data to send to the external URL."
+                        ]
+                    ],
+                    "required" => [
+                        "data"
+                    ]
+                ]
+            ],
+            [
+                "name" => "wp_action",
+                "description" => "Calls a WordPress action and returns the result.",
+                "parameters" => [
+                    "type" => "object",
+                    "properties" => [
+                        "action_name" => [
+                            "type" => "string",
+                            "description" => "The name of the action."
+                        ],
+                        "action_type" => [
+                            "type" => "string",
+                            "description" => "The type of the action, filter or action."
+                        ],
+                        "action_arguments" => [
+                            "type" => "string",
+                            "description" => "The arguments to pass to the action. Formatted as a JSON array."
+                        ]
+                    ],
+                    "required" => [
+                        "action_name",
+                        "action_type",
+                        "action_arguments"
+                    ]
+                ]
+            ]
+        ];
     }
 
     /* Site Search Function */
-    public static function search_site($search_term) {
+    public static function search_site($search_term, $widget_id) {
         $args = array(
             's' => $search_term,
             'post_type' => 'any',
@@ -56,8 +105,8 @@ class TW_Chat_Functions {
         return $search_results;
     }
 
-    /* Product Search Function */
-    public static function search_products($search_term) {
+    /* WooCommerce Product Search Function */
+    public static function search_products($search_term, $widget_id) {
         $args = array(
             's' => $search_term,
             'post_status' => 'publish',
@@ -93,46 +142,137 @@ class TW_Chat_Functions {
         return $search_results;
     }
     
-    /* Get Custom Posts */
-    public static function get_custom_posts($post_type = 'post', $order = 'DESC', $orderby = 'date', $number_of_posts = 5) {
-        // Set up the query arguments
-        $args = array(
-            'post_type'      => $post_type,
-            'posts_per_page' => $number_of_posts,
-            'order'          => $order
-        );
-        
-        // Execute the query
-        $query = new WP_Query($args);
-        
-        // Initialize an array to hold post data
-        $posts_data = [];
-        
-        // Loop through the posts
-        if ($query->have_posts()) {
-            while ($query->have_posts()) {
-                $query->the_post();
-                $post_data = [
-                    'ID'    => get_the_ID(),
-                    'title' => get_the_title(),
-                    'date'  => get_the_date(),
-                    'link'  => get_permalink(),
-                ];
-                
-                // Get all post meta fields
-                $post_meta = get_post_meta( $post_data['ID'] );
+    /* Webhook Function */
+    public static function webhook($arguments, $widget_id) {
+         // Webhook Function Call
+         $param_name = "data";
 
-                // Merge post meta with post data
-                $post_data['meta'] = $post_meta;
-                
-                $posts_data[] = $post_data;
+         // Get post data from argument
+         if (array_key_exists($param_name, $arguments) && $arguments[$param_name] !== null) {
+            // Get the webook url and header
+            $webhook_header = get_post_meta($widget_id, 'tw_chat_webhook_header', true);
+            $webhook_address = get_post_meta($widget_id, 'tw_chat_webhook_address', true);
+
+            // Sanitize post data
+            $post_data = sanitize_text_field($arguments[$param_name]);
+
+            // Arguments for the wp_remote_post function
+            $args = array(
+                'body'    => json_decode($post_data, true),
+                'timeout' => '10', // Timeout in seconds
+            );
+
+            if ($webhook_header) {
+                $args['headers'] = json_decode($webhook_header, true);
+            }
+
+            // Make the POST request
+            $response = wp_remote_post($webhook_address, $args);
+
+             // Check for errors
+            if (is_wp_error($response)) {
+                TW_Chat_Logger::log(__('Error sending data: '));
+                $function_result = "Error sending data";
+            } else {
+                TW_Chat_Logger::log(__('Data sent successfully: ' . $webhook_address));
+                $function_result = wp_remote_retrieve_body($response);
+            }
+             
+         }
+
+         return $function_result;
+    }
+
+    /* WP Action Function */
+    public static function wp_action($arguments, $widget_id) {
+        // Call WordPress Action
+        // Enables developers to create and call custom actions from assistant
+        $action_output = "";
+        $valid_arguments = true;
+        $action_arguments = [];
+        $action_type = 'action';
+        $action_name = '';
+
+        // Check if action_arguments is set
+        if (array_key_exists('action_arguments', $arguments) && $arguments['action_arguments'] !== null) {
+            $action_arguments = json_decode($arguments["action_arguments"]);
+        } else {
+            TW_Chat_Logger::log(__("Missing action_arguments call argument"));
+            $valid_arguments = false;
+        }
+
+        // Check if action_type is filter
+        if (array_key_exists('action_type', $arguments) && $arguments['action_type'] !== null) {
+            if (strtolower($arguments["action_type"]) === 'filter') {
+                $action_type = $arguments["action_type"];
             }
         }
+
+        // Check if action_name is set
+        if (array_key_exists('action_name', $arguments) && $arguments['action_name'] !== null) {
+            $action_name = $arguments["action_name"];
+        } else {
+            TW_Chat_Logger::log(__("Missing action_name call argument"));
+            $valid_arguments = false;
+        }
+
+        if ($valid_arguments) {
+
+            if ($action_type === 'filter') {
+                // Call the filter hook
+                $action_output = apply_filters($action_name, ...$action_arguments);
+            } else {
+                // Call the action
+                // Start output buffering
+                ob_start();
+
+                do_action($action_name, ...$action_arguments);
+
+                // Get the output
+                $action_output = ob_get_clean();
+
+                TW_Chat_Logger::log(__('Successfully called action: ' . $action_name));
+            }
+
+        } else {
+            $action_output = "Invalid arguments for function call";
+        }
+
+        return $action_output;
+    }
+
+    /**
+     * Test Custom Action
+     */
+    public function test_action_callback($first_name, $last_name) {
         
-        // Reset post data
-        wp_reset_postdata();
+        $log_message = "";
         
-        return $posts_data;
+        if (( empty($first_name) || is_null($first_name) ) || ( empty($first_name) || is_null($first_name) )) {
+            $log_message = "";
+        } else {
+            $log_message = "Hello, " . $first_name . " " . $last_name;
+        }
+
+        TW_Chat_Logger::log($log_message);
+        echo $log_message;
+    }
+
+    /**
+     * Test Filter Action
+     */
+    public function test_filter_callback($first_name, $last_name) {
+        
+        $log_message = "";
+        
+        if (( empty($first_name) || is_null($first_name) ) || ( empty($last_name) || is_null($last_name) )) {
+            $log_message = "";
+        } else {
+            $log_message = "Goodbye, " . $first_name . " " . $last_name;
+        }
+
+        TW_Chat_Logger::log($log_message);
+        return $log_message;
     }
 
 }
