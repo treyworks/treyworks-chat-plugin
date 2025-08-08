@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import axios from 'axios';
 import toast from "react-hot-toast";
 import { useAtom } from "jotai";
@@ -10,7 +10,7 @@ import { Tooltip } from 'react-tooltip';
 
 
 const SettingsManager = () => {
-    const [formData, setFormData] = useState({
+    const initialFormData = {
         tw_chat_button_text: twChatSettings.tw_chat_button_text,
         tw_chat_openai_key: twChatSettings.tw_chat_openai_key,
         tw_chat_retell_key: twChatSettings.tw_chat_retell_key,
@@ -24,14 +24,32 @@ const SettingsManager = () => {
         tw_chat_allowed_actions: twChatSettings.tw_chat_allowed_actions,
         tw_chat_is_moderation: twChatSettings.tw_chat_is_moderation,
         tw_chat_button_image: twChatSettings.tw_chat_button_image,
-        tw_chat_send_button_image: twChatSettings.tw_chat_send_button_image
-    });
+        tw_chat_send_button_image: twChatSettings.tw_chat_send_button_image,
+        tw_chat_api_base_uri: twChatSettings.tw_chat_api_base_uri
+    };
+    const [formData, setFormData] = useState(initialFormData);
+    const [formIsDirty, setFormIsDirty] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [chatWidgets] = useAtom(chatWidgetsAtom);
     const [isLogModalOpen, setIsLogModalOpen] = useState(false);
     const [showApiKey, setShowApiKey] = useState(false);
     const [showRetellKey, setShowRetellKey] = useState(false);
 
+    // Prevent the browser from showing password update notification when leaving the page
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (formIsDirty) {
+                // This text doesn't actually appear in modern browsers, but the function must return a string
+                const message = 'You have unsaved changes. Are you sure you want to leave?';
+                e.returnValue = message; // Standard
+                return message; // For older browsers
+            }
+        };
+        
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [formIsDirty]);
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSaving(true);
@@ -45,6 +63,7 @@ const SettingsManager = () => {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             toast.success('Settings saved successfully!');
+            setFormIsDirty(false); // Reset dirty state after successful save
         } catch (error) {
             toast.error('There was an error saving settings.');
             console.error('Error saving settings:', error);
@@ -56,11 +75,13 @@ const SettingsManager = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
+        setFormIsDirty(true); // Mark form as dirty on any change
     };
 
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: checked ? "enabled" : "" }));
+        setFormIsDirty(true); // Mark form as dirty on any change
     };
 
     const handleActionsChange = useCallback((allowedActions) => {
@@ -68,6 +89,7 @@ const SettingsManager = () => {
             ...prevData,
             tw_chat_allowed_actions: allowedActions.join(',')
         }));
+        setFormIsDirty(true); // Mark form as dirty on any change
     }, []);
 
     return (
@@ -83,10 +105,16 @@ const SettingsManager = () => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <input
                                             className="regular-text"
-                                            type={showApiKey ? "text" : "password"}
+                                            type="text"
                                             name="tw_chat_openai_key"
                                             onChange={handleInputChange}
                                             value={formData.tw_chat_openai_key}
+                                            style={{ 
+                                                WebkitTextSecurity: showApiKey ? 'none' : 'disc',
+                                                MozTextSecurity: showApiKey ? 'none' : 'disc' 
+                                            }}
+                                            autoComplete="off"
+                                            data-lpignore="true"
                                         />
                                         <button
                                             type="button"
@@ -110,8 +138,12 @@ const SettingsManager = () => {
                                     </div>
                                 </td>
                             </tr>
+                            {renderFormField("API Base URI", "tw_chat_api_base_uri", "text", formData, handleInputChange, "api.openai.com/v1")}
                         </tbody>
                     </table>
+                    <p>
+                    <span style={{ fontWeight: 'bold' }}>Note:</span> The default API Base URI is <code>api.openai.com/v1</code>.
+                    </p>
                     <p>
                         Visit the <a href="https://platform.openai.com/docs/quickstart" target="_blank" rel="noopener noreferrer">OpenAI Platform Developer quickstart</a> for information on how to obtain a new key.
                     </p>
@@ -123,10 +155,16 @@ const SettingsManager = () => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <input
                                             className="regular-text"
-                                            type={showRetellKey ? "text" : "password"}
+                                            type="text"
                                             name="tw_chat_retell_key"
                                             onChange={handleInputChange}
                                             value={formData.tw_chat_retell_key}
+                                            style={{ 
+                                                WebkitTextSecurity: showRetellKey ? 'none' : 'disc',
+                                                MozTextSecurity: showRetellKey ? 'none' : 'disc' 
+                                            }}
+                                            autoComplete="off"
+                                            data-lpignore="true"
                                         />
                                         <button
                                             type="button"
@@ -150,6 +188,7 @@ const SettingsManager = () => {
                                     </div>
                                 </td>
                             </tr>
+                            
                         </tbody>
                     </table>
                     <p>
@@ -195,7 +234,7 @@ const SettingsManager = () => {
                                     chatWidgets.filter(widget => 
                                         widget.meta?.tw_chat_widget_type?.[0] === undefined || 
                                         widget.meta?.tw_chat_widget_type?.[0] === '' || 
-                                        widget.meta?.tw_chat_widget_type?.[0] === 'assistant'
+                                        widget.meta?.tw_chat_widget_type?.[0] === 'text'
                                     ),
                                     formData, 
                                     handleInputChange

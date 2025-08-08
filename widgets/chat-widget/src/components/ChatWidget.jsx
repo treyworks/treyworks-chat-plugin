@@ -18,7 +18,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     const [messages, setMessages] = useState(twChatMessages[widgetID])
     const [messageText, setMessageText] = useState('')
     const [isWaiting, setIsWaiting] = useState(false)
-    const [threadID, setThreadID] = useState(0)
+
     const [characterCount, setCharacterCount] = useState(0)
     const [suggestedAnswers, setSuggestedAnswers] = useState([])
     const [isFullscreen, setIsFullscreen] = useState(false)
@@ -44,20 +44,15 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
 
     // Set focus when instantiated
     useEffect(() => {
-        // Check to see if widget has a thread ID
-        if (window.twChatWidgetSettings[widgetID].thread_id === undefined) {
-            // No thread id set. Add default suggested answers
+        // Check to see if widget has messages
+        if (window.twChatMessages[widgetID].length <= 1) {
+            // Add default suggested answers if set
             if (widgetSettings.tw_chat_suggested_answers) {
                 setSuggestedAnswers(widgetSettings.tw_chat_suggested_answers.split(','))
             }
-        } else {
-            // Init widget with previous thread id and suggested answers
-            setThreadID(window.twChatWidgetSettings[widgetID].thread_id)
-            if (window.twChatWidgetSettings[widgetID].suggestedAnswers) {
-                setSuggestedAnswers(window.twChatWidgetSettings[widgetID].suggestedAnswers)
-            }
         }
 
+        // Set focus if sticky
         if (sticky) {
             setFocus(widgetID)
         }
@@ -82,6 +77,12 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
 
     // Function to send a new message
     const handleMessageSubmit = (event, chosenAnswer) => {
+
+        // Check if messageText is empty
+        if (messageText.trim() === '') {
+            return
+        }
+
         // Prevent default form event if present
         if (event) { 
             event.preventDefault()
@@ -92,11 +93,17 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
 
         // Send chosen answer if passed. Else send messageText from form
         const newMessageText = chosenAnswer ? chosenAnswer : messageText
+
+        // Add new message to history
+        twChatMessages[widgetID] = [...messages, newMessage(newMessageText, 'user')]
+
+        // Set messages state to current history array
+        setMessages(twChatMessages[widgetID])
         
         // Prepare data to be sent
         const data = {
             widget_id: widgetID,
-            message: newMessageText
+            messages: twChatMessages[widgetID]
         }
         
         // Set request header
@@ -106,20 +113,8 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
             }
         }
 
-        // Add thread ID if one exists. 
-        // The endpoint will create a new thread if nothing is passed.
-        if (threadID) {
-            data.thread_id = threadID
-        }
-
-        // Add new message to history
-        twChatMessages[widgetID] = [...messages, newMessage(newMessageText, 'user')]
-        
-        // Set messages state to current history array
-        setMessages(twChatMessages[widgetID])
-
         // Send the message to the plugin endpoint
-        axios.post(`${chatSettings.root}tw-chat-assistant/v1/chat-response/`,
+        axios.post(chatSettings.api_url,
             data, axiosConfig)
         .then(response => {
             // Get returned data
@@ -154,9 +149,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
             setMessageText('')
             setCharacterCount(0)
             setIsWaiting(false)
-            // Success. Set widget thread id
-            window.twChatWidgetSettings[widgetID].thread_id = response.data.thread_id
-            setThreadID(response.data.thread_id)
+           
             // Set input focus
             setFocus(widgetID)
             
@@ -170,6 +163,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
 
     // Handle keypress in textarea
     const handleKeyPress = (event) => {
+
         // Submit form on Enter key, but not when Shift+Enter is pressed
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
@@ -215,7 +209,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                 id={`tw-chat-message-${widgetID}-${index}`} 
                 className={`message ${message.role}`}
             >
-                <ChatContent html={marked.use(markedCodePreview).parse(message.content)} />
+                <ChatContent html={marked.use(markedCodePreview).parse(message.content ? message.content : 'Something went wrong.')} />
             </div>
             )
         })
@@ -233,7 +227,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                     <button key={index} onClick={() => handleSuggestAnswerClick(answer)}>{answer}</button>
                     )
                 })}
-                { widgetSettings.tw_chat_dismiss_answers == "enabled" &&
+                { widgetSettings.tw_chat_dismiss_answers == "1" &&
                 <button className="tw-chat-suggested-answers--clear" onClick={() => setSuggestedAnswers([])}>
                     { widgetSettings.tw_chat_dismiss_answers_text ?
                         widgetSettings.tw_chat_dismiss_answers_text

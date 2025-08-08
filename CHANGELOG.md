@@ -1,5 +1,16 @@
 # Project Changelog
 
+## 2.0.0
+- Breaking change: Switched core text chat from OpenAI Assistants API to Chat Completions API.
+- Feature: Text chat widgets can now be created and managed entirely in the plugin admin.
+- Feature: Built-in tools for assistants: Webhook, Search Site, and Call Action (WordPress hooks) — no external setup required.
+- Dev: Internal refactors and UI polish to support the new flow.
+
+## 1.4.2
+- Feature: Added top-level admin menu for easier access to plugin settings
+- Bug fix: Fixed password update notifications when using API key fields
+- UI: Improved API key field handling to prevent browser password management interference
+
 ## 1.4.1
 - Composer dependency updates
 - Improvements to Voice chat widget UI

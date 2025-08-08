@@ -11,11 +11,12 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         tw_chat_dismiss_answers: '',
         tw_chat_dismiss_answers_text: '',
         tw_chat_suggested_answers: '',
-        tw_chat_assistant_id: '',
+        tw_chat_system_prompt: '',
+        tw_chat_ai_model: 'gpt-4o',
         tw_chat_webhook_address: '',
         tw_chat_webhook_header: '',
         tw_chat_email_recipients: '',
-        tw_chat_widget_type: 'assistant',
+        tw_chat_widget_type: 'text',
         tw_chat_voice_agent_id: ''
     });
 
@@ -25,14 +26,15 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                 id: currentWidget.id,
                 tw_chat_widget_name: currentWidget.name,
                 tw_chat_greeting: currentWidget.meta.tw_chat_greeting ? currentWidget.meta.tw_chat_greeting[0] : '',
-                tw_chat_assistant_id: currentWidget.meta.tw_chat_assistant_id ? currentWidget.meta.tw_chat_assistant_id[0] : '',
+                tw_chat_system_prompt: currentWidget.meta.tw_chat_system_prompt ? currentWidget.meta.tw_chat_system_prompt[0] : '',
+                tw_chat_ai_model: currentWidget.meta.tw_chat_ai_model ? currentWidget.meta.tw_chat_ai_model[0] : 'gpt-4o',
                 tw_chat_suggested_answers: currentWidget.meta.tw_chat_suggested_answers ? currentWidget.meta.tw_chat_suggested_answers[0] : '',
                 tw_chat_dismiss_answers: currentWidget.meta.tw_chat_dismiss_answers ? currentWidget.meta.tw_chat_dismiss_answers[0] : '',
                 tw_chat_dismiss_answers_text: currentWidget.meta.tw_chat_dismiss_answers_text ? currentWidget.meta.tw_chat_dismiss_answers_text[0] : '',
                 tw_chat_email_recipients: currentWidget.meta.tw_chat_email_recipients ? currentWidget.meta.tw_chat_email_recipients[0] : '',
                 tw_chat_webhook_address: currentWidget.meta.tw_chat_webhook_address ? currentWidget.meta.tw_chat_webhook_address[0] : '',
                 tw_chat_webhook_header: currentWidget.meta.tw_chat_webhook_header ? currentWidget.meta.tw_chat_webhook_header[0] : '',
-                tw_chat_widget_type: currentWidget.meta.tw_chat_widget_type ? currentWidget.meta.tw_chat_widget_type[0] : 'openai',
+                tw_chat_widget_type: currentWidget.meta.tw_chat_widget_type ? currentWidget.meta.tw_chat_widget_type[0] : 'text',
                 tw_chat_voice_agent_id: currentWidget.meta.tw_chat_voice_agent_id ? currentWidget.meta.tw_chat_voice_agent_id[0] : '',
             });
         }
@@ -42,7 +44,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         const { name, value, type, checked } = e.target;
         setFormData(prevData => ({
             ...prevData,
-            [name]: type === 'checkbox' ? (checked ? 'enabled' : '') : value
+            [name]: type === 'checkbox' ? (checked ? '1' : '') : value
         }));
     }, []);
 
@@ -61,10 +63,11 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
     }, [formData, onSave]);
 
     const handleKeyDown = useCallback((event) => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && event.target.tagName.toLowerCase() !== 'textarea') {
             event.preventDefault();
+            handleSubmit(event);
         }
-    }, []);
+    }, [handleSubmit]);
 
     return (
         <form id="tw-chat-new-widget-form" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
@@ -92,32 +95,51 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                 onChange={handleInputChange}
                                 className="regular-text"
                             >
-                                <option value="assistant">OpenAI Assistant</option>
-                                <option value="voice">Retell AI Voice Agent</option>
+                                <option value="text">Text Chat Widget</option>
+                                <option value="voice">Voice Chat Widget</option>
                             </select>
                             <p className="description">
-                                {formData.tw_chat_widget_type === 'assistant' 
-                                    ? 'Text-based chat widget with OpenAI Assistant API integration.' 
-                                    : 'Voice-based conversation widget with Retell AI integration.'}
+                                {formData.tw_chat_widget_type === 'text' 
+                                    ? 'Text-based chat widget with OpenAI API.' 
+                                    : 'Voice-based conversation widget with Retell AI.'}
                             </p>
                         </td>
                     </tr>
                     
-                    {formData.tw_chat_widget_type === 'assistant' ? (
+                    {formData.tw_chat_widget_type === 'text' ? (
                         // Chat widget specific fields
                         <>
                             <tr valign="top">
-                                <th scope="row">OpenAI Assistant ID</th>
+                                <th scope="row">System Prompt</th>
                                 <td>
-                                    <input
-                                        className="regular-text"
-                                        type="text"
-                                        name="tw_chat_assistant_id"
+                                    <textarea
+                                        rows="10"
+                                        className="large-text"
+                                        name="tw_chat_system_prompt"
                                         onChange={handleInputChange}
-                                        value={formData.tw_chat_assistant_id}
-                                        required
-                                    />
-                                    <p className="description">OpenAI Assistant ID</p>
+                                        value={formData.tw_chat_system_prompt}
+                                        placeholder="You are a helpful assistant."
+                                    ></textarea>
+                                    <p className="description">The system prompt sets the behavior and personality of your assistant.</p>
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row">Model</th>
+                                <td>
+                                    <select
+                                        name="tw_chat_ai_model"
+                                        onChange={handleInputChange}
+                                        value={formData.tw_chat_ai_model}
+                                        required="required"
+                                    >
+                                        <option value="">Select a model</option>
+                                        <option value="gpt-4.1-2025-04-14">GPT-4.1</option>
+                                        <option value="gpt-4.1-mini-2025-04-14">GPT-4.1 Mini</option>
+                                        <option value="gpt-4.1-nano-2025-04-14">GPT-4.1 Nano</option>
+                                        <option value="o3-2025-04-16">o3</option>
+                                        <option value="o3-mini-2025-01-31">o3 Mini</option>
+                                    </select>
+                                    <p className="description">Select the OpenAI model to use for the chat widget.</p>
                                 </td>
                             </tr>
                             <tr valign="top">
@@ -137,7 +159,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                             <tr valign="top">
                                 <th scope="row">Suggested Answers</th>
                                 <td>
-                                    <label>Initial suggested answers:</label><br />
+                                    <label>Enter text for clickable buttons to start the conversation:</label><br />
                                     <ListInput
                                         onChange={handleSuggestedAnswersChange}
                                         defaultValues={formData.tw_chat_suggested_answers}
@@ -152,11 +174,11 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                         type="checkbox" 
                                         id="tw_chat_dismiss_answers" 
                                         name="tw_chat_dismiss_answers" 
-                                        checked={formData.tw_chat_dismiss_answers === 'enabled'}
+                                        checked={formData.tw_chat_dismiss_answers == '1'}
                                         onChange={handleInputChange}
                                     /> 
                                     <label htmlFor="tw_chat_dismiss_answers">Allow users to dismiss suggested answers.</label>
-                                    {formData.tw_chat_dismiss_answers === "enabled" && (
+                                    {formData.tw_chat_dismiss_answers == "1" && (
                                         <div style={{margin: "1rem 0"}}>
                                             <label htmlFor="tw_chat_dismiss_answers_text">Dismiss Suggestions Button Text</label>
                                             <input
@@ -169,18 +191,6 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                             />
                                         </div>
                                     )}
-                                </td>
-                            </tr>
-                            <tr valign="top">
-                                <th scope="row">Email Recipients</th>
-                                <td>
-                                    <input
-                                        className="regular-text"
-                                        type="text"
-                                        name="tw_chat_email_recipients"
-                                        onChange={handleInputChange}
-                                        value={formData.tw_chat_email_recipients}
-                                    />
                                 </td>
                             </tr>
                             <tr valign="top">

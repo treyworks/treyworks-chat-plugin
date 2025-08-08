@@ -4,18 +4,25 @@
 
 The Treyworks Chat Plugin empowers your WordPress website with intelligent chatbots in two formats: text-based chat and voice-interactive conversations. Enhance user experience, provide instant answers, and boost engagement with these versatile and customizable widgets.
 
+### What's New in 2.0
+
+- Breaking change: Core text chat now uses the OpenAI Chat Completions API (replacing the Assistants API).
+- Build and manage text chat widgets entirely in the plugin admin — no external Assistant setup required.
+- Built-in tools for text chat widgets: Webhook, Search Site, and Call Action (WordPress hooks).
+- Updated UI and internal refactors for a smoother setup and usage.
+
 ### Two Chat Widget Options
 
-1. **Text Chat Widgets** - Powered by OpenAI Assistants API, providing intelligent text-based conversations
+1. **Text Chat Widgets** - Powered by the OpenAI Chat Completions API, providing intelligent text-based conversations
 2. **Voice Chat Widgets** - Powered by RetellAI, enabling interactive voice conversations
 
 ## Key Features
 
 ### Text Chat Features (OpenAI)
-- Seamless integration with OpenAI Assistants API
+- Seamless integration with the OpenAI Chat Completions API
 - Multiple text chat widgets per page
 - Advanced functions for site search, post retrieval, and more
-- Email and webhook capabilities for lead generation
+- Webhook capabilities for lead generation
 - WordPress action and filter integration
 - Message moderation and profanity filtering
 
@@ -41,7 +48,7 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 4. Navigate to the plugin's settings page.
 5. For text chat widgets:
    - Enter your OpenAI API key
-   - View and manage your OpenAI assistants in the Assistants tab
+   - Build and manage text chat widgets in the Chat Widgets tab (tools like Webhook, Search Site, and Call Action are built-in).
 6. For voice chat widgets:
    - Enter your RetellAI API key in the Voice Widget section
    - Select from available RetellAI agents
@@ -52,7 +59,7 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 ## Text Chat Widgets (OpenAI)
 
 ### Global Text Chat Widget
-Set up a global text chat widget in the Settings tab after creating a text chat widget with OpenAI.
+Set up a global text chat widget in the Settings tab after creating a text chat widget in the plugin admin.
 
 You can override the global text chat widget on a page using the **Chat Widget Settings** in the page editor.
 
@@ -61,314 +68,121 @@ Each page can have a unique chat widget, but the global chat widget will be used
 ### Embedding a Text Chat Widget in a Page
 Add text chat widgets to specific pages using the shortcode:
 ```
-[tw_chat_widget id=WIDGET_ID]
+[tw_chat_widget id=WIDGET_ID width="400px"]
 ```
 
-Optionally, specify the widget height in CSS format:
+Optionally, specify the widget height and width in CSS format:
 ```
-[tw_chat_widget id=WIDGET_ID height="500px"]
+[tw_chat_widget id=WIDGET_ID height="500px" width="400px"]
 ```
 
 ## Voice Chat Widgets (RetellAI)
 
-### Global Voice Chat Widget
-After creating a voice chat widget with RetellAI, you can set it as the global voice chat widget in the Settings tab.
-
-You can override the global voice chat widget on a page using the **Chat Widget Settings** in the page editor.
-
 ### Embedding a Voice Chat Widget in a Page
-Add voice chat widgets to specific pages using the shortcode with the voice parameter:
+Add voice chat widgets to specific pages using the shortcode:
 ```
-[tw_chat_widget id=WIDGET_ID voice=true]
+[tw_voice_widget id=1]
 ```
 
-Optionally, specify the widget height in CSS format:
-```
-[tw_chat_widget id=WIDGET_ID voice=true height="500px"]
-```
+This shortcode has one required parameter:
+- `id`: The ID of the voice widget to embed
 
 ### Voice Chat Permissions
 Voice chat widgets require microphone access. Users will be prompted to grant microphone permissions when interacting with a voice chat widget.
 
 **Note:** Multiple widgets (of either type) can be added to a page, but each widget can only be used once per page.
 
+## Voice Chat Configuration
+
+### RetellAI API Setup
+
+1. Ensure you have a valid RetellAI account and API key.
+2. To obtain an API key, log in to your RetellAI dashboard.
+3. Navigate to the API Keys section in your account settings.
+4. Generate a new API key and securely store it.
+
+For more details on managing RetellAI API keys, visit: [RetellAI API Key Documentation](https://docs.retellai.com/accounts/manage-api-keys)
+
+### Creating a Voice Chat Widget
+
+1. Navigate to the Chat Widgets tab and select "Add New Widget"
+2. Configure your widget as usual with an OpenAI assistant
+3. Enable the Voice feature by checking the "Enable Voice Widget" option
+4. Select a RetellAI agent from the dropdown to use with this widget
+5. Customize additional voice settings as needed:
+   - Initial greeting message
+   - Voice activation method (button press or automatic)
+   - Voice recognition sensitivity
+
+### Voice Widget Feature
+
+The Voice Widget feature integrates [RetellAI](https://www.retellai.com/) with your chat widgets to provide interactive voice conversations on your WordPress site.
+
+#### RetellAI Integration
+
+1. **RetellAI Account Setup**:
+   - Create an account at [RetellAI](https://www.retellai.com/)
+   - Obtain your RetellAI API key from your account dashboard
+
+2. **Adding Your RetellAI Key**:
+   - Navigate to the plugin settings page
+   - Enter your RetellAI API key in the designated field under the Voice Widget section
+   - Save your settings to enable voice capabilities
+
+3. **Viewing Available RetellAI Agents**:
+   - Once your API key is verified, you can view and select from your available RetellAI agents
+   - Available agents will appear in a dropdown list in the Voice Widget tab
+   - Each agent has unique voice characteristics and capabilities
 
 ## Text Chat Configuration
 
-### OpenAI Assistant Setup
+### OpenAI API Setup
 
 1. Ensure you have a valid OpenAI API account and API key.
-2. Consider the potential costs associated with using the OpenAI Assistant API.
+2. Consider the potential costs associated with using the OpenAI Chat Completions API.
 3. Regularly review and optimize your chatbot's prompts and knowledge base.
+
+### Global Text Chat Widget Override
+
+Each page can have a unique text chat widget that overrides the global setting:
+
+1. Edit the page where you want to override the global widget.
+2. Locate the **Chat Widget Settings** metabox in the page editor.
+3. Select a different chat widget or disable the chat widget entirely for this page.
+4. Update the page to save your settings.
 
 ## Advanced Text Chat Features
 
-### Site Search Function (OpenAI Text Chat)
+### Built-in Tools (OpenAI Text Chat)
 
-Enable site search by adding this function to your OpenAI assistant:
+Text chat widgets in v2.0 include three built-in tools you can enable and configure per widget. No JSON schemas are needed.
 
-```json
-{
-  "name": "search_site",
-  "description": "Search the website for answers",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "search_term": {
-        "type": "string",
-        "description": "The search term to lookup on the website"
-      }
-    },
-    "required": [
-      "search_term"
-    ]
-  }
-}
-```
+#### Search Site
+Search your WordPress site content and provide relevant information to users:
+- Parameters
+  - `search_term` (string, required): The keyword/phrase to search across your WordPress site content.
+- Example prompt
+  - "Search the site for 'pricing plans' and summarize the most relevant page with a link."
 
-Add to assistant instructions:
-```
-Use the search_site function to answer user questions by referring to website content. Always include a link for the user to learn more information.
-```
+#### Webhook
+Connect your chatbot to external systems and services for data exchange:
+- Settings
+  - Configure Webhook URL and optional headers in the widget settings.
+- Parameters
+  - `post_data` (string or JSON, required): Payload to send to the configured endpoint.
+- Example prompt
+  - "Send this lead to our CRM via webhook: name=Jane Smith, email=jane@example.com, interest=AI chatbot. Confirm when done."
 
-#### Parameters for search_site
-
-1. `search_term` (string, required):
-   - The keyword or phrase to search for on the website.
-   - Example: "WordPress plugin installation"
-
-Example usage in assistant instructions:
-```
-To find information about plugin installation:
-Use the search_site function with these parameters:
-search_term: "WordPress plugin installation"
-
-Summarize the search results and provide a relevant link for more information.
-```
-
-### Post Retrieval Function (OpenAI Text Chat)
-
-Add this function to your OpenAI assistant:
-
-```json
-{
-  "name": "get_posts",
-  "description": "List posts by post type.",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "post_type": {
-        "type": "string",
-        "description": "The post type of the posts to query."
-      },
-      "order": {
-        "type": "string",
-        "description": "Query order."
-      },
-      "orderby": {
-        "type": "string",
-        "description": "Order the query by date, title, etc."
-      },
-      "number_of_posts": {
-        "type": "string",
-        "description": "The number of posts to query."
-      }
-    },
-    "required": []
-  }
-}
-```
-
-Add to assistant instructions:
-```
-Use the get_posts function to retrieve a list of posts. Summarize the results.
-```
-
-#### Parameters for get_posts
-
-1. `post_type` (string, optional):
-   - Specifies the type of post to retrieve.
-   - Default: 'post'
-   - Examples: 'page', 'product', or any custom post type.
-
-2. `order` (string, optional):
-   - Sets the order of the retrieved posts.
-   - Options: 'ASC' (ascending) or 'DESC' (descending)
-   - Default: 'DESC'
-
-3. `orderby` (string, optional):
-   - Determines the field to order the posts by.
-   - Common options: 'date', 'title', 'author', 'modified'
-   - Default: 'date'
-
-4. `number_of_posts` (string, optional):
-   - Limits the number of posts to retrieve.
-   - Use '-1' to retrieve all posts (use with caution on large sites).
-   - Default: '10'
-
-Example usage in assistant instructions:
-```
-To get the 5 most recent products, ordered by title:
-Use the get_posts function with these parameters:
-post_type: 'product'
-order: 'DESC'
-orderby: 'title'
-number_of_posts: '5'
-
-Summarize the results, including the product titles and publication dates.
-```
-
-### Send Email Message Function (OpenAI Text Chat)
-
-To enable email functionality with text chat widgets:
-
-1. Set email recipients in the text chat widget settings.
-2. Add this function to your OpenAI assistant:
-
-```json
-{
-  "name": "send_message",
-  "description": "Send the user information as an email",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "body": {
-        "type": "string",
-        "description": "A summary of the user information"
-      }
-    },
-    "required": [
-      "body"
-    ]
-  }
-}
-```
-
-Add to assistant instructions:
-```
-Use the send_message function to email the provided information.
-```
-
-#### Parameters for send_message
-
-1. `body` (string, required):
-   - The content of the email to be sent.
-   - Should contain a summary of the user information or query.
-
-Example usage in assistant instructions:
-```
-To send an email with user information:
-Use the send_message function with these parameters:
-body: "New customer inquiry: Name: John Doe, Email: john@example.com, Question: How do I install the chat plugin?"
-
-Confirm to the user that their message has been sent to our support team.
-```
-
-### Webhook Function (OpenAI Text Chat)
-
-To enable webhook functionality with text chat widgets:
-
-1. Set the webhook URL and required headers in the chat widget settings.
-2. Add this function to your OpenAI assistant:
-
-```json
-{
-  "name": "webhook",
-  "description": "Post data to an external URL",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "post_data": {
-        "type": "string",
-        "description": "Data to send to external URL."
-      }
-    },
-    "required": [
-      "post_data"
-    ]
-  }
-}
-```
-
-Add to assistant instructions:
-```
-Use the webhook function to send this information.
-```
-
-#### Parameters for webhook
-
-1. `post_data` (string, required):
-   - The data to be sent to the external URL.
-   - Should be formatted as a JSON string.
-
-Example usage in assistant instructions:
-```
-To send user information to an external CRM:
-Use the webhook function with these parameters:
-post_data: '{"name": "Jane Smith", "email": "jane@example.com", "interest": "AI chatbot"}'
-
-Confirm to the user that their information has been received and a representative will contact them soon.
-```
-
-### WordPress Actions and Filters (OpenAI Text Chat)
-
-1. Navigate to the plugin settings dashboard and locate the "Allowed Actions" section. Add the specific WordPress action or filter you want to use to this list.
-2. Add this function to your OpenAI assistant for text chat widgets:
-
-```json
-{
-  "name": "wp_action",
-  "description": "Calls a WordPress action and returns the result.",
-  "strict": false,
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "action_name": {
-        "type": "string",
-        "description": "The name of the action."
-      },
-      "action_type": {
-        "type": "string",
-        "description": "The type of the action, filter or action."
-      },
-      "action_arguments": {
-        "type": "string",
-        "description": "The arguments to pass to the action. Formatted as a JSON array"
-      }
-    },
-    "required": [
-      "action_name",
-      "action_type",
-      "action_arguments"
-    ]
-  }
-}
-```
-
-#### Parameters for wp_action
-
-1. `action_name` (string, required):
-   - The name of the WordPress action or filter to call.
-   - Example: "the_content" or "wp_mail"
-
-2. `action_type` (string, required):
-   - Specifies whether it's an action or a filter.
-   - Options: "action" or "filter"
-
-3. `action_arguments` (string, required):
-   - The arguments to pass to the action or filter.
-   - Should be formatted as a JSON array.
-
-Example usage in assistant instructions:
-```
-To modify the content of a post:
-Use the wp_action function with these parameters:
-action_name: "your_custom_filter"
-action_type: "filter"
-action_arguments: ["John", "Smith"]
-
-Process the result and provide a summary of how the content was modified.
-```
+#### WordPress Action Call
+Extend your chatbot's functionality with custom WordPress hooks and filters:
+- Prerequisite
+  - Add allowed actions/filters in Settings → Allowed Actions.
+- Parameters
+  - `action_name` (string, required): Name of the action/filter to invoke.
+  - `action_type` (string, required): One of `action` or `filter`.
+  - `action_arguments` (array, optional): Arguments to pass.
+- Example prompt
+  - "Call the 'get_featured_products' filter with ['recent', 5] and summarize the titles it returns."
 
 ## Suggested Answers (OpenAI Text Chat)
 
@@ -523,37 +337,6 @@ Customize the appearance of both text chat widgets and voice chat widgets using 
 
 Enable the message moderation feature from the plugin settings for text chat widgets. This feature is designed to filter user messages with the [Profanity PHP library](https://github.com/ConsoleTVs/Profanity) and enable the [OpenAI Moderation API](https://platform.openai.com/docs/guides/moderation).
 
-## Voice Widget Feature
-
-The Voice Widget feature integrates [RetellAI](https://www.retellai.com/) with your chat widgets to provide interactive voice conversations on your WordPress site.
-
-### RetellAI Integration
-
-1. **RetellAI Account Setup**:
-   - Create an account at [RetellAI](https://www.retellai.com/)
-   - Obtain your RetellAI API key from your account dashboard
-
-2. **Adding Your RetellAI Key**:
-   - Navigate to the plugin settings page
-   - Enter your RetellAI API key in the designated field under the Voice Widget section
-   - Save your settings to enable voice capabilities
-
-3. **Viewing Available RetellAI Agents**:
-   - Once your API key is verified, you can view and select from your available RetellAI agents
-   - Available agents will appear in a dropdown list in the Voice Widget tab
-   - Each agent has unique voice characteristics and capabilities
-
-### Creating a Voice Chat Widget
-
-1. Navigate to the Chat Widgets tab and select "Add New Widget"
-2. Configure your widget as usual with an OpenAI assistant
-3. Enable the Voice feature by checking the "Enable Voice Widget" option
-4. Select a RetellAI agent from the dropdown to use with this widget
-5. Customize additional voice settings as needed:
-   - Initial greeting message
-   - Voice activation method (button press or automatic)
-   - Voice recognition sensitivity
-
 ### Embedding the Voice Widget
 
 Add voice-enabled widgets to your pages or posts using the standard shortcode with the voice parameter:
@@ -578,7 +361,7 @@ Enable logging from the plugin settings dashboard for debugging and tracking fun
 
 - WordPress 6.6 or higher
 - PHP 8.1 or higher
-- Valid API key for the OpenAI Assistants API (for text chat widgets)
+- Valid OpenAI API key (for text chat widgets)
 - Valid API key for RetellAI (for voice chat widgets)
 
 ## Resources

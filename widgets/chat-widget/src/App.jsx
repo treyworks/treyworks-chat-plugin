@@ -7,13 +7,11 @@ import ChatIcon from './icons/chatIcon';
 const rootStyle = getComputedStyle(document.documentElement);
 window.twChatPluginSettings.iconColor = rootStyle.getPropertyValue('--tw-chat-icon-color').trim();
 
-function App({ widgetID, sticky }) {
+function App({ widgetID, sticky, width, height }) {
 
   const [isVisible, setIsVisible] = useState(false)
   const buttonText = window.twChatPluginSettings.tw_chat_button_text || "Chat"
   const buttonImage = window.twChatPluginSettings.tw_chat_button_image || null
-  const width = window.twChatWidgetSettings[widgetID].tw_chat_width || null
-  const height = window.twChatWidgetSettings[widgetID].tw_chat_height || null
   const iconColor = window.twChatPluginSettings.iconColor
 
   const toggleChat = () => {

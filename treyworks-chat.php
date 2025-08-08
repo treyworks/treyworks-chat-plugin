@@ -2,8 +2,8 @@
 /*
  * Plugin Name: Treyworks Chat for WordPress
  * Plugin URI: https://treyworks.com/chat-plugin/
- * Description: A chat widget plugin for WordPress powered by the OpenAI Assistants API.
- * Version: 1.4.1
+ * Description: An AI-powered text and voice chat widget plugin for WordPress.
+ * Version: 2.0.0
  * Author: Treyworks LLC
  * Author URI: https://treyworks.com
  * License:           MIT
@@ -12,7 +12,7 @@
  * Domain Path:       /languages
 */
 
-defined('TW_CHAT_VERSION') or define('TW_CHAT_VERSION', '1.4.1');
+defined('TW_CHAT_VERSION') or define('TW_CHAT_VERSION', '1.5.0');
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {

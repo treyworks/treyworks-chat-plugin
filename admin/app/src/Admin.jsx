@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Tabs from './components/Tabs';
 import SettingsManager from './pages/SettingsManager';
-import AssistantsManager from './pages/AssistantsManager';
+
 import ChatWidgetsManager from './pages/ChatWidgetsManager';
 import RetellAIManager from './pages/RetellAIManager';
 
@@ -13,7 +13,7 @@ function Admin() {
   const tabData = [
     { title: 'Plugin Settings', content: SettingsManager },
     { title: 'Chat Widgets', content: ChatWidgetsManager},
-    { title: 'OpenAI Assistants', content: AssistantsManager },
+
     { title: 'Retell AI Voice Agents', content: RetellAIManager }
   ];
 

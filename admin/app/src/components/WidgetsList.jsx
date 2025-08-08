@@ -35,7 +35,7 @@ const WidgetsList = ({ widgets, onEdit, onRemove, onCopy }) => {
                             </a>
                         </td>
                         <td>{widget.id}</td>
-                        <td style={{ textTransform: 'capitalize' }}>{widget.meta.tw_chat_widget_type == 'voice' ? 'Voice Agent' : 'OpenAI Assistant'}</td>
+                        <td style={{ textTransform: 'capitalize' }}>{widget.meta.tw_chat_widget_type == 'voice' ? 'Voice Agent' : 'Text Chat'}</td>
                         <td>
                             <a
                                 href="#"
