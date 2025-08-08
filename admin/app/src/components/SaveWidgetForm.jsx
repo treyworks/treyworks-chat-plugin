@@ -130,11 +130,12 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                         name="tw_chat_ai_model"
                                         onChange={handleInputChange}
                                         value={formData.tw_chat_ai_model}
+                                        required="required"
                                     >
+                                        <option value="">Select a model</option>
                                         <option value="gpt-4.1-2025-04-14">GPT-4.1</option>
                                         <option value="gpt-4.1-mini-2025-04-14">GPT-4.1 Mini</option>
                                         <option value="gpt-4.1-nano-2025-04-14">GPT-4.1 Nano</option>
-                                        <option value="gpt-4o">GPT-4o</option>
                                         <option value="o3-2025-04-16">o3</option>
                                         <option value="o3-mini-2025-01-31">o3 Mini</option>
                                     </select>
@@ -158,7 +159,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                             <tr valign="top">
                                 <th scope="row">Suggested Answers</th>
                                 <td>
-                                    <label>Conversation starters:</label><br />
+                                    <label>Enter text for clickable buttons to start the conversation:</label><br />
                                     <ListInput
                                         onChange={handleSuggestedAnswersChange}
                                         defaultValues={formData.tw_chat_suggested_answers}

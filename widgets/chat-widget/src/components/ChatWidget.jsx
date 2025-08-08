@@ -45,7 +45,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     // Set focus when instantiated
     useEffect(() => {
         // Check to see if widget has messages
-        if (window.twChatMessages[widgetID].length === 0) {
+        if (window.twChatMessages[widgetID].length <= 1) {
             // Add default suggested answers if set
             if (widgetSettings.tw_chat_suggested_answers) {
                 setSuggestedAnswers(widgetSettings.tw_chat_suggested_answers.split(','))
@@ -77,6 +77,12 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
 
     // Function to send a new message
     const handleMessageSubmit = (event, chosenAnswer) => {
+
+        // Check if messageText is empty
+        if (messageText.trim() === '') {
+            return
+        }
+
         // Prevent default form event if present
         if (event) { 
             event.preventDefault()
@@ -106,12 +112,6 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                 'X-WP-Nonce': chatSettings.nonce
             }
         }
-
-        // Add thread ID if one exists. 
-        // The endpoint will create a new thread if nothing is passed.
-        // if (threadID) {
-        //     data.thread_id = threadID
-        // }
 
         // Send the message to the plugin endpoint
         axios.post(chatSettings.api_url,
@@ -163,6 +163,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
 
     // Handle keypress in textarea
     const handleKeyPress = (event) => {
+
         // Submit form on Enter key, but not when Shift+Enter is pressed
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();

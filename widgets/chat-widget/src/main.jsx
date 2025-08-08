@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+import { newMessage } from './utils/chat-utils.js'
 
 // Set up global message history array
 window.twChatMessages = window.twChatMessages || {};
@@ -9,12 +10,8 @@ window.twChatWidgetSettings = window.twChatWidgetSettings || {};
 // Initialize Chat Widget
 window.addEventListener('load', function() {
 
-    console.log('Chat Widget loaded');
-
     // Find all widget placeholders
     const widgetDivs = document.querySelectorAll('.tw-chat-widget-container');
-
-    console.log('Found ' + widgetDivs.length + ' widget placeholders');
 
     // Inject our widget into each placeholder
     widgetDivs.forEach(div => {
@@ -30,7 +27,10 @@ window.addEventListener('load', function() {
             </React.StrictMode>
         );
 
-        console.log('Widget injected into ' + div.dataset.widgetId);
+        // Add chat widget greeting
+        const widgetSettings = window.twChatWidgetSettings[div.dataset.widgetId];
+        const greeting = newMessage(widgetSettings.tw_chat_greeting, 'assistant');
+        window.twChatMessages[div.dataset.widgetId] = [greeting];
 
     });
 
