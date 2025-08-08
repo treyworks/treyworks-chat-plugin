@@ -1,5 +1,9 @@
 # Project Changelog
 
+## 2.0.1
+- Bug fix: Fixed suggested answer click callback
+- Bug fix: Fixed shortcode embed issue
+
 ## 2.0.0
 - Breaking change: Switched core text chat from OpenAI Assistants API to Chat Completions API.
 - Feature: Text chat widgets can now be created and managed entirely in the plugin admin.

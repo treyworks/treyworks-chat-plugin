@@ -24894,7 +24894,7 @@ const mM = ({ isFullscreen: p, color: c = "#000000" }) => p ? /* @__PURE__ */ tt
     j && Ve.current && Ve.current.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
   }, [j]);
   const ne = (k, G) => {
-    if (g.trim() === "")
+    if (g.trim() === "" && G.trim() === "")
       return;
     k && k.preventDefault(), M(!0);
     const we = G || g;
@@ -25042,7 +25042,7 @@ function SM({ widgetID: p, sticky: c, width: f, height: h }) {
       C
     ] })
   ] });
-  return /* @__PURE__ */ tt.jsx(tt.Fragment, { children: c ? /* @__PURE__ */ tt.jsx(M, {}) : /* @__PURE__ */ tt.jsx(Qx, { widgetID: p, iconColor: U, toggleChat: j, width: f, height: h, sticky: c }) });
+  return /* @__PURE__ */ tt.jsx(tt.Fragment, { children: c == "1" ? /* @__PURE__ */ tt.jsx(M, {}) : /* @__PURE__ */ tt.jsx(Qx, { widgetID: p, iconColor: U, toggleChat: j, width: f, height: h, sticky: c }) });
 }
 window.twChatMessages = window.twChatMessages || {};
 window.twChatWidgetSettings = window.twChatWidgetSettings || {};
