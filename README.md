@@ -369,5 +369,10 @@ Enable logging from the plugin settings dashboard for debugging and tracking fun
 - GitHub Repository: [https://github.com/treyworks/treyworks-chat-plugin](https://github.com/treyworks/treyworks-chat-plugin)
 - Website: [https://treyworks.com/chat-plugin/](https://treyworks.com/chat-plugin/)
 - WordPress Plugin Handbook: [https://developer.wordpress.org/plugins/hooks/](https://developer.wordpress.org/plugins/hooks/)
+- OpenAI PHP Client: [https://github.com/openai-php/client](https://github.com/openai-php/client)
 
 For additional support or feature requests, please open an issue on our GitHub repository.
+
+## Acknowledgements
+
+Special thanks to the maintainers of the [OpenAI PHP Client](https://github.com/openai-php/client) for their excellent work, which has been instrumental in the development of this plugin.

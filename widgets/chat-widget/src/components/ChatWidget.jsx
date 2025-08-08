@@ -78,9 +78,9 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     // Function to send a new message
     const handleMessageSubmit = (event, chosenAnswer) => {
 
-        // Check if messageText is empty
-        if (messageText.trim() === '') {
-            return
+        // Check if messageText and chosenAnswer are empty
+        if (messageText.trim() === '' && chosenAnswer.trim() === '') {
+            return 
         }
 
         // Prevent default form event if present

@@ -3,7 +3,7 @@
  * Plugin Name: Treyworks Chat for WordPress
  * Plugin URI: https://treyworks.com/chat-plugin/
  * Description: An AI-powered text and voice chat widget plugin for WordPress.
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: Treyworks LLC
  * Author URI: https://treyworks.com
  * License:           MIT

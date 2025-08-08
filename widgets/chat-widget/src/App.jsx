@@ -37,7 +37,7 @@ function App({ widgetID, sticky, width, height }) {
   }
 
   return (<>
-  { sticky ? 
+  { sticky == "1" ? 
     <StickyWidget />
     : <ChatWidget widgetID={widgetID} iconColor={iconColor} toggleChat={toggleChat} width={width} height={height} sticky={sticky} />
   }
