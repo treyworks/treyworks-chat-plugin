@@ -1,5 +1,10 @@
 # Project Changelog
 
+## 2.0.2
+- Feature: Added support for GPT 5.1 model
+- Updated chat moderation to use omni-moderation-latest model
+- Dependency updates
+
 ## 2.0.1
 - Bug fix: Fixed suggested answer click callback
 - Bug fix: Fixed shortcode embed issue

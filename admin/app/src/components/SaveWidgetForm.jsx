@@ -133,11 +133,10 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                         required="required"
                                     >
                                         <option value="">Select a model</option>
+                                        <option value="gpt-5.1">GPT-5.1</option>
                                         <option value="gpt-4.1-2025-04-14">GPT-4.1</option>
                                         <option value="gpt-4.1-mini-2025-04-14">GPT-4.1 Mini</option>
                                         <option value="gpt-4.1-nano-2025-04-14">GPT-4.1 Nano</option>
-                                        <option value="o3-2025-04-16">o3</option>
-                                        <option value="o3-mini-2025-01-31">o3 Mini</option>
                                     </select>
                                     <p className="description">Select the OpenAI model to use for the chat widget.</p>
                                 </td>

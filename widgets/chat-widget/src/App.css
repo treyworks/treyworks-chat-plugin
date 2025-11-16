@@ -2,6 +2,7 @@
   --tw-chat-header-button-color: #fff;
 }
 .tw-chat-container {
+  z-index: 1;
   position: fixed;
   bottom: var(--tw-chat-position-bottom, 25px);
   right: var(--tw-chat-position-right, 25px);;

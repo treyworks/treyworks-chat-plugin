@@ -482,7 +482,7 @@ class TW_Chat_Plugin {
 
                 // Moderation API call
                 $moderation_response = $client->moderations()->create([
-                    'model' => 'text-moderation-latest',
+                    'model' => 'omni-moderation-latest',
                     'input' => $clean_message,
                 ]);
                 
