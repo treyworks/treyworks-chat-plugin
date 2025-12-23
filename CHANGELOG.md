@@ -1,5 +1,10 @@
 # Project Changelog
 
+## 2.0.3
+- Feature: Added support for GPT 5.2 model
+- Feature: Limited search results to 3 posts
+- Bug fix: Fixed search_sites function call so it returns array with title, permalink, and content
+
 ## 2.0.2
 - Feature: Added support for GPT 5.1 model
 - Updated chat moderation to use omni-moderation-latest model

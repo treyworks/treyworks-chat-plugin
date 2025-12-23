@@ -12,7 +12,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         tw_chat_dismiss_answers_text: '',
         tw_chat_suggested_answers: '',
         tw_chat_system_prompt: '',
-        tw_chat_ai_model: 'gpt-4o',
+        tw_chat_ai_model: 'gpt-4.1-2025-04-14',
         tw_chat_webhook_address: '',
         tw_chat_webhook_header: '',
         tw_chat_email_recipients: '',
@@ -27,7 +27,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                 tw_chat_widget_name: currentWidget.name,
                 tw_chat_greeting: currentWidget.meta.tw_chat_greeting ? currentWidget.meta.tw_chat_greeting[0] : '',
                 tw_chat_system_prompt: currentWidget.meta.tw_chat_system_prompt ? currentWidget.meta.tw_chat_system_prompt[0] : '',
-                tw_chat_ai_model: currentWidget.meta.tw_chat_ai_model ? currentWidget.meta.tw_chat_ai_model[0] : 'gpt-4o',
+                tw_chat_ai_model: currentWidget.meta.tw_chat_ai_model ? currentWidget.meta.tw_chat_ai_model[0] : 'gpt-4.1-2025-04-14',
                 tw_chat_suggested_answers: currentWidget.meta.tw_chat_suggested_answers ? currentWidget.meta.tw_chat_suggested_answers[0] : '',
                 tw_chat_dismiss_answers: currentWidget.meta.tw_chat_dismiss_answers ? currentWidget.meta.tw_chat_dismiss_answers[0] : '',
                 tw_chat_dismiss_answers_text: currentWidget.meta.tw_chat_dismiss_answers_text ? currentWidget.meta.tw_chat_dismiss_answers_text[0] : '',
@@ -133,10 +133,9 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                         required="required"
                                     >
                                         <option value="">Select a model</option>
-                                        <option value="gpt-5.1">GPT-5.1</option>
-                                        <option value="gpt-4.1-2025-04-14">GPT-4.1</option>
-                                        <option value="gpt-4.1-mini-2025-04-14">GPT-4.1 Mini</option>
-                                        <option value="gpt-4.1-nano-2025-04-14">GPT-4.1 Nano</option>
+                                        <option value="gpt-5.2-2025-12-11">GPT 5.2</option>
+                                        <option value="gpt-5-mini">GPT 5 Mini</option>
+                                        <option value="gpt-4.1-mini-2025-04-14">GPT 4.1 Mini</option>
                                     </select>
                                     <p className="description">Select the OpenAI model to use for the chat widget.</p>
                                 </td>

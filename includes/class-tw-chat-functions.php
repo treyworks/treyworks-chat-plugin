@@ -83,7 +83,7 @@ class TW_Chat_Functions {
             's' => $search_term,
             'post_type' => 'any',
             'post_status' => 'publish',
-            'posts_per_page' => -1,
+            'posts_per_page' => 3,
         );
     
         $search_query = new WP_Query($args);
@@ -94,7 +94,8 @@ class TW_Chat_Functions {
                 $search_query->the_post();
                 $search_results[] = array(
                     'title' => get_the_title(),
-                    'permalink' => get_permalink()
+                    'permalink' => get_permalink(),
+                    'content' => get_the_content()
                 );
             }
         }

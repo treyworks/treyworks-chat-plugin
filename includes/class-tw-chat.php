@@ -534,6 +534,9 @@ class TW_Chat_Plugin {
 
                     // Search site
                     $function_result = TW_Chat_Functions::search_site($search_term, $widget_id);
+
+                    // Log function results
+                    TW_Chat_Logger::log(__('+ Number of search results: ' . count($function_result)));
                 
                 } elseif ($function_name === 'webhook') {
                     // Webhook function call
