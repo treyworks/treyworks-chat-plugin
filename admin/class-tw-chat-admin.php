@@ -163,6 +163,19 @@
             $script_data['ajax_nonce'] =  wp_create_nonce( '_ajax_nonce' );
             $script_data['chat_widgets'] = TW_Chat_Widgets::get_chat_widgets();
             $script_data['plugin_dir_url'] = $this->get_plugin_directory_url();
+            
+            // Get available post types for site search
+            $post_types = get_post_types( array( 'public' => true ), 'objects' );
+            $available_post_types = array();
+            foreach ( $post_types as $post_type ) {
+                $available_post_types[] = array(
+                    'name' => $post_type->name,
+                    'label' => $post_type->label,
+                    'singular_name' => $post_type->labels->singular_name
+                );
+            }
+            $script_data['available_post_types'] = $available_post_types;
+            
             wp_localize_script( 'tw-chat-admin', 'twChatSettings', $script_data );
 
             // Enqueue the media uploader scripts
@@ -238,6 +251,10 @@
             $voice_agent_id = isset($_POST['tw_chat_voice_agent_id']) ? sanitize_text_field($_POST['tw_chat_voice_agent_id']) : '';
             $chat_widget_type = isset($_POST['tw_chat_widget_type']) ? sanitize_text_field($_POST['tw_chat_widget_type']) : 'text';
             $use_site_search = isset($_POST['tw_chat_use_site_search']) ? rest_sanitize_boolean($_POST['tw_chat_use_site_search']) : 0;
+            $search_scope = isset($_POST['tw_chat_search_scope']) ? sanitize_text_field($_POST['tw_chat_search_scope']) : 'all';
+            $search_post_types = isset($_POST['tw_chat_search_post_types']) ? sanitize_text_field($_POST['tw_chat_search_post_types']) : '';
+            $search_specific_ids = isset($_POST['tw_chat_search_specific_ids']) ? sanitize_text_field($_POST['tw_chat_search_specific_ids']) : '';
+            $exclude_links = isset($_POST['tw_chat_exclude_links']) ? sanitize_text_field($_POST['tw_chat_exclude_links']) : '';
 
             // Validate chat_widget_type
             // if (!in_array($chat_widget_type, ['text', 'voice'])) {
@@ -279,6 +296,10 @@
             update_post_meta($post_id, 'tw_chat_voice_agent_id', $voice_agent_id);
             update_post_meta($post_id, 'tw_chat_widget_type', $chat_widget_type);
             update_post_meta($post_id, 'tw_chat_use_site_search', $use_site_search);
+            update_post_meta($post_id, 'tw_chat_search_scope', $search_scope);
+            update_post_meta($post_id, 'tw_chat_search_post_types', $search_post_types);
+            update_post_meta($post_id, 'tw_chat_search_specific_ids', $search_specific_ids);
+            update_post_meta($post_id, 'tw_chat_exclude_links', $exclude_links);
 
             $response = TW_Chat_Widgets::get_chat_widgets();
             wp_send_json_success( $response );

@@ -242,6 +242,20 @@ button.nav-tab.nav-tab-active {
    Form Styles
    ============================================ */
 
+#tw-chat-new-widget-form h3 {
+  font-family: var(--tw-font-heading);
+  font-size: 1.25rem;
+  color: var(--tw-primary-blue);
+  margin: var(--tw-spacing-lg) 0 var(--tw-spacing-md) 0;
+  padding-bottom: var(--tw-spacing-sm);
+  border-bottom: 1px solid rgba(4, 34, 54, 0.1);
+  font-weight: 700;
+}
+
+#tw-chat-new-widget-form h3:first-of-type {
+  margin-top: 0;
+}
+
 .form-table {
   margin-top: var(--tw-spacing-md);
   width: 100%;

@@ -453,7 +453,24 @@ class TW_Chat_Plugin {
 
             // Append site search prompt if enabled
             if ($use_site_search) {
-                $site_search_prompt = TW_Chat_Prompt_Manager::get_site_search_prompt(3);
+                // Start with base site search prompt
+                $site_search_prompt = TW_Chat_Prompt_Manager::get_site_search_prompt();
+                
+                // Get excluded post types
+                $exclude_links = !empty($chat_widget['tw_chat_exclude_links']) ? $chat_widget['tw_chat_exclude_links'] : '';
+                $excluded_post_types = !empty($exclude_links) ? array_map('trim', explode(',', $exclude_links)) : array();
+                
+                // Add link inclusion or exclusion instructions
+                if (!empty($excluded_post_types)) {
+                    // If there are excluded post types, add both inclusion and exclusion prompts
+                    $site_search_prompt .= TW_Chat_Prompt_Manager::get_link_inclusion_prompt(3);
+                    $site_search_prompt .= TW_Chat_Prompt_Manager::get_link_exclusion_prompt($excluded_post_types);
+                } else {
+                    // No exclusions, just add standard link inclusion
+                    $site_search_prompt .= TW_Chat_Prompt_Manager::get_link_inclusion_prompt(3);
+                }
+                
+                // Append to system prompt
                 $system_prompt = !empty($system_prompt) ? $system_prompt . "\n\n" . $site_search_prompt : $site_search_prompt;
 
                 // Log site search prompt
@@ -548,6 +565,13 @@ class TW_Chat_Plugin {
 
                     // Log function results
                     TW_Chat_Logger::log(__('+ Number of search results: ' . count($function_result)));
+                    
+                    // Handle empty results
+                    if (empty($function_result)) {
+                        $function_result = array(
+                            'message' => 'No results found for the search term: ' . $search_term
+                        );
+                    }
                 
                 } elseif ($function_name === 'webhook') {
                     // Webhook function call
@@ -575,8 +599,8 @@ class TW_Chat_Plugin {
                     }
                 }
                 
-                // If function result is not empty
-                if (!empty($function_result)) {
+                // If function result is set (should always be set after function execution)
+                if (isset($function_result)) {
                     // Add new 'function' role message including function result
                     $api_messages[] = [
                         'role' => 'assistant',

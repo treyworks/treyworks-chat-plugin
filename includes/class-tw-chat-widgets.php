@@ -82,6 +82,10 @@ class TW_Chat_Widgets {
             $model = get_post_meta($post_id, 'tw_chat_model', true);
             $system_prompt = get_post_meta($post_id, 'tw_chat_system_prompt', true);
             $use_site_search = get_post_meta($post_id, 'tw_chat_use_site_search', true);
+            $search_scope = get_post_meta($post_id, 'tw_chat_search_scope', true);
+            $search_post_types = get_post_meta($post_id, 'tw_chat_search_post_types', true);
+            $search_specific_ids = get_post_meta($post_id, 'tw_chat_search_specific_ids', true);
+            $exclude_links = get_post_meta($post_id, 'tw_chat_exclude_links', true);
             
             return [
                 'tw_chat_widget_name' => $post['post_title'],
@@ -97,7 +101,11 @@ class TW_Chat_Widgets {
                 'tw_chat_widget_type' => $chat_widget_type,
                 'tw_chat_model' => $model,
                 'tw_chat_system_prompt' => $system_prompt,
-                'tw_chat_use_site_search' => $use_site_search
+                'tw_chat_use_site_search' => $use_site_search,
+                'tw_chat_search_scope' => $search_scope,
+                'tw_chat_search_post_types' => $search_post_types,
+                'tw_chat_search_specific_ids' => $search_specific_ids,
+                'tw_chat_exclude_links' => $exclude_links
             ];
 
         } else {

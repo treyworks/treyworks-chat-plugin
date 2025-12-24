@@ -18,7 +18,11 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         tw_chat_email_recipients: '',
         tw_chat_widget_type: 'text',
         tw_chat_voice_agent_id: '',
-        tw_chat_use_site_search: ''
+        tw_chat_use_site_search: '',
+        tw_chat_search_scope: 'all',
+        tw_chat_search_post_types: [],
+        tw_chat_search_specific_ids: '',
+        tw_chat_exclude_links: []
     });
 
     useEffect(() => {
@@ -38,6 +42,10 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                 tw_chat_widget_type: currentWidget.meta.tw_chat_widget_type ? currentWidget.meta.tw_chat_widget_type[0] : 'text',
                 tw_chat_voice_agent_id: currentWidget.meta.tw_chat_voice_agent_id ? currentWidget.meta.tw_chat_voice_agent_id[0] : '',
                 tw_chat_use_site_search: currentWidget.meta.tw_chat_use_site_search ? currentWidget.meta.tw_chat_use_site_search[0] : '',
+                tw_chat_search_scope: currentWidget.meta.tw_chat_search_scope ? currentWidget.meta.tw_chat_search_scope[0] : 'all',
+                tw_chat_search_post_types: currentWidget.meta.tw_chat_search_post_types ? currentWidget.meta.tw_chat_search_post_types[0].split(',').filter(Boolean) : [],
+                tw_chat_search_specific_ids: currentWidget.meta.tw_chat_search_specific_ids ? currentWidget.meta.tw_chat_search_specific_ids[0] : '',
+                tw_chat_exclude_links: currentWidget.meta.tw_chat_exclude_links ? currentWidget.meta.tw_chat_exclude_links[0].split(',').filter(Boolean) : [],
             });
         }
     }, [currentWidget]);
@@ -50,6 +58,32 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         }));
     }, []);
 
+    const handlePostTypeChange = useCallback((postTypeName) => {
+        setFormData(prevData => {
+            const currentTypes = prevData.tw_chat_search_post_types || [];
+            const newTypes = currentTypes.includes(postTypeName)
+                ? currentTypes.filter(type => type !== postTypeName)
+                : [...currentTypes, postTypeName];
+            return {
+                ...prevData,
+                tw_chat_search_post_types: newTypes
+            };
+        });
+    }, []);
+
+    const handleExcludeLinksChange = useCallback((postTypeName) => {
+        setFormData(prevData => {
+            const currentExcluded = prevData.tw_chat_exclude_links || [];
+            const newExcluded = currentExcluded.includes(postTypeName)
+                ? currentExcluded.filter(type => type !== postTypeName)
+                : [...currentExcluded, postTypeName];
+            return {
+                ...prevData,
+                tw_chat_exclude_links: newExcluded
+            };
+        });
+    }, []);
+
     const handleSuggestedAnswersChange = useCallback((answers) => {
         setFormData(prevData => ({
             ...prevData,
@@ -57,10 +91,21 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         }));
     }, []);
 
-    const handleSubmit = useCallback((e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
+        
+        // Convert post types array to comma-separated string for storage
+        const submitData = {
+            ...formData,
+            tw_chat_search_post_types: Array.isArray(formData.tw_chat_search_post_types) 
+                ? formData.tw_chat_search_post_types.join(',') 
+                : formData.tw_chat_search_post_types,
+            tw_chat_exclude_links: Array.isArray(formData.tw_chat_exclude_links)
+                ? formData.tw_chat_exclude_links.join(',')
+                : formData.tw_chat_exclude_links
+        };
         setIsSaving(true);
-        onSave(formData);
+        onSave(submitData);
         setIsSaving(false);
     }, [formData, onSave]);
 
@@ -73,6 +118,8 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
 
     return (
         <form id="tw-chat-new-widget-form" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
+            
+            <h3>General Settings</h3>
             <table className="form-table">
                 <tbody>
                     <tr valign="top">
@@ -107,24 +154,14 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                             </p>
                         </td>
                     </tr>
-                    
-                    {formData.tw_chat_widget_type === 'text' ? (
-                        // Chat widget specific fields
-                        <>
-                            <tr valign="top">
-                                <th scope="row">System Prompt</th>
-                                <td>
-                                    <textarea
-                                        rows="10"
-                                        className="large-text"
-                                        name="tw_chat_system_prompt"
-                                        onChange={handleInputChange}
-                                        value={formData.tw_chat_system_prompt}
-                                        placeholder="You are a helpful assistant."
-                                    ></textarea>
-                                    <p className="description">The system prompt sets the behavior and personality of your assistant.</p>
-                                </td>
-                            </tr>
+                </tbody>
+            </table>
+
+            {formData.tw_chat_widget_type === 'text' ? (
+                <>
+                    <h3>AI Configuration</h3>
+                    <table className="form-table">
+                        <tbody>
                             <tr valign="top">
                                 <th scope="row">Model</th>
                                 <td>
@@ -142,6 +179,26 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                     <p className="description">Select the OpenAI model to use for the chat widget.</p>
                                 </td>
                             </tr>
+                            <tr valign="top">
+                                <th scope="row">System Prompt</th>
+                                <td>
+                                    <textarea
+                                        rows="10"
+                                        className="large-text"
+                                        name="tw_chat_system_prompt"
+                                        onChange={handleInputChange}
+                                        value={formData.tw_chat_system_prompt}
+                                        placeholder="You are a helpful assistant."
+                                    ></textarea>
+                                    <p className="description">The system prompt sets the behavior and personality of your assistant.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Conversation Flow</h3>
+                    <table className="form-table">
+                        <tbody>
                             <tr valign="top">
                                 <th scope="row">Greeting</th>
                                 <td>
@@ -193,8 +250,14 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                     )}
                                 </td>
                             </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Site Search</h3>
+                    <table className="form-table">
+                        <tbody>
                             <tr valign="top">
-                                <th></th>
+                                <th scope="row">Site Search</th>
                                 <td>
                                     <input 
                                         type="checkbox" 
@@ -207,6 +270,140 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                     <p className="description">When enabled, the assistant can search your website content to answer questions.</p>
                                 </td>
                             </tr>
+                            {formData.tw_chat_use_site_search == '1' && (
+                                <>
+                                    <tr valign="top">
+                                        <th scope="row">Search Scope</th>
+                                        <td>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+                                                    <input
+                                                        type="radio"
+                                                        name="tw_chat_search_scope"
+                                                        value="all"
+                                                        checked={formData.tw_chat_search_scope === 'all'}
+                                                        onChange={handleInputChange}
+                                                        style={{ marginRight: '0.5rem' }}
+                                                    />
+                                                    <strong>All Content</strong>
+                                                </label>
+                                                <p className="description" style={{ marginLeft: '1.75rem', marginTop: '0.25rem' }}>
+                                                    Search across all pages, posts, and custom post types on your website.
+                                                </p>
+                                            </div>
+
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+                                                    <input
+                                                        type="radio"
+                                                        name="tw_chat_search_scope"
+                                                        value="post_types"
+                                                        checked={formData.tw_chat_search_scope === 'post_types'}
+                                                        onChange={handleInputChange}
+                                                        style={{ marginRight: '0.5rem' }}
+                                                    />
+                                                    <strong>Selected Post Types</strong>
+                                                </label>
+                                                <p className="description" style={{ marginLeft: '1.75rem', marginTop: '0.25rem' }}>
+                                                    Limit search to specific post types (e.g., pages, posts, products).
+                                                </p>
+                                                {formData.tw_chat_search_scope === 'post_types' && (
+                                                    <div style={{ marginLeft: '1.75rem', marginTop: '0.75rem' }}>
+                                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                                                            Select Post Types:
+                                                        </label>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                            {window.twChatSettings?.available_post_types?.map((postType) => (
+                                                                <label key={postType.name} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={formData.tw_chat_search_post_types?.includes(postType.name) || false}
+                                                                        onChange={() => handlePostTypeChange(postType.name)}
+                                                                    />
+                                                                    <span>{postType.label} <span style={{ color: '#666', fontSize: '0.9em' }}>({postType.name})</span></span>
+                                                                </label>
+                                                            ))}
+                                                        </div>
+                                                        {(!window.twChatSettings?.available_post_types || window.twChatSettings.available_post_types.length === 0) && (
+                                                            <p className="description" style={{ marginTop: '0.5rem', color: '#d63638' }}>
+                                                                No public post types found.
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+                                                    <input
+                                                        type="radio"
+                                                        name="tw_chat_search_scope"
+                                                        value="specific"
+                                                        checked={formData.tw_chat_search_scope === 'specific'}
+                                                        onChange={handleInputChange}
+                                                        style={{ marginRight: '0.5rem' }}
+                                                    />
+                                                    <strong>Specific Pages or Posts</strong>
+                                                </label>
+                                                <p className="description" style={{ marginLeft: '1.75rem', marginTop: '0.25rem' }}>
+                                                    Search only within specific pages or posts by their IDs.
+                                                </p>
+                                                {formData.tw_chat_search_scope === 'specific' && (
+                                                    <div style={{ marginLeft: '1.75rem', marginTop: '0.75rem' }}>
+                                                        <label htmlFor="tw_chat_search_specific_ids" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>
+                                                            Post/Page IDs (comma-separated):
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            id="tw_chat_search_specific_ids"
+                                                            name="tw_chat_search_specific_ids"
+                                                            className="regular-text"
+                                                            value={formData.tw_chat_search_specific_ids}
+                                                            onChange={handleInputChange}
+                                                            placeholder="123, 456, 789"
+                                                            style={{ maxWidth: '400px' }}
+                                                        />
+                                                        <p className="description" style={{ marginTop: '0.25rem' }}>
+                                                            Enter post or page IDs separated by commas.
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row">Exclude Links</th>
+                                        <td>
+                                            <p className="description" style={{ marginBottom: '0.75rem' }}>
+                                                Select post types to exclude from link generation. The AI can still search and reference content from these post types, but won't provide direct links to them.
+                                            </p>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                {window.twChatSettings?.available_post_types?.map((postType) => (
+                                                    <label key={postType.name} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={formData.tw_chat_exclude_links?.includes(postType.name) || false}
+                                                            onChange={() => handleExcludeLinksChange(postType.name)}
+                                                        />
+                                                        <span>{postType.label} <span style={{ color: '#666', fontSize: '0.9em' }}>({postType.name})</span></span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                            {(!window.twChatSettings?.available_post_types || window.twChatSettings.available_post_types.length === 0) && (
+                                                <p className="description" style={{ marginTop: '0.5rem', color: '#d63638' }}>
+                                                    No public post types found.
+                                                </p>
+                                            )}
+                                        </td>
+                                    </tr>
+                                </>
+                            )}
+                        </tbody>
+                    </table>
+
+                    <h3>Integrations</h3>
+                    <table className="form-table">
+                        <tbody>
                             <tr valign="top">
                                 <th scope="row">Webhook Address</th>
                                 <td>
@@ -231,32 +428,42 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                     ></textarea>
                                 </td>
                             </tr>
-                        </>
-                    ) : (
-                        // Voice widget specific fields
-                        <tr valign="top">
-                            <th scope="row">Voice Agent ID</th>
-                            <td>
-                                <input
-                                    className="regular-text"
-                                    type="text"
-                                    name="tw_chat_voice_agent_id"
-                                    onChange={handleInputChange}
-                                    value={formData.tw_chat_voice_agent_id}
-                                    required
-                                    placeholder="agent_xxxxxxxxxxxxxxxxxxxxxxx"
-                                />
-                                <p className="description">Retell AI Voice Agent ID from your Retell dashboard</p>
-                            </td>
-                        </tr>
-                    )}
-                </tbody>                
-            </table>
-            {!isSaving ? (
-                <input className="button button-hero button-primary" type="submit" value="Submit" />
+                        </tbody>
+                    </table>
+                </>
             ) : (
-                <p><span className="spinner is-active"></span> Saving</p>
+                // Voice widget specific fields
+                <>
+                    <h3>Voice Configuration</h3>
+                    <table className="form-table">
+                        <tbody>
+                            <tr valign="top">
+                                <th scope="row">Voice Agent ID</th>
+                                <td>
+                                    <input
+                                        className="regular-text"
+                                        type="text"
+                                        name="tw_chat_voice_agent_id"
+                                        onChange={handleInputChange}
+                                        value={formData.tw_chat_voice_agent_id}
+                                        required
+                                        placeholder="agent_xxxxxxxxxxxxxxxxxxxxxxx"
+                                    />
+                                    <p className="description">Retell AI Voice Agent ID from your Retell dashboard</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </>
             )}
+
+            <p className="submit">
+                {!isSaving ? (
+                    <input className="button button-hero button-primary" type="submit" value="Submit" />
+                ) : (
+                    <p><span className="spinner is-active"></span> Saving</p>
+                )}
+            </p>
         </form> 
     );
 };
