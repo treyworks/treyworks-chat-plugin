@@ -1,38 +1,406 @@
+/* ============================================
+   TreyWorks Brand Design System
+   Build Faster. Operate Smarter. Win More.
+   ============================================ */
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap');
+
+/* CSS Custom Properties - Brand Colors */
+:root {
+  /* Primary Blues */
+  --tw-primary-blue: #042236;
+  --tw-primary-blue-light: #0a3e5f;
+  --tw-primary-blue-lighter: #105a8a;
+  --tw-primary-blue-dark: #021624;
+  --tw-primary-blue-darker: #010b12;
+
+  /* Secondary Greens */
+  --tw-secondary-green: #275c4d;
+  --tw-secondary-green-light: #347d69;
+  --tw-secondary-green-lighter: #419e85;
+  --tw-secondary-green-dark: #1a3d33;
+  --tw-secondary-green-darker: #0d1e19;
+
+  /* Light Blues */
+  --tw-light-blue: #052b43;
+  --tw-light-blue-light: #0a4a73;
+  --tw-light-blue-lighter: #0f69a3;
+  --tw-light-blue-dark: #031c2c;
+  --tw-light-blue-darker: #010e16;
+
+  /* Orange Accents */
+  --tw-orange: #aa5c0e;
+  --tw-orange-light: #d27311;
+  --tw-orange-lighter: #fa8a14;
+  --tw-orange-dark: #824609;
+  --tw-orange-darker: #5a3106;
+
+  /* Neutrals */
+  --tw-cream: #d9d2a4;
+  --tw-off-white: #faf6ee;
+  --tw-red: #a83235;
+  --tw-light: #f0f0f0;
+  --tw-dark: #000000;
+
+  /* Typography */
+  --tw-font-body: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --tw-font-heading: "Merriweather", Georgia, serif;
+  --tw-font-size-base: 16px;
+
+  /* Spacing */
+  --tw-spacing-xs: 0.25rem;
+  --tw-spacing-sm: 0.5rem;
+  --tw-spacing-md: 1rem;
+  --tw-spacing-lg: 1.5rem;
+  --tw-spacing-xl: 2rem;
+  --tw-spacing-2xl: 3rem;
+
+  /* Border Radius */
+  --tw-radius-sm: 4px;
+  --tw-radius-md: 8px;
+  --tw-radius-lg: 12px;
+  --tw-radius-xl: 16px;
+
+  /* Shadows */
+  --tw-shadow-sm: 0 1px 2px rgba(4, 34, 54, 0.05);
+  --tw-shadow-md: 0 4px 6px rgba(4, 34, 54, 0.1);
+  --tw-shadow-lg: 0 10px 25px rgba(4, 34, 54, 0.15);
+  --tw-shadow-xl: 0 20px 40px rgba(4, 34, 54, 0.2);
+
+  /* Transitions */
+  --tw-transition-fast: 150ms ease;
+  --tw-transition-normal: 250ms ease;
+  --tw-transition-slow: 350ms ease;
+}
+
+/* ============================================
+   Base Admin Styles
+   ============================================ */
+#tw-chat-admin {
+  margin-bottom: var(--tw-spacing-xl);
+}
+
+.tw-options-page {
+  font-family: var(--tw-font-body);
+  font-size: var(--tw-font-size-base);
+  color: var(--tw-primary-blue);
+  line-height: 1.6;
+  background-color: var(--tw-light); /* Ensure light background for full page feel */
+  min-height: 100vh;
+}
+
 .tw-options-page .postbox {
-  padding: 0.5rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  padding: var(--tw-spacing-md);
+  color: var(--tw-light-blue);
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+/* Header Styles from Content Portal Dashboard example */
+.tw-admin-header {
+  background-color: var(--tw-secondary-green);
+  color: white;
+  padding: var(--tw-spacing-lg) var(--tw-spacing-xl);
+  border-radius: var(--tw-radius-lg);
+  margin-bottom: var(--tw-spacing-xl);
+  box-shadow: var(--tw-shadow-md);
+}
+
+.tw-admin-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tw-admin-header h1 {
+  font-family: var(--tw-font-heading);
+  font-size: 2rem;
+  color: white;
+  margin: 0;
+  font-weight: 400;
+}
+
+.tw-admin-header .tw-motto {
+  color: #fff;
+  margin: var(--tw-spacing-sm) 0 0 0;
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.tw-admin-header .tw-logo {
+  font-family: var(--tw-font-body);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: var(--tw-spacing-sm);
+}
+
+.tw-admin-header .tw-logo img {
+  width: 150px;
+  height: auto;
+}
+
+.tw-admin-body {
+  padding: 0 var(--tw-spacing-sm);
+}
+
+/* ============================================
+   Navigation Tabs (Pill Shaped)
+   ============================================ */
+
+.nav-tab-wrapper {
+  display: flex;
+  gap: var(--tw-spacing-md);
+  border-bottom: none; /* Removed standard border */
+  padding-bottom: 0;
+  margin-bottom: var(--tw-spacing-lg);
+  background: transparent;
+}
+
+button.nav-tab {
+  font-family: var(--tw-font-body);
+  font-size: 14px;
+  font-weight: 600;
+  padding: var(--tw-spacing-sm) var(--tw-spacing-lg);
+  background: white;
+  color: var(--tw-primary-blue);
+  border: 1px solid rgba(4, 34, 54, 0.15);
+  border-radius: var(--tw-radius-md); /* Pill/Rounded shape */
+  cursor: pointer;
+  transition: all var(--tw-transition-fast);
+  position: relative;
+  bottom: 0;
+  box-shadow: var(--tw-shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button.nav-tab:hover {
-  cursor: pointer;
+  background: var(--tw-off-white);
+  color: var(--tw-primary-blue);
+  /* transform: translateY(-2px); */
+  box-shadow: var(--tw-shadow-md);
+  border-color: var(--tw-secondary-green-light);
 }
 
 button.nav-tab:focus {
-  border-left: 1px solid #c3c4c7;
+  outline: 2px solid var(--tw-orange-light);
+  outline-offset: 2px;
+}
+
+button.nav-tab.nav-tab-active {
+  background: white;
+  color: var(--tw-secondary-green);
+  border: 1px solid var(--tw-secondary-green);
+  box-shadow: 0 0 0 1px var(--tw-secondary-green) inset; /* Double border effect */
 }
 
 .tabs-content {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  animation: fadeIn var(--tw-transition-normal);
 }
 
-.spinner {
-  float: none;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Form Styles */
+/* ============================================
+   Section Styling
+   ============================================ */
+
+.tabs-content section {
+  background: white;
+  border-radius: var(--tw-radius-lg);
+  padding: var(--tw-spacing-xl);
+  margin-bottom: var(--tw-spacing-xl);
+  box-shadow: var(--tw-shadow-sm);
+  border: 1px solid rgba(4, 34, 54, 0.05);
+}
+
+.tabs-content section h2 {
+  font-family: var(--tw-font-heading);
+  font-size: 1.5rem;
+  color: var(--tw-primary-blue);
+  margin: 0 0 var(--tw-spacing-md) 0;
+  padding-bottom: var(--tw-spacing-sm);
+  border-bottom: 2px solid var(--tw-secondary-green-light);
+  display: inline-block;
+}
+
+.tabs-content section > p {
+  color: var(--tw-primary-blue-light);
+  margin-bottom: var(--tw-spacing-lg);
+  max-width: 800px;
+}
+
+/* ============================================
+   Form Styles
+   ============================================ */
+
+.form-table {
+  margin-top: var(--tw-spacing-md);
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--tw-spacing-md);
+}
+
+.form-table th {
+  font-family: var(--tw-font-body);
+  font-weight: 600;
+  color: var(--tw-primary-blue);
+  padding: var(--tw-spacing-sm) var(--tw-spacing-lg) var(--tw-spacing-sm) 0;
+  vertical-align: top;
+  width: 250px;
+}
+
+.form-table td {
+  padding: 0;
+  vertical-align: top;
+}
+
 .form-table td select {
   width: 100%;
+  max-width: 400px;
 }
 
-.form-table td p:first-child {
-  margin-top: 0;
+.form-table td p.description {
+  color: var(--tw-primary-blue-lighter);
+  font-size: 13px;
+  margin-top: var(--tw-spacing-xs);
+  font-style: italic;
 }
 
-.form-table td p:not(:first-child) {
-  margin-top: 1rem;
+/* Input Fields */
+.form-table input[type="text"],
+.form-table input[type="password"],
+.form-table input[type="number"],
+.form-table input[type="email"],
+.form-table input[type="url"],
+.form-table textarea,
+.form-table select {
+  font-family: var(--tw-font-body);
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(4, 34, 54, 0.2);
+  border-radius: var(--tw-radius-md);
+  background: white;
+  color: var(--tw-primary-blue);
+  transition: all var(--tw-transition-fast);
+  width: 100%;
+  max-width: 500px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
 }
+
+.form-table input[type="text"]:focus,
+.form-table input[type="password"]:focus,
+.form-table input[type="number"]:focus,
+.form-table input[type="email"]:focus,
+.form-table input[type="url"]:focus,
+.form-table textarea:focus,
+.form-table select:focus {
+  outline: none;
+  border-color: var(--tw-secondary-green);
+  box-shadow: 0 0 0 3px rgba(39, 92, 77, 0.15);
+}
+
+/* Checkbox Styling */
+.form-table input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--tw-secondary-green);
+  cursor: pointer;
+  margin-right: var(--tw-spacing-sm);
+  border-radius: 4px;
+  border: 1px solid rgba(4, 34, 54, 0.2);
+}
+
+.form-table input[type="checkbox"]:checked {
+    background-color: var(--tw-secondary-green);
+    border-color: var(--tw-secondary-green);
+}
+
+.form-table input[type="checkbox"] + label {
+  cursor: pointer;
+  color: var(--tw-primary-blue);
+  font-weight: 500;
+  position: relative;
+  top: -4px;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+
+.button {
+  font-family: var(--tw-font-body);
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: var(--tw-radius-md);
+  cursor: pointer;
+  transition: all var(--tw-transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tw-spacing-sm);
+  text-decoration: none;
+  border: none;
+  line-height: 1.2;
+}
+
+/* Primary Button - Orange as requested */
+.button-primary {
+  background: var(--tw-orange); /* Solid orange */
+  color: white !important;
+  box-shadow: var(--tw-shadow-sm);
+  border: 1px solid transparent;
+}
+
+.button-primary:hover {
+  background: var(--tw-orange-light);
+  /* transform: translateY(-1px); */
+  box-shadow: var(--tw-shadow-md);
+}
+
+.button-primary:active {
+  background: var(--tw-orange-dark);
+  transform: translateY(0);
+}
+
+.button-primary:focus {
+  outline: 2px solid var(--tw-primary-blue);
+  outline-offset: 2px;
+}
+
+.button-hero {
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+/* Secondary Button - Outline style */
+.button-secondary,
+button[type="button"]:not(.button-primary):not(.nav-tab) {
+  background: white;
+  color: var(--tw-secondary-green) !important;
+  border: 1px solid var(--tw-secondary-green);
+  box-shadow: var(--tw-shadow-sm);
+}
+
+.button-secondary:hover,
+button[type="button"]:not(.button-primary):not(.nav-tab):hover {
+  background: var(--tw-secondary-green);
+  color: white !important;
+  /* transform: translateY(-1px); */
+  box-shadow: var(--tw-shadow-md);
+}
+
+/* ============================================
+   Modal Styles
+   ============================================ */
 
 .tw-chat-admin-modal {
   position: absolute;
@@ -40,55 +408,76 @@ button.nav-tab:focus {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 800px;
-  height: 800px;
-  overflow-y: scroll;
-  max-width: 95%;
-  max-height: 95%;
-  background-color: #f0f0f0;
-  border: 1px solid #c3c4c7;
-  box-shadow: 0 0 12px rgb(170, 92, 14);
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: var(--tw-radius-xl);
+  border: none;
+  box-shadow: var(--tw-shadow-xl);
+  outline: none;
 }
 
 .tw-chat-admin-modal-body {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 100%;
   width: 100%;
 }
 
 .tw-chat-admin-modal-header {
-  padding: 1rem;
-  font-size: 1.5rem;
+  padding: var(--tw-spacing-lg) var(--tw-spacing-xl);
+  font-family: var(--tw-font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 0;
   position: sticky;
   top: 0;
-  background: white;
+  background: var(--tw-secondary-green); /* Matches main header */
+  z-index: 10;
 }
 
 .tw-chat-admin-modal-header button {
   border: none;
-  background: none;
+  background: rgba(255, 255, 255, 0.1);
   box-shadow: none;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
+  padding: var(--tw-spacing-sm);
+  border-radius: var(--tw-radius-md);
+  transition: all var(--tw-transition-fast);
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.tw-chat-admin-modal-header button:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .tw-chat-admin-modal-header .dashicons {
-  font-size: 2rem;
-  width: 2rem;
-  height: 2rem;
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: white;
 }
 
 .tw-chat-admin-modal-content {
-  padding: 1rem;
+  padding: var(--tw-spacing-xl);
 }
 
 .tw-chat-admin-modal-content pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  background: var(--tw-light);
+  padding: var(--tw-spacing-md);
+  border-radius: var(--tw-radius-md);
+  font-size: 13px;
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
 .tw-chat-admin-overlay {
@@ -98,21 +487,381 @@ button.nav-tab:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(4, 34, 54, 0.75);
+  background-color: rgba(4, 34, 54, 0.7);
+  backdrop-filter: blur(4px);
 }
 
-/* Toaster */
-/* .tw-admin-toaster {} */
+/* ============================================
+   Tables
+   ============================================ */
 
-/* Table buttons */
-.wp-list-table button {
-  background: none;
+.wp-list-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--tw-radius-md);
+  overflow: hidden;
+  box-shadow: var(--tw-shadow-sm);
+  border: 1px solid rgba(4, 34, 54, 0.1);
+  width: 100%;
+}
+
+.wp-list-table thead th {
+  background: var(--tw-light-blue);
+  color: white !important;
+  font-family: var(--tw-font-body);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--tw-spacing-md) var(--tw-spacing-lg);
   border: none;
-  box-shadow: none;
-  margin-right: 1rem;
-  cursor: pointer;
+  text-align: left;
 }
 
-.wp-list-table button:last-child {
-  margin-right: 0;
+.wp-list-table tbody tr {
+  transition: background var(--tw-transition-fast);
+  background: white;
+}
+
+.wp-list-table tbody tr:nth-child(even) {
+  background: var(--tw-off-white);
+}
+
+.wp-list-table tbody tr:hover {
+  background: #f0f4f8 !important; /* Light blue tint on hover */
+}
+
+.wp-list-table tbody td {
+  padding: var(--tw-spacing-md) var(--tw-spacing-lg);
+  border-bottom: 1px solid rgba(4, 34, 54, 0.05);
+  vertical-align: middle;
+  color: var(--tw-primary-blue);
+  font-size: 14px;
+}
+
+.wp-list-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.wp-list-table a {
+  color: var(--tw-secondary-green);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--tw-transition-fast);
+}
+
+.wp-list-table a:hover {
+  color: var(--tw-orange);
+  text-decoration: underline;
+}
+
+.wp-list-table button {
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+  margin-right: var(--tw-spacing-xs);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--tw-radius-sm);
+  transition: all var(--tw-transition-fast);
+  color: var(--tw-primary-blue-lighter);
+}
+
+.wp-list-table button:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--tw-primary-blue);
+}
+
+.wp-list-table .dashicons-trash {
+  color: var(--tw-red);
+}
+
+.wp-list-table button:hover .dashicons-trash {
+    color: #c94043;
+}
+
+/* ============================================
+   Loading & Spinner
+   ============================================ */
+
+.spinner {
+  float: none;
+}
+
+.spinner.is-active {
+  background-color: var(--tw-secondary-green);
+}
+
+/* ============================================
+   Notices
+   ============================================ */
+
+.notice {
+  border-radius: var(--tw-radius-md);
+  padding: var(--tw-spacing-md) var(--tw-spacing-lg);
+  margin: var(--tw-spacing-md) 0;
+  border-left-width: 4px;
+  box-shadow: var(--tw-shadow-sm);
+  background: white;
+}
+
+.notice-info {
+  border-left-color: var(--tw-light-blue-lighter);
+}
+
+.notice-success {
+  border-left-color: var(--tw-secondary-green-light);
+}
+
+.notice-warning {
+  border-left-color: var(--tw-orange);
+}
+
+.notice-error {
+  border-left-color: var(--tw-red);
+}
+
+/* ============================================
+   Toaster
+   ============================================ */
+
+.tw-admin-toaster {
+  font-family: var(--tw-font-body) !important;
+  font-size: 14px !important;
+  border-radius: var(--tw-radius-md) !important;
+  box-shadow: var(--tw-shadow-lg) !important;
+  background: var(--tw-primary-blue) !important;
+  color: white !important;
+}
+
+/* ============================================
+   Links
+   ============================================ */
+
+.tabs-content a {
+  color: var(--tw-secondary-green);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--tw-transition-fast);
+}
+
+.tabs-content a:hover {
+  color: var(--tw-orange);
+  text-decoration: underline;
+}
+
+/* ============================================
+   Code Elements
+   ============================================ */
+
+code {
+  background: var(--tw-off-white);
+  padding: 4px 8px;
+  border-radius: var(--tw-radius-sm);
+  font-size: 13px;
+  color: var(--tw-orange-dark);
+  border: 1px solid rgba(0,0,0,0.05);
+  font-family: monospace;
+}
+
+/* ============================================
+   Ordered Lists (Instructions)
+   ============================================ */
+
+.tabs-content ol {
+  padding-left: var(--tw-spacing-xl);
+  margin: var(--tw-spacing-md) 0;
+}
+
+.tabs-content ol li {
+  padding: var(--tw-spacing-sm) 0;
+  color: var(--tw-primary-blue);
+  line-height: 1.6;
+}
+
+.tabs-content ol li::marker {
+  color: var(--tw-secondary-green);
+  font-weight: 700;
+}
+
+/* ============================================
+   Tooltips
+   ============================================ */
+
+.react-tooltip {
+  font-family: var(--tw-font-body) !important;
+  font-size: 12px !important;
+  padding: 8px 12px !important;
+  border-radius: var(--tw-radius-md) !important;
+  background: var(--tw-primary-blue) !important;
+  opacity: 1 !important;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media screen and (max-width: 782px) {
+  .tw-admin-header {
+    padding: var(--tw-spacing-md);
+  }
+
+  .tw-admin-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .tw-admin-header .tw-logo {
+    display: none; /* Hide logo on small screens if needed for space */
+  }
+
+  .nav-tab-wrapper {
+    flex-wrap: wrap;
+    gap: var(--tw-spacing-sm);
+  }
+
+  button.nav-tab {
+    flex: 1 1 auto;
+    text-align: center;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .tabs-content section {
+    padding: var(--tw-spacing-md);
+  }
+
+  .form-table th,
+  .form-table td {
+    display: block;
+    width: 100%;
+    padding: var(--tw-spacing-sm) 0;
+  }
+
+  .form-table th {
+    padding-bottom: 0;
+    margin-bottom: 4px;
+  }
+
+  .form-table input[type="text"],
+  .form-table input[type="number"],
+  .form-table textarea,
+  .form-table select {
+    max-width: 100%;
+  }
+
+  .tw-chat-admin-modal {
+    width: 95vw;
+    max-height: 95vh;
+    border-radius: var(--tw-radius-md);
+  }
+
+  .tw-chat-admin-modal-header {
+    padding: var(--tw-spacing-md);
+    font-size: 1.1rem;
+  }
+
+  .tw-chat-admin-modal-content {
+    padding: var(--tw-spacing-md);
+  }
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ============================================
+   List Input Component
+   ============================================ */
+
+.tw-chat-list-input > div {
+  display: flex;
+  align-items: center;
+  gap: var(--tw-spacing-sm);
+  margin-bottom: var(--tw-spacing-sm);
+}
+
+.tw-chat-list-input input.regular-text {
+  margin: 0 !important;
+  flex: 1;
+  max-width: 400px;
+}
+
+/* Remove button styling */
+.tw-chat-list-input > div > button {
+  background: white;
+  border: 1px solid rgba(168, 50, 53, 0.2);
+  color: var(--tw-red);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--tw-radius-md);
+  cursor: pointer;
+  transition: all var(--tw-transition-fast);
+  flex-shrink: 0;
+  box-shadow: var(--tw-shadow-sm);
+}
+
+.tw-chat-list-input > div > button:hover {
+  background: var(--tw-red);
+  color: white;
+  border-color: var(--tw-red);
+  box-shadow: var(--tw-shadow-md);
+}
+
+.tw-chat-list-input > div > button .dashicons {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Add Item Button styling */
+.tw-chat-list-input > button {
+  margin-top: 4px;
+  background: white;
+  border: 1px dashed var(--tw-secondary-green);
+  color: var(--tw-secondary-green);
+  padding: 8px 16px;
+  border-radius: var(--tw-radius-md);
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--tw-transition-fast);
+  font-family: var(--tw-font-body);
+}
+
+.tw-chat-list-input > button:hover {
+  background: rgba(39, 92, 77, 0.05);
+  border-style: solid;
+  color: var(--tw-secondary-green-dark);
+  transform: translateY(-1px);
+}
+
+.tw-chat-list-input > button .dashicons {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+}
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--tw-orange-light);
+  outline-offset: 2px;
 }
