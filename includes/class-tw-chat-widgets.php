@@ -81,6 +81,7 @@ class TW_Chat_Widgets {
             $chat_widget_type = get_post_meta($post_id, 'tw_chat_widget_type', true);
             $model = get_post_meta($post_id, 'tw_chat_model', true);
             $system_prompt = get_post_meta($post_id, 'tw_chat_system_prompt', true);
+            $use_site_search = get_post_meta($post_id, 'tw_chat_use_site_search', true);
             
             return [
                 'tw_chat_widget_name' => $post['post_title'],
@@ -95,7 +96,8 @@ class TW_Chat_Widgets {
                 'tw_chat_voice_agent_id' => $voice_agent_id,
                 'tw_chat_widget_type' => $chat_widget_type,
                 'tw_chat_model' => $model,
-                'tw_chat_system_prompt' => $system_prompt
+                'tw_chat_system_prompt' => $system_prompt,
+                'tw_chat_use_site_search' => $use_site_search
             ];
 
         } else {

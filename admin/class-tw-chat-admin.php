@@ -237,6 +237,7 @@
             $email_recipients = isset($_POST['tw_chat_email_recipients']) ? sanitize_text_field($_POST['tw_chat_email_recipients']) : '';
             $voice_agent_id = isset($_POST['tw_chat_voice_agent_id']) ? sanitize_text_field($_POST['tw_chat_voice_agent_id']) : '';
             $chat_widget_type = isset($_POST['tw_chat_widget_type']) ? sanitize_text_field($_POST['tw_chat_widget_type']) : 'text';
+            $use_site_search = isset($_POST['tw_chat_use_site_search']) ? rest_sanitize_boolean($_POST['tw_chat_use_site_search']) : 0;
 
             // Validate chat_widget_type
             // if (!in_array($chat_widget_type, ['text', 'voice'])) {
@@ -277,6 +278,7 @@
             update_post_meta($post_id, 'tw_chat_email_recipients', $email_recipients);
             update_post_meta($post_id, 'tw_chat_voice_agent_id', $voice_agent_id);
             update_post_meta($post_id, 'tw_chat_widget_type', $chat_widget_type);
+            update_post_meta($post_id, 'tw_chat_use_site_search', $use_site_search);
 
             $response = TW_Chat_Widgets::get_chat_widgets();
             wp_send_json_success( $response );

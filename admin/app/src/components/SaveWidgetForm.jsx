@@ -17,7 +17,8 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         tw_chat_webhook_header: '',
         tw_chat_email_recipients: '',
         tw_chat_widget_type: 'text',
-        tw_chat_voice_agent_id: ''
+        tw_chat_voice_agent_id: '',
+        tw_chat_use_site_search: ''
     });
 
     useEffect(() => {
@@ -36,6 +37,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                 tw_chat_webhook_header: currentWidget.meta.tw_chat_webhook_header ? currentWidget.meta.tw_chat_webhook_header[0] : '',
                 tw_chat_widget_type: currentWidget.meta.tw_chat_widget_type ? currentWidget.meta.tw_chat_widget_type[0] : 'text',
                 tw_chat_voice_agent_id: currentWidget.meta.tw_chat_voice_agent_id ? currentWidget.meta.tw_chat_voice_agent_id[0] : '',
+                tw_chat_use_site_search: currentWidget.meta.tw_chat_use_site_search ? currentWidget.meta.tw_chat_use_site_search[0] : '',
             });
         }
     }, [currentWidget]);
@@ -189,6 +191,20 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                             />
                                         </div>
                                     )}
+                                </td>
+                            </tr>
+                            <tr valign="top">
+                                <th></th>
+                                <td>
+                                    <input 
+                                        type="checkbox" 
+                                        id="tw_chat_use_site_search" 
+                                        name="tw_chat_use_site_search" 
+                                        checked={formData.tw_chat_use_site_search == '1'}
+                                        onChange={handleInputChange}
+                                    /> 
+                                    <label htmlFor="tw_chat_use_site_search">Enable site search function</label>
+                                    <p className="description">When enabled, the assistant can search your website content to answer questions.</p>
                                 </td>
                             </tr>
                             <tr valign="top">

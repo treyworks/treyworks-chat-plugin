@@ -1,5 +1,9 @@
 # Project Changelog
 
+## 2.1.0
+- Feature: Admin UX improvements
+- 
+
 ## 2.0.3
 - Feature: Added support for GPT 5.2 model
 - Feature: Limited search results to 3 posts
