@@ -26,6 +26,11 @@ class TW_Chat_Prompt_Manager {
     const PROMPT_LINK_EXCLUSION = "\n\n**Exclude Links for Specific Content:** When referencing content from the following post types, do NOT provide direct links: {excluded_post_types}. You may still search and reference the content, but silently omit the URLs for these types. Do not mention or explain to the user that links are unavailable.";
 
     /**
+     * JSON response format prompt - instructs AI to format responses as JSON with optional UX components
+     */
+    const PROMPT_JSON_RESPONSE = "\n\n## Response Format\n\nFormat all responses in JSON:\n{\n  \"message\": \"[YOUR RESPONSE]\",\n  \"type\": \"text\",\n  \"suggestedAnswers\": [ARRAY OF SUGGESTED USER ANSWERS TO YOUR RESPONSE]\n}\n\n**When to Include suggestedAnswers:**\n- When your system prompt instructs you to make suggestions or provide options\n- When you ask the user a question with specific choices (e.g., \"Would you like to know about A, B, or C?\")\n- When offering relevant follow-up topics that would help continue the conversation\n- When presenting multiple paths the user could take next\n\nThe 'suggestedAnswers' field can be an empty array if no suggestions are contextually relevant or appropriate.";
+
+    /**
      * Inject parameters into a prompt template
      *
      * @param string $prompt The prompt template with {parameter} placeholders
@@ -83,6 +88,15 @@ class TW_Chat_Prompt_Manager {
         return self::inject_params( self::PROMPT_LINK_EXCLUSION, array(
             'excluded_post_types' => $post_types_list
         ) );
+    }
+
+    /**
+     * Get JSON response format prompt
+     *
+     * @return string The JSON response format prompt
+     */
+    public static function get_json_response_prompt() {
+        return self::PROMPT_JSON_RESPONSE;
     }
 
     /**

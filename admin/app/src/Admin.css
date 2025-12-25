@@ -100,6 +100,7 @@
 /* Header Styles from Content Portal Dashboard example */
 .tw-admin-header {
   background-color: var(--tw-secondary-green);
+  background: linear-gradient(135deg, var(--tw-primary-blue) 0%, var(--tw-secondary-green) 100%);
   color: white;
   padding: var(--tw-spacing-lg) var(--tw-spacing-xl);
   border-radius: var(--tw-radius-lg);
