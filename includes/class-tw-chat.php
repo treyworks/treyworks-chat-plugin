@@ -8,6 +8,7 @@ require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-wi
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-functions.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-logger.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-meta.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-prompt-manager.php';
 
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-admin.php';
 
@@ -436,6 +437,9 @@ class TW_Chat_Plugin {
                 return new WP_Error('bad_request', 'Missing widget_id or messages.', ['status' => 400]);
             }
 
+            // Log request
+            TW_Chat_Logger::log(__("Chat Request for widget: " . $widget_id));
+
             // Get widget settings
             $chat_widget = TW_Chat_Widgets::get_chat_widget_by_id($widget_id);
             if (!$chat_widget) {
@@ -445,9 +449,33 @@ class TW_Chat_Plugin {
             // Get system prompt and model
             $system_prompt = sanitize_textarea_field($chat_widget['tw_chat_system_prompt']);
             $model = !empty($chat_widget['tw_chat_ai_model']) ? sanitize_text_field($chat_widget['tw_chat_ai_model']) : 'gpt-4o';
+            $use_site_search = !empty($chat_widget['tw_chat_use_site_search']);
 
-            // Log request
-            TW_Chat_Logger::log(__("Chat Request for widget: " . $widget_id));
+            // Append site search prompt if enabled
+            if ($use_site_search) {
+                // Start with base site search prompt
+                $site_search_prompt = TW_Chat_Prompt_Manager::get_site_search_prompt();
+                
+                // Get excluded post types
+                $exclude_links = !empty($chat_widget['tw_chat_exclude_links']) ? $chat_widget['tw_chat_exclude_links'] : '';
+                $excluded_post_types = !empty($exclude_links) ? array_map('trim', explode(',', $exclude_links)) : array();
+                
+                // Add link inclusion or exclusion instructions
+                if (!empty($excluded_post_types)) {
+                    // If there are excluded post types, add both inclusion and exclusion prompts
+                    $site_search_prompt .= TW_Chat_Prompt_Manager::get_link_inclusion_prompt(3);
+                    $site_search_prompt .= TW_Chat_Prompt_Manager::get_link_exclusion_prompt($excluded_post_types);
+                } else {
+                    // No exclusions, just add standard link inclusion
+                    $site_search_prompt .= TW_Chat_Prompt_Manager::get_link_inclusion_prompt(3);
+                }
+                
+                // Append to system prompt
+                $system_prompt = !empty($system_prompt) ? $system_prompt . "\n\n" . $site_search_prompt : $site_search_prompt;
+
+                // Log site search prompt
+                TW_Chat_Logger::log(__("Site Search Prompt: " . $site_search_prompt));
+            }
 
             // Get API Base URI
             $api_base_uri = !empty($settings['tw_chat_api_base_uri']) ? sanitize_text_field($settings['tw_chat_api_base_uri']) : 'api.openai.com/v1';
@@ -537,6 +565,13 @@ class TW_Chat_Plugin {
 
                     // Log function results
                     TW_Chat_Logger::log(__('+ Number of search results: ' . count($function_result)));
+                    
+                    // Handle empty results
+                    if (empty($function_result)) {
+                        $function_result = array(
+                            'message' => 'No results found for the search term: ' . $search_term
+                        );
+                    }
                 
                 } elseif ($function_name === 'webhook') {
                     // Webhook function call
@@ -564,8 +599,8 @@ class TW_Chat_Plugin {
                     }
                 }
                 
-                // If function result is not empty
-                if (!empty($function_result)) {
+                // If function result is set (should always be set after function execution)
+                if (isset($function_result)) {
                     // Add new 'function' role message including function result
                     $api_messages[] = [
                         'role' => 'assistant',

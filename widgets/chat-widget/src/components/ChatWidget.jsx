@@ -51,11 +51,6 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                 setSuggestedAnswers(widgetSettings.tw_chat_suggested_answers.split(','))
             }
         }
-
-        // Set focus if sticky
-        if (sticky) {
-            setFocus(widgetID)
-        }
     }, [])
 
     // Set up effect for new messages
@@ -150,8 +145,10 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
             setCharacterCount(0)
             setIsWaiting(false)
            
-            // Set input focus
-            setFocus(widgetID)
+            // Set input focus for sticky widgets only
+            if (sticky) {
+                setFocus(widgetID)
+            }
             
           })
           .catch(error => {

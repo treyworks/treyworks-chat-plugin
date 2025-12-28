@@ -79,30 +79,92 @@ class TW_Chat_Functions {
 
     /* Site Search Function */
     public static function search_site($search_term, $widget_id) {
-        $args = array(
-            's' => $search_term,
-            'post_type' => 'any',
-            'post_status' => 'publish',
-            'posts_per_page' => 3,
-        );
-    
-        $search_query = new WP_Query($args);
-        $search_results = array();
-    
-        if ($search_query->have_posts()) {
-            while ($search_query->have_posts()) {
-                $search_query->the_post();
-                $search_results[] = array(
-                    'title' => get_the_title(),
-                    'permalink' => get_permalink(),
-                    'content' => get_the_content()
-                );
+        // Get widget settings
+        $chat_widget = TW_Chat_Widgets::get_chat_widget_by_id($widget_id);
+        
+        // Get search scope settings
+        $search_scope = !empty($chat_widget['tw_chat_search_scope']) ? $chat_widget['tw_chat_search_scope'] : 'all';
+        $search_post_types = !empty($chat_widget['tw_chat_search_post_types']) ? $chat_widget['tw_chat_search_post_types'] : '';
+        $search_specific_ids = !empty($chat_widget['tw_chat_search_specific_ids']) ? $chat_widget['tw_chat_search_specific_ids'] : '';
+        
+        // Split comma-separated search terms and limit to 3 variations
+        $search_terms = array_map('trim', explode(',', $search_term));
+        $search_terms = array_slice($search_terms, 0, 3);
+        
+        // Track posts by ID with relevance score (how many searches found them)
+        $posts_by_id = array();
+        $relevance_scores = array();
+        
+        // Execute search for each term
+        foreach ($search_terms as $term) {
+            if (empty($term)) {
+                continue;
             }
+            
+            // Build base query args
+            $args = array(
+                's' => $term,
+                'post_status' => 'publish',
+                'posts_per_page' => 5, // Get more results per query to increase pool
+            );
+            
+            // Apply post type filtering based on search scope
+            if ($search_scope === 'post_types' && !empty($search_post_types)) {
+                // Search specific post types
+                $post_types = array_map('trim', explode(',', $search_post_types));
+                $args['post_type'] = $post_types;
+            } elseif ($search_scope === 'specific' && !empty($search_specific_ids)) {
+                // Search specific post IDs
+                $post_ids = array_map('trim', explode(',', $search_specific_ids));
+                $args['post_type'] = 'any';
+                $args['post__in'] = $post_ids;
+            } else {
+                // Default: search all post types
+                $args['post_type'] = 'any';
+            }
+        
+            $search_query = new WP_Query($args);
+        
+            if ($search_query->have_posts()) {
+                while ($search_query->have_posts()) {
+                    $search_query->the_post();
+                    $post_id = get_the_ID();
+                    
+                    // If we haven't seen this post yet, add it
+                    if (!isset($posts_by_id[$post_id])) {
+                        $posts_by_id[$post_id] = array(
+                            'id' => $post_id,
+                            'title' => get_the_title(),
+                            'post_type' => get_post_type($post_id),
+                            'permalink' => get_permalink(),
+                            'content' => get_the_content()
+                        );
+                        $relevance_scores[$post_id] = 0;
+                    }
+                    
+                    // Increment relevance score (post found in multiple searches)
+                    $relevance_scores[$post_id]++;
+                }
+            }
+            
+            // Reset post data after each query
+            wp_reset_postdata();
         }
-    
-        // Reset post data
-        wp_reset_postdata();
-    
+        
+        // Sort posts by relevance score (descending)
+        arsort($relevance_scores);
+        
+        // Build final results array, limited to 3 posts
+        $search_results = array();
+        $count = 0;
+        foreach ($relevance_scores as $post_id => $score) {
+            if ($count >= 3) {
+                break;
+            }
+            $search_results[] = $posts_by_id[$post_id];
+            $count++;
+        }
+        
         return $search_results;
     }
 
