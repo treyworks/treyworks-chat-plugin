@@ -2,7 +2,7 @@
 
 ## 2.1.0
 - Feature: Admin UX improvements
-- 
+- Bug fix: Removed autofocus for embedded widgets
 
 ## 2.0.3
 - Feature: Added support for GPT 5.2 model
