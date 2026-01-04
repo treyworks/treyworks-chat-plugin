@@ -25055,7 +25055,7 @@ window.addEventListener("load", function() {
           widgetID: c.dataset.widgetId,
           height: c.dataset.height,
           width: c.dataset.width,
-          sticky: c.dataset.sticky
+          sticky: Number(c.dataset.sticky)
         }
       ) })
     );

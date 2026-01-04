@@ -22,7 +22,7 @@ window.addEventListener('load', function() {
                     widgetID={div.dataset.widgetId} 
                     height={div.dataset.height}
                     width={div.dataset.width}
-                    sticky={div.dataset.sticky}
+                    sticky={Number(div.dataset.sticky)}
                 />
             </React.StrictMode>
         );

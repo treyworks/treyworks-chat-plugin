@@ -1,5 +1,8 @@
 # Project Changelog
 
+## 2.1.1
+- Bug fix: Fixed sticky flag on embedded text chat widgets
+
 ## 2.1.0
 - Feature: Admin UX improvements
 - Bug fix: Removed autofocus for embedded widgets
