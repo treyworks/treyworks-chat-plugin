@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2.1.2
+- Bug fix: Removed JSON parsing for suggested answers response. Will migrate to Responses API in the future and add JSON structured output option.
+
+## 2.1.1
+- Bug fix: Fixed sticky flag on embedded text chat widgets
+
 ## 2.1.0
 - Feature: Admin UX improvements
 - Bug fix: Removed autofocus for embedded widgets

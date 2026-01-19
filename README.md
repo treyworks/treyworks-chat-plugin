@@ -4,13 +4,6 @@
 
 The Treyworks Chat Plugin empowers your WordPress website with intelligent chatbots in two formats: text-based chat and voice-interactive conversations. Enhance user experience, provide instant answers, and boost engagement with these versatile and customizable widgets.
 
-### What's New in 2.0
-
-- Breaking change: Core text chat now uses the OpenAI Chat Completions API (replacing the Assistants API).
-- Build and manage text chat widgets entirely in the plugin admin — no external Assistant setup required.
-- Built-in tools for text chat widgets: Webhook, Search Site, and Call Action (WordPress hooks).
-- Updated UI and internal refactors for a smoother setup and usage.
-
 ### Two Chat Widget Options
 
 1. **Text Chat Widgets** - Powered by the OpenAI Chat Completions API, providing intelligent text-based conversations
@@ -183,21 +176,6 @@ Extend your chatbot's functionality with custom WordPress hooks and filters:
   - `action_arguments` (array, optional): Arguments to pass.
 - Example prompt
   - "Call the 'get_featured_products' filter with ['recent', 5] and summarize the titles it returns."
-
-## Suggested Answers (OpenAI Text Chat)
-
-Enhance text chat widget interactivity by configuring your OpenAI assistant to provide suggested answers:
-
-1. Add to assistant instructions:
-```
-Format all responses in JSON:
-{
-  "message": "[YOUR RESPONSE]",
-  "suggestedAnswers": [ARRAY OF SUGGESTED USER ANSWERS TO YOUR RESPONSE]
-}
-```
-
-2. In the OpenAI platform, navigate to Response Settings in the Model Configuration section and check the JSON Object checkbox.
 
 ## Customization
 
