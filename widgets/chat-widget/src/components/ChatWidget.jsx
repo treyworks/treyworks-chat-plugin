@@ -119,21 +119,9 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
 
             // Check length of returned data
             if (responseMessage.length > 0) {
-                // is it a valid JSON response?
-                try {
-                    const responseObject = JSON.parse(responseMessage)
-                    // get the message property value
-                    replyText = responseObject.message
 
-                    // set the suggested answers
-                    if (responseObject.suggestedAnswers) {
-                        setSuggestedAnswers(responseObject.suggestedAnswers)
-                    }
-                    window.twChatWidgetSettings[widgetID].suggestedAnswers = responseObject.suggestedAnswers
-                } catch (error) {
-                    // Treat it as a string
-                    replyText = responseMessage
-                }
+                // Set reply text
+                replyText = responseMessage
 
                 // Remove annotations
                 const newText = replyText.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【.*?†source】/g, "")

@@ -184,21 +184,6 @@ Extend your chatbot's functionality with custom WordPress hooks and filters:
 - Example prompt
   - "Call the 'get_featured_products' filter with ['recent', 5] and summarize the titles it returns."
 
-## Suggested Answers (OpenAI Text Chat)
-
-Enhance text chat widget interactivity by configuring your OpenAI assistant to provide suggested answers:
-
-1. Add to assistant instructions:
-```
-Format all responses in JSON:
-{
-  "message": "[YOUR RESPONSE]",
-  "suggestedAnswers": [ARRAY OF SUGGESTED USER ANSWERS TO YOUR RESPONSE]
-}
-```
-
-2. In the OpenAI platform, navigate to Response Settings in the Model Configuration section and check the JSON Object checkbox.
-
 ## Customization
 
 ### Widget Styling (Both Text and Voice)
