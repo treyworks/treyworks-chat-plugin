@@ -3,7 +3,6 @@ import axios from 'axios';
 import toast from "react-hot-toast";
 import { useAtom } from "jotai";
 import { chatWidgetsAtom } from "../atoms";
-import LogFileModal from "../components/LogFileModal";
 import ListInput from "../components/ListInput";
 import { renderFormField, renderCheckboxField, renderSelectField } from "../components/FormElements";
 import { Tooltip } from 'react-tooltip';
@@ -31,7 +30,6 @@ const SettingsManager = () => {
     const [formIsDirty, setFormIsDirty] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [chatWidgets] = useAtom(chatWidgetsAtom);
-    const [isLogModalOpen, setIsLogModalOpen] = useState(false);
     const [showApiKey, setShowApiKey] = useState(false);
     const [showRetellKey, setShowRetellKey] = useState(false);
 
@@ -212,10 +210,6 @@ const SettingsManager = () => {
                                 <td><p>Filter user messages with the <a href="https://github.com/ConsoleTVs/Profanity" target="_blank">Profanity PHP library</a> and enable the  <a href="https://platform.openai.com/docs/guides/moderation" target="_blank">OpenAI Moderation API</a>.</p></td>
                             </tr>
                             {renderCheckboxField("Enable Debugging", "tw_chat_is_debug", formData, handleCheckboxChange)}
-                            <tr>
-                                <th></th>
-                                <td><button type="button" onClick={() => setIsLogModalOpen(true)}>Open Log File</button></td>
-                            </tr>
                         </tbody>
                     </table>
                 </section>
@@ -272,11 +266,6 @@ const SettingsManager = () => {
                     {isSaving ? 'Saving...' : 'Submit'}
                 </button>
             </form>
-
-            <LogFileModal 
-                isOpen={isLogModalOpen}
-                onRequestClose={() => setIsLogModalOpen(false)}
-            />
         </>
     );
 };
