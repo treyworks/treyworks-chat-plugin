@@ -3,7 +3,8 @@ import Tabs from './components/Tabs';
 import SettingsManager from './pages/SettingsManager';
 
 import ChatWidgetsManager from './pages/ChatWidgetsManager';
-import RetellAIManager from './pages/RetellAIManager';
+import Logging from './pages/Logging';
+import ReportingDashboard from './pages/ReportingDashboard';
 
 import { Toaster } from 'react-hot-toast';
 import './Admin.css';
@@ -11,10 +12,10 @@ import './Admin.css';
 function Admin() {
 
   const tabData = [
+    { title: 'Welcome', content: ReportingDashboard },
     { title: 'Plugin Settings', content: SettingsManager },
     { title: 'Chat Widgets', content: ChatWidgetsManager},
-
-    { title: 'Retell AI Voice Agents', content: RetellAIManager }
+    { title: 'Logging', content: Logging }
   ];
 
   return (
@@ -22,8 +23,8 @@ function Admin() {
       <header className="tw-admin-header">
         <div className="tw-admin-header-content">
           <div>
-            <h1>Chat Dashboard</h1>
-            <p className="tw-motto">Build Faster. Operate Smarter. Win More.</p>
+            <h1>Chat Plugin for WordPress</h1>
+            <p className="tw-motto">Version {window.twChatSettings?.plugin_version}</p>
           </div>
           <div className="tw-logo">
             <img src={window.twChatSettings?.plugin_dir_url + 'img/logo.png'} alt="Treyworks Logo" />

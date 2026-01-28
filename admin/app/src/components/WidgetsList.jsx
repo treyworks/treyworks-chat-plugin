@@ -49,15 +49,14 @@ const WidgetsList = ({ widgets, onEdit, onRemove, onCopy }) => {
                             <Tooltip id={`copy-widget-tooltip-${widget.id}`} />
                         </td>
                         <td>
-                            <a
-                                href="#"
+                            <button
                                 onClick={() => onRemove(widget.id)}
                                 data-tooltip-id={`remove-tooltip-${widget.id}`}
                                 data-tooltip-content="Remove Chat Widget"
                                 data-tooltip-place="top"
                             >
                                 <span className="dashicons dashicons-trash"></span>
-                            </a>
+                            </button>
                             <Tooltip id={`remove-tooltip-${widget.id}`} />
                         </td>
                     </tr>
