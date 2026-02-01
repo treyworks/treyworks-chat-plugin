@@ -294,6 +294,35 @@
   text-decoration: underline;
 }
 
+.tw-chat-messages .message code {
+  background-color: rgba(4, 34, 54, 0.08);
+  color: var(--tw-primary-blue);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9em;
+  border: 1px solid rgba(4, 34, 54, 0.1);
+}
+
+.tw-chat-messages .message pre {
+  background-color: rgba(4, 34, 54, 0.08);
+  color: var(--tw-primary-blue);
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9em;
+  border: 1px solid rgba(4, 34, 54, 0.1);
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.tw-chat-messages .message pre code {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  font-size: 1em;
+}
+
 .tw-chat-messages .message.user {
   background: var(--tw-chat-message-user-background, #052b43);
   color: var(--tw-chat-message-user-color, #fff);
@@ -302,6 +331,23 @@
 
 .tw-chat-messages .message.user a {
   color: var(--tw-chat-message-user-color, #fff);
+}
+
+.tw-chat-messages .message.user code {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tw-chat-messages .message.user pre {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tw-chat-messages .message.user pre code {
+  background-color: transparent;
+  color: #fff;
 }
 
 .tw-chat-messages .message.error {
