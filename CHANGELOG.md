@@ -1,5 +1,19 @@
 # Project Changelog
 
+## 2.2.0
+- **Major Feature: Database Logging System**
+  - Replaced file-based logging with comprehensive database logging
+  - Message logs: Track all conversations with conversation_id, widget_id, message_type, message_text, and token usage (input/output)
+  - System logs: Database logging for info, error, warning, and debug messages with context
+  - Tool call logs: Track all function/tool calls with parameters, results, and status
+  - Admin interface: New "Logs" submenu with tabbed interface for viewing all log types
+  - Analytics: Token usage statistics and reporting
+  - Log retention: Configurable automatic cleanup with daily scheduled task (default: 30 days)
+  - Backward compatibility: File-based logging still available when debug mode is enabled
+- **API Enhancement**: Chat API now returns conversation_id for tracking multi-turn conversations
+- **Performance**: Improved log querying with database indexes on frequently searched fields
+- **Developer**: New classes for database management and logging (TW_Chat_DB, TW_Chat_Message_Logger, TW_Chat_System_Logger, TW_Chat_Tool_Logger, TW_Chat_Log_Cleanup)
+
 ## 2.1.2
 - Bug fix: Removed JSON parsing for suggested answers response. Will migrate to Responses API in the future and add JSON structured output option.
 
