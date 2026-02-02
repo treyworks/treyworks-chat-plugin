@@ -164,10 +164,25 @@ Stores tool/function calls made during conversations.
    - Add backend API endpoints for dashboard data
    - Integrate with admin navigation
 
+### Phase 8: Voice Widget Updates
+11. **Standardize voice widget styling**
+   - Update voice widget CSS to use same CSS variable naming convention as text chat widget
+   - Ensure consistent design system across both widget types
+   - Use `--tw-` prefix for all CSS custom properties
+   - Maintain visual consistency with text chat widget styling
+
+12. **Add call confirmation dialog**
+   - Implement confirmation dialog before initiating voice call
+   - Provide clear user consent before starting call
+   - Include cancel option in confirmation dialog
+   - Ensure accessibility compliance for dialog
+
 ## Success Criteria
 - All file-based logging replaced with database logging
 - Admin interfaces functional and user-friendly
 - Log retention system working automatically
 - No performance degradation in API endpoints
 - Message history page integrated with existing admin UI
+- Voice widget uses consistent CSS variable naming convention
+- Voice widget requires user confirmation before starting calls
 - Comprehensive documentation completed
