@@ -106,7 +106,7 @@ export default class VoiceWidget {
       this.updateCallStatus('Connecting...');
       
       // Fetch the access token from your server
-      const webCallResponse = await fetch(`${window.location.origin}/wp-json/tw-chat-assistant/v1/create-call`, {
+      const webCallResponse = await fetch(`${window.location.origin}/wp-json/tw-chat/v1/create-call`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
