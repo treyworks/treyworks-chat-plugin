@@ -5,6 +5,7 @@ import SettingsManager from './pages/SettingsManager';
 import ChatWidgetsManager from './pages/ChatWidgetsManager';
 import Logging from './pages/Logging';
 import ReportingDashboard from './pages/ReportingDashboard';
+import StyleCustomizer from './pages/StyleCustomizer';
 
 import { Toaster } from 'react-hot-toast';
 import './Admin.css';
@@ -15,6 +16,7 @@ function Admin() {
     { title: 'Welcome', content: ReportingDashboard },
     { title: 'Plugin Settings', content: SettingsManager },
     { title: 'Chat Widgets', content: ChatWidgetsManager},
+    { title: 'Style Customizer', content: StyleCustomizer },
     { title: 'Logging', content: Logging }
   ];
 

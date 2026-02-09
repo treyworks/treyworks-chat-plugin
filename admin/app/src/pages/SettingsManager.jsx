@@ -22,8 +22,6 @@ const SettingsManager = () => {
         tw_chat_logo_url: twChatSettings.tw_chat_logo_url,
         tw_chat_allowed_actions: twChatSettings.tw_chat_allowed_actions,
         tw_chat_is_moderation: twChatSettings.tw_chat_is_moderation,
-        tw_chat_button_image: twChatSettings.tw_chat_button_image,
-        tw_chat_send_button_image: twChatSettings.tw_chat_send_button_image,
         tw_chat_api_base_uri: twChatSettings.tw_chat_api_base_uri
     };
     const [formData, setFormData] = useState(initialFormData);
@@ -199,8 +197,6 @@ const SettingsManager = () => {
                     <table className="form-table">
                         <tbody>
                             {renderFormField("Custom Logo URL", "tw_chat_logo_url", "text", formData, handleInputChange)}
-                            {renderFormField("Chat Button Image URL", "tw_chat_button_image", "text", formData, handleInputChange)}
-                            {renderFormField("Send Button Image URL", "tw_chat_send_button_image", "text", formData, handleInputChange)}
                             {renderFormField("Disclaimer", "tw_chat_disclaimer", "textarea", formData, handleInputChange)}
                             {renderFormField("Maximum Characters Allowed", "tw_chat_max_characters", "number", formData, handleInputChange)}
                             {renderFormField("Chat Error Message", "tw_chat_error_message", "textarea", formData, handleInputChange)}
