@@ -13,9 +13,11 @@ require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-db
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-message-logger.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-system-logger.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-log-cleanup.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-tw-chat-style-settings.php';
 
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-admin.php';
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-logs-admin.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-tw-chat-styles-admin.php';
 
 class TW_Chat_Plugin {
 
@@ -30,6 +32,9 @@ class TW_Chat_Plugin {
         
         // Initialize log cleanup
         TW_Chat_Log_Cleanup::init();
+
+        // Seed default style values into wp_options
+        TW_Chat_Style_Settings::seed_defaults();
         
         $this->setup_admin();
         $this->setup_meta();
@@ -43,6 +48,7 @@ class TW_Chat_Plugin {
 		 */
 		$this->plugin_admin = new TW_Chat_Admin();
 		new TW_Chat_Logs_Admin();
+		new TW_Chat_Styles_Admin();
     }
 
     public function setup_meta() {
@@ -117,6 +123,12 @@ class TW_Chat_Plugin {
                 wp_enqueue_script('tw-chat-js', plugins_url('../widgets/chat-widget/dist/tw-chat.js', __FILE__), [], '1.0.0', true);
                 wp_enqueue_style('tw-chat-css', plugins_url('../widgets/chat-widget/dist/style.css', __FILE__));
 
+                // Inject widget CSS variables from stored settings
+                $widget_css = TW_Chat_Style_Settings::generate_css('chat');
+                if (!empty($widget_css)) {
+                    wp_add_inline_style('tw-chat-css', $widget_css);
+                }
+
                 // Get current post/page ID
                 $current_id = get_queried_object_id();
 
@@ -136,7 +148,9 @@ class TW_Chat_Plugin {
                     'nonce' => wp_create_nonce('wp_rest'),
                     "tw_chat_button_text" => $chat_button_text,
                     "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
-                    "tw_chat_send_button_image" => $settings["tw_chat_send_button_image"],
+                    "tw_chat_send_button_image" => TW_Chat_Style_Settings::get_send_button_image_url(),
+                    "tw_chat_bubble_image" => TW_Chat_Style_Settings::get_bubble_image_url(),
+                    "tw_chat_bubble_text_tooltip" => TW_Chat_Style_Settings::is_bubble_text_tooltip() ? '1' : '0',
                 ];
 
                 wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
@@ -176,6 +190,17 @@ class TW_Chat_Plugin {
         if (!is_admin()) {
             wp_enqueue_script('tw-voice-widget-js', plugins_url('../widgets/voice-widget/dist/tw-voice-widget.js', __FILE__), [], '1.0.0', true);
             wp_enqueue_style('tw-voice-widget-css', plugins_url('../widgets/voice-widget/dist/tw-voice-widget.css', __FILE__));
+
+            // Inject widget CSS variables from stored settings
+            $widget_css = TW_Chat_Style_Settings::generate_css('voice');
+            if (!empty($widget_css)) {
+                wp_add_inline_style('tw-voice-widget-css', $widget_css);
+            }
+
+            // Localize voice widget settings
+            wp_localize_script('tw-voice-widget-js', 'twVoicePluginSettings', array(
+                'tw_voice_button_icon_image' => TW_Chat_Style_Settings::get_voice_button_icon_image_url(),
+            ));
         }
     }
 
@@ -257,6 +282,12 @@ class TW_Chat_Plugin {
             // Directly enqueue the scripts without checking global settings
             wp_enqueue_script('tw-chat-js', plugins_url('../widgets/chat-widget/dist/tw-chat.js', __FILE__), [], '1.0.0', true);
             wp_enqueue_style('tw-chat-css', plugins_url('../widgets/chat-widget/dist/style.css', __FILE__));
+
+            // Inject widget CSS variables from stored settings
+            $widget_css = TW_Chat_Style_Settings::generate_css('chat');
+            if (!empty($widget_css)) {
+                wp_add_inline_style('tw-chat-css', $widget_css);
+            }
             
             // Localize script with plugin settings
             if (!wp_script_is('tw-chat-js', 'localized')) {
@@ -265,7 +296,9 @@ class TW_Chat_Plugin {
                     "api_url" => esc_url_raw(rest_url('tw-chat/v1/chat')),
                     'nonce' => wp_create_nonce('wp_rest'),
                     "tw_chat_max_characters" => $settings["tw_chat_max_characters"],
-                    "tw_chat_send_button_image" => $settings["tw_chat_send_button_image"],
+                    "tw_chat_send_button_image" => TW_Chat_Style_Settings::get_send_button_image_url(),
+                    "tw_chat_bubble_image" => TW_Chat_Style_Settings::get_bubble_image_url(),
+                    "tw_chat_bubble_text_tooltip" => TW_Chat_Style_Settings::is_bubble_text_tooltip() ? '1' : '0',
                 ];
                 
                 wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);

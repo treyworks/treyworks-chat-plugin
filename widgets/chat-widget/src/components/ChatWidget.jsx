@@ -30,11 +30,11 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     const chatSettings = window.twChatPluginSettings
     const widgetSettings = window.twChatWidgetSettings[widgetID]
     const maxCharacters = chatSettings.tw_chat_max_characters
-    const iconColor = window.twChatPluginSettings.iconColor
     const sendButtonImage = chatSettings.tw_chat_send_button_image || null
 
-    // Close SVG color
+    // Read icon colors from CSS variables
     const rootStyle = getComputedStyle(document.documentElement)
+    const iconColor = rootStyle.getPropertyValue('--tw-chat-icon-color').trim()
     const headerButtonColor = rootStyle.getPropertyValue('--tw-chat-header-button-color').trim()
 
     // Toggle fullscreen mode

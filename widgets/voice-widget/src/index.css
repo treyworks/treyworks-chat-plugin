@@ -1,60 +1,4 @@
-:root {
-  /* Voice Widget CSS Variables - Aligned with Chat Widget Design System */
-  --tw-voice-container-max-width: 300px;
-  --tw-voice-container-padding: 20px;
-  --tw-voice-container-border-radius: 16px;
-  --tw-voice-container-background: #ffffff;
-  --tw-voice-container-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  
-  --tw-voice-status-font-size: 16px;
-  --tw-voice-status-color: #555;
-  --tw-voice-status-padding: 8px 12px;
-  --tw-voice-status-border-radius: 8px;
-  --tw-voice-status-background: #f5f5f5;
-  
-  --tw-voice-button-size: 80px;
-  --tw-voice-button-border-radius: 50%;
-  --tw-voice-button-background: #4a6cf7;
-  --tw-voice-button-color: #ffffff;
-  --tw-voice-button-font-size: 24px;
-  --tw-voice-button-box-shadow: 0 4px 8px rgba(74, 108, 247, 0.3);
-  --tw-voice-button-active-background: #f74a4a;
-  --tw-voice-button-active-box-shadow: 0 4px 8px rgba(247, 74, 74, 0.3);
-  
-  --tw-voice-button-size-mobile: 70px;
-  
-  --tw-voice-transition: all 0.3s ease;
-  
-  /* Confirmation Dialog Variables */
-  --tw-voice-dialog-overlay-background: rgba(0, 0, 0, 0.5);
-  --tw-voice-dialog-background: #ffffff;
-  --tw-voice-dialog-border-radius: 12px;
-  --tw-voice-dialog-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  --tw-voice-dialog-padding: 24px;
-  --tw-voice-dialog-max-width: 400px;
-  
-  --tw-voice-dialog-title-font-size: 20px;
-  --tw-voice-dialog-title-color: #333;
-  --tw-voice-dialog-title-margin-bottom: 12px;
-  
-  --tw-voice-dialog-text-font-size: 14px;
-  --tw-voice-dialog-text-color: #666;
-  --tw-voice-dialog-text-margin-bottom: 20px;
-  
-  --tw-voice-dialog-button-padding: 10px 20px;
-  --tw-voice-dialog-button-border-radius: 6px;
-  --tw-voice-dialog-button-font-size: 14px;
-  --tw-voice-dialog-button-font-weight: 600;
-  --tw-voice-dialog-button-gap: 12px;
-  
-  --tw-voice-dialog-button-confirm-background: #4a6cf7;
-  --tw-voice-dialog-button-confirm-color: #ffffff;
-  --tw-voice-dialog-button-confirm-hover-background: #3a5ce7;
-  
-  --tw-voice-dialog-button-cancel-background: #e0e0e0;
-  --tw-voice-dialog-button-cancel-color: #333;
-  --tw-voice-dialog-button-cancel-hover-background: #d0d0d0;
-}
+/* CSS variables are injected via wp_add_inline_style from TW_Chat_Style_Settings */
 
 .tw-voice-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -98,7 +42,6 @@
   border-radius: var(--tw-voice-button-border-radius);
   border: none;
   background-color: var(--tw-voice-button-background);
-  color: var(--tw-voice-button-color);
   font-size: var(--tw-voice-button-font-size);
   cursor: pointer;
   display: flex;
@@ -109,6 +52,7 @@
 }
 
 .tw-voice-button:hover {
+  background-color: var(--tw-voice-button-hover-background, #3a5ce7);
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(74, 108, 247, 0.4);
 }
@@ -124,6 +68,18 @@
 
 .tw-voice-button.talking {
   animation: pulse 1.5s infinite;
+}
+
+.tw-voice-icon {
+  font-size: inherit;
+  line-height: 1;
+}
+
+.tw-voice-icon-image {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+  border-radius: inherit;
 }
 
 @keyframes pulse {
