@@ -5,11 +5,11 @@ import { useState, useEffect } from 'react';
  * Used for predefined options like font-weight, text-align, etc.
  */
 function SelectInput({ label, variable, value, defaultValue, savedValue, onChange, options }) {
-  const [localValue, setLocalValue] = useState(value || defaultValue);
-  const isModified = value && value !== (savedValue || defaultValue);
+  const [localValue, setLocalValue] = useState(value ?? defaultValue);
+  const isModified = value !== savedValue;
 
   useEffect(() => {
-    setLocalValue(value || defaultValue);
+    setLocalValue(value ?? defaultValue);
   }, [value, defaultValue]);
 
   const handleChange = (e) => {

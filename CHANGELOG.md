@@ -1,5 +1,33 @@
 # Project Changelog
 
+## 2.2.2
+- **Feature: Custom Model Selector**
+  - Added "Custom" option to the model dropdown for entering any OpenAI-compatible model name
+  - Enables use with non-OpenAI providers (Google Gemini, etc.) via the API Base URI setting
+  - Auto-detects non-preset models on widget load and switches to custom mode
+- **Feature: Webhook Data Structure UI**
+  - Visual field builder for defining webhook payload structure (field name, type, required, description)
+  - Structure is automatically injected into the system prompt via `TW_Chat_Prompt_Manager`
+  - Webhook tool definition dynamically updated with field descriptions for accurate AI tool calls
+  - Webhook handler updated: proper JSON parsing, `Content-Type: application/json` header, custom headers merged correctly
+- **Feature: AI Prompt Generator**
+  - "Generate with AI" button next to the system prompt textarea
+  - Modal with "Generate new" and "Improve existing" modes
+  - Auto-detects enabled tools (Site Search, Webhook) and includes context in generation
+  - Webhook schema fields included in generation context when defined
+  - Generated prompt is editable before applying
+  - New AJAX endpoint `tw_chat_generate_prompt` with nonce verification and capability check
+- **Bug Fix: Style Customizer Input Defaults**
+  - Fixed inputs snapping back to default values when cleared, preventing manual entry
+  - Replaced `||` (logical OR) with `??` (nullish coalescing) across all style input components
+  - Fixed `isModified` detection so cleared fields correctly show as modified
+- **Style Customizer: Mobile Overrides Cleanup**
+  - Removed redundant Mobile Overrides section from Chat Widget tab
+  - Moved Bubble Font Size (Mobile) to the Chat Bubble Text section
+  - Removed non-existent `--tw-chat-bubble-icon-size-mobile` variable (removed in 2.2.1)
+  - Fixed typo: `--tw-chat-interface-width-height` → `--tw-chat-interface-height-mobile`
+  - Cleaned up duplicate PHP defaults across sections
+
 ## 2.2.1
 - **Major Feature: Style Customizer**
   - Visual admin interface for customizing all widget CSS variables

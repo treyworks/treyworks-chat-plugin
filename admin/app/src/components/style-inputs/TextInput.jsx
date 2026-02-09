@@ -5,11 +5,11 @@ import { useState, useEffect } from 'react';
  * Used for complex values like box-shadow, border shorthand, etc.
  */
 function TextInput({ label, variable, value, defaultValue, savedValue, onChange }) {
-  const [localValue, setLocalValue] = useState(value || defaultValue);
-  const isModified = value && value !== (savedValue || defaultValue);
+  const [localValue, setLocalValue] = useState(value ?? defaultValue);
+  const isModified = value !== savedValue;
 
   useEffect(() => {
-    setLocalValue(value || defaultValue);
+    setLocalValue(value ?? defaultValue);
   }, [value, defaultValue]);
 
   const handleChange = (e) => {

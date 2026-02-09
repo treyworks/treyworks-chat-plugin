@@ -86,6 +86,7 @@ class TW_Chat_Widgets {
             $search_post_types = get_post_meta($post_id, 'tw_chat_search_post_types', true);
             $search_specific_ids = get_post_meta($post_id, 'tw_chat_search_specific_ids', true);
             $exclude_links = get_post_meta($post_id, 'tw_chat_exclude_links', true);
+            $webhook_schema = get_post_meta($post_id, 'tw_chat_webhook_schema', true);
             
             return [
                 'tw_chat_widget_name' => $post['post_title'],
@@ -105,7 +106,8 @@ class TW_Chat_Widgets {
                 'tw_chat_search_scope' => $search_scope,
                 'tw_chat_search_post_types' => $search_post_types,
                 'tw_chat_search_specific_ids' => $search_specific_ids,
-                'tw_chat_exclude_links' => $exclude_links
+                'tw_chat_exclude_links' => $exclude_links,
+                'tw_chat_webhook_schema' => $webhook_schema
             ];
 
         } else {

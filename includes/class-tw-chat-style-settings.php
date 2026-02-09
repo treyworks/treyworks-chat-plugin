@@ -106,6 +106,7 @@ class TW_Chat_Style_Settings {
             'chat_bubble_text' => array(
                 '--tw-chat-bubble-color'          => '#052b43',
                 '--tw-chat-bubble-font-family'    => 'inherit',
+                '--tw-chat-bubble-font-size-mobile' => '14px',
                 '--tw-chat-bubble-font-size'      => '16px',
                 '--tw-chat-bubble-font-weight'    => '600',
                 '--tw-chat-bubble-gap'            => '4px',
@@ -185,12 +186,6 @@ class TW_Chat_Style_Settings {
                 '--tw-chat-interface-embedded-max-width'  => '100%',
                 '--tw-chat-interface-embedded-height'     => '550px',
                 '--tw-chat-interface-embedded-max-height' => '75vh',
-            ),
-            'chat_mobile' => array(
-                '--tw-chat-interface-width-mobile'  => '95vw',
-                '--tw-chat-interface-height-mobile' => '95vh',
-                '--tw-chat-bubble-size-mobile'      => '80px',
-                '--tw-chat-bubble-font-size-mobile' => '14px',
             ),
         );
     }

@@ -31,6 +31,11 @@ class TW_Chat_Prompt_Manager {
     const PROMPT_JSON_RESPONSE = "\n\n## Response Format\n\nFormat all responses in JSON:\n{\n  \"message\": \"[YOUR RESPONSE]\",\n  \"type\": \"text\",\n  \"suggestedAnswers\": [ARRAY OF SUGGESTED USER ANSWERS TO YOUR RESPONSE]\n}\n\n**When to Include suggestedAnswers:**\n- When your system prompt instructs you to make suggestions or provide options\n- When you ask the user a question with specific choices (e.g., \"Would you like to know about A, B, or C?\")\n- When offering relevant follow-up topics that would help continue the conversation\n- When presenting multiple paths the user could take next\n\nThe 'suggestedAnswers' field can be an empty array if no suggestions are contextually relevant or appropriate.";
 
     /**
+     * Webhook data structure prompt - instructs AI to format webhook data according to defined schema
+     */
+    const PROMPT_WEBHOOK_SCHEMA = "\n\n## Webhook Data Structure\n\nWhen using the webhook tool, format the data as a JSON object with the following fields:\n{field_definitions}\n\nAlways collect all required fields from the user before sending the webhook. Send the data as a valid JSON string.";
+
+    /**
      * Inject parameters into a prompt template
      *
      * @param string $prompt The prompt template with {parameter} placeholders
@@ -97,6 +102,38 @@ class TW_Chat_Prompt_Manager {
      */
     public static function get_json_response_prompt() {
         return self::PROMPT_JSON_RESPONSE;
+    }
+
+    /**
+     * Get webhook schema prompt with field definitions injected
+     *
+     * @param string $schema_json JSON string of webhook schema fields
+     * @return string The webhook schema prompt, or empty string if no schema
+     */
+    public static function get_webhook_schema_prompt( $schema_json = '' ) {
+        if ( empty( $schema_json ) ) {
+            return '';
+        }
+
+        $schema_fields = json_decode( $schema_json, true );
+        if ( ! is_array( $schema_fields ) || empty( $schema_fields ) ) {
+            return '';
+        }
+
+        $lines = array();
+        foreach ( $schema_fields as $field ) {
+            $name = isset( $field['name'] ) ? $field['name'] : 'unnamed';
+            $type = isset( $field['type'] ) ? $field['type'] : 'string';
+            $req  = ! empty( $field['required'] ) ? 'required' : 'optional';
+            $desc = ! empty( $field['description'] ) ? ': ' . $field['description'] : '';
+            $lines[] = '- ' . $name . ' (' . $type . ', ' . $req . ')' . $desc;
+        }
+
+        $field_definitions = implode( "\n", $lines );
+
+        return self::inject_params( self::PROMPT_WEBHOOK_SCHEMA, array(
+            'field_definitions' => $field_definitions
+        ) );
     }
 
     /**

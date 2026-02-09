@@ -36,7 +36,8 @@ const CHAT_BUBBLE_SECTIONS = [
     fields: [
       { variable: '--tw-chat-bubble-color', label: 'Text Color', type: 'color' },
       { variable: '--tw-chat-bubble-font-family', label: 'Font Family', type: 'text' },
-      { variable: '--tw-chat-bubble-font-size', label: 'Font Size', type: 'slider', min: 10, max: 32, unit: 'px' },
+      { variable: '--tw-chat-bubble-font-size-mobile', label: 'Font Size (Mobile)', type: 'slider', min: 10, max: 24, unit: 'px' },
+      { variable: '--tw-chat-bubble-font-size', label: 'Font Size (Desktop)', type: 'slider', min: 10, max: 32, unit: 'px' },
       { variable: '--tw-chat-bubble-font-weight', label: 'Font Weight', type: 'select', options: [
         { value: '400', label: 'Normal (400)' },
         { value: '600', label: 'Semi-Bold (600)' },
@@ -175,18 +176,6 @@ const CHAT_SECTIONS = [
       { variable: '--tw-chat-interface-embedded-max-height', label: 'Max Height', type: 'text' },
     ],
   },
-  {
-    key: 'chat_mobile',
-    title: 'Mobile Overrides',
-    icon: 'dashicons-smartphone',
-    fields: [
-      { variable: '--tw-chat-interface-width-mobile', label: 'Interface Width', type: 'text' },
-      { variable: '--tw-chat-interface-width-height', label: 'Interface Height', type: 'text' },
-      { variable: '--tw-chat-bubble-size-mobile', label: 'Bubble Size', type: 'slider', min: 40, max: 120, unit: 'px' },
-      { variable: '--tw-chat-bubble-font-size-mobile', label: 'Bubble Font Size', type: 'slider', min: 10, max: 24, unit: 'px' },
-      { variable: '--tw-chat-bubble-icon-size-mobile', label: 'Bubble Icon Size', type: 'slider', min: 20, max: 60, unit: 'px' },
-    ],
-  },
 ];
 
 const VOICE_SECTIONS = [
@@ -251,9 +240,9 @@ const VOICE_SECTIONS = [
  * Renders a single field based on its type configuration.
  */
 function renderField(field, defaults, currentValues, savedValues, widgetType, handleChange) {
-  const defaultValue = defaults[field.variable] || '';
-  const currentValue = currentValues[widgetType]?.[field.variable] || defaultValue;
-  const savedValue = savedValues[widgetType]?.[field.variable] || defaultValue;
+  const defaultValue = defaults[field.variable] ?? '';
+  const currentValue = currentValues[widgetType]?.[field.variable] ?? defaultValue;
+  const savedValue = savedValues[widgetType]?.[field.variable] ?? defaultValue;
 
   const commonProps = {
     key: field.variable,

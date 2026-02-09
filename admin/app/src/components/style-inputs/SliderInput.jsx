@@ -10,11 +10,11 @@ function SliderInput({ label, variable, value, defaultValue, savedValue, onChang
     return isNaN(num) ? 0 : num;
   };
 
-  const [localValue, setLocalValue] = useState(parseNumeric(value || defaultValue));
-  const isModified = value && value !== (savedValue || defaultValue);
+  const [localValue, setLocalValue] = useState(parseNumeric(value ?? defaultValue));
+  const isModified = value !== savedValue;
 
   useEffect(() => {
-    setLocalValue(parseNumeric(value || defaultValue));
+    setLocalValue(parseNumeric(value ?? defaultValue));
   }, [value, defaultValue]);
 
   const handleSliderChange = (e) => {

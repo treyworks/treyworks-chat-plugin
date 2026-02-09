@@ -14,7 +14,25 @@ class TW_Chat_Functions {
     }
 
     /* Get Function Definitions */
-    public static function get_function_definitions() {
+    public static function get_function_definitions( $widget_id = null ) {
+        // Build webhook data description
+        $webhook_data_description = "Data to send to the external URL as a JSON string.";
+        if ( $widget_id ) {
+            $webhook_schema = get_post_meta( $widget_id, 'tw_chat_webhook_schema', true );
+            if ( ! empty( $webhook_schema ) ) {
+                $schema_fields = json_decode( $webhook_schema, true );
+                if ( is_array( $schema_fields ) && ! empty( $schema_fields ) ) {
+                    $field_descriptions = array();
+                    foreach ( $schema_fields as $field ) {
+                        $req = ! empty( $field['required'] ) ? 'required' : 'optional';
+                        $desc = ! empty( $field['description'] ) ? ' - ' . $field['description'] : '';
+                        $field_descriptions[] = $field['name'] . ' (' . $field['type'] . ', ' . $req . ')' . $desc;
+                    }
+                    $webhook_data_description = "Data to send as a JSON object with these fields: " . implode( '; ', $field_descriptions );
+                }
+            }
+        }
+
         return [
             [
                 "name" => "search_site",
@@ -40,7 +58,7 @@ class TW_Chat_Functions {
                     "properties" => [
                         "data" => [
                             "type" => "string",
-                            "description" => "Data to send to the external URL."
+                            "description" => $webhook_data_description
                         ]
                     ],
                     "required" => [
@@ -216,17 +234,27 @@ class TW_Chat_Functions {
             $webhook_header = get_post_meta($widget_id, 'tw_chat_webhook_header', true);
             $webhook_address = get_post_meta($widget_id, 'tw_chat_webhook_address', true);
 
-            // Sanitize post data
-            $post_data = sanitize_text_field($arguments[$param_name]);
+            // Parse the JSON data from the AI
+            $post_data = $arguments[$param_name];
+            $decoded_data = json_decode($post_data, true);
+
+            // If JSON decode fails, wrap raw string in a data key
+            if ($decoded_data === null && json_last_error() !== JSON_ERROR_NONE) {
+                $decoded_data = array('data' => sanitize_text_field($post_data));
+            }
 
             // Arguments for the wp_remote_post function
             $args = array(
-                'body'    => json_decode($post_data, true),
+                'headers' => array('Content-Type' => 'application/json'),
+                'body'    => wp_json_encode($decoded_data),
                 'timeout' => '10', // Timeout in seconds
             );
 
             if ($webhook_header) {
-                $args['headers'] = json_decode($webhook_header, true);
+                $custom_headers = json_decode($webhook_header, true);
+                if (is_array($custom_headers)) {
+                    $args['headers'] = array_merge($args['headers'], $custom_headers);
+                }
             }
 
             // Make the POST request

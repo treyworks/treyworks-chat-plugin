@@ -558,6 +558,15 @@ class TW_Chat_Plugin {
                 TW_Chat_System_Logger::log_debug(__("Site Search Prompt: " . $site_search_prompt));
             }
 
+            // Append webhook schema prompt if defined
+            $webhook_schema = !empty($chat_widget['tw_chat_webhook_schema']) ? $chat_widget['tw_chat_webhook_schema'] : '';
+            if (!empty($webhook_schema)) {
+                $webhook_schema_prompt = TW_Chat_Prompt_Manager::get_webhook_schema_prompt($webhook_schema);
+                if (!empty($webhook_schema_prompt)) {
+                    $system_prompt = !empty($system_prompt) ? $system_prompt . "\n\n" . $webhook_schema_prompt : $webhook_schema_prompt;
+                }
+            }
+
             // Get API Base URI
             $api_base_uri = !empty($settings['tw_chat_api_base_uri']) ? sanitize_text_field($settings['tw_chat_api_base_uri']) : 'api.openai.com/v1';
 
@@ -635,7 +644,7 @@ class TW_Chat_Plugin {
             $response = $client->chat()->create([
                 'model' => $model,
                 'messages' => $api_messages,
-                'functions' => TW_Chat_Functions::get_function_definitions(),
+                'functions' => TW_Chat_Functions::get_function_definitions($widget_id),
                 'function_call' => 'auto',
             ]);
 
