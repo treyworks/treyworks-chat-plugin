@@ -1,0 +1,18 @@
+<!--
+  Canonical HTML structure for the chat bubble preview.
+  Used by: admin StylePreview.jsx component
+  Reference for: widgets/chat-widget/src/App.jsx (bubble rendering)
+
+  When modifying widget markup (class names, DOM hierarchy, new elements):
+  1. Update this template
+  2. Update the widget app's render method to match
+  3. Update the admin StylePreview.jsx component if it references this template
+
+  The bubble image src is injected dynamically by StylePreview.jsx
+-->
+<div class="tw-chat-container" style="position: relative; bottom: auto; right: auto;">
+  <button class="tw-chat-bubble">
+    <img id="tw-bubble-preview-image" src="" alt="" class="tw-chat-bubble-image" />
+    <span id="tw-bubble-preview-text">Chat</span>
+  </button>
+</div>

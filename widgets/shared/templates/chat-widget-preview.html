@@ -1,0 +1,47 @@
+<!--
+  Canonical HTML structure for the chat widget preview.
+  Used by: admin StylePreview.jsx component
+  Reference for: widgets/chat-widget/src/components/ChatWidget.jsx
+
+  When modifying widget markup (class names, DOM hierarchy, new elements):
+  1. Update this template
+  2. Update the widget app's render method to match
+  3. Update the admin StylePreview.jsx component if it references this template
+-->
+<div class="tw-chat-container" style="position: relative; bottom: auto; right: auto;">
+  <div class="tw-chat-interface embedded">
+    <div class="tw-chat-header">
+      <span>Chat Assistant</span>
+      <div class="tw-chat-header-actions">
+        <button class="tw-chat-header-close" aria-label="Close">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+    <div class="tw-chat-messages">
+      <div class="message">
+        <p>Hello! How can I help you today?</p>
+      </div>
+      <div class="message user">
+        <p>I have a question about your services.</p>
+      </div>
+      <div class="message">
+        <p>Of course! I'd be happy to help. What would you like to know?</p>
+      </div>
+    </div>
+    <div class="tw-chat-form-container">
+      <form class="tw-chat-form" onsubmit="return false;">
+        <div class="tw-chat-input-container">
+          <textarea placeholder="Enter your message..." rows="1" disabled></textarea>
+        </div>
+        <button id="tw-preview-send-button" type="button" disabled>
+          <svg id="tw-preview-send-icon" width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          <img id="tw-preview-send-image" src="" alt="Send" class="tw-chat-send-button-image" style="display:none;" />
+        </button>
+      </form>
+      <div class="tw-chat-disclaimer-container">
+        <div>AI-powered assistant</div>
+      </div>
+    </div>
+  </div>
+</div>

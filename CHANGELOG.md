@@ -1,5 +1,38 @@
 # Project Changelog
 
+## 2.2.1
+- **Major Feature: Style Customizer**
+  - Visual admin interface for customizing all widget CSS variables
+  - Live preview pane with iframe isolation for real-time style changes
+  - Collapsible sections organized by widget area (bubble, chat interface, voice)
+  - Undo changes per section or globally before saving
+  - Import/export style settings as JSON files with confirmation dialog on import
+  - Conditional field visibility (e.g., tooltip fields hidden when tooltip is disabled)
+- **Chat Bubble Customization**
+  - Split into three sections: Chat Bubble Button, Chat Bubble Text, Chat Bubble Image
+  - New fields: border, spacing (gap), hover background, hover text color
+  - Bubble text can be displayed as a tooltip with customizable tooltip background
+  - Bubble image with adjustable image size
+  - Conditional visibility: spacing hidden when tooltip mode is active, tooltip background hidden when tooltip is off
+- **Chat Widget Styling**
+  - Mobile-specific width and height fields for the chat interface
+  - Suggested answer buttons: dedicated background color, text color, border, hover background, and hover text color
+  - Send button custom image support via Style Customizer
+- **Voice Widget Styling**
+  - Custom icon image support for the voice button (replaces emoji when set)
+  - Mobile-specific button size field
+  - Hover background for voice button
+  - Confirmation dialog customization: overlay background, button colors, button text colors, button hover backgrounds
+  - Voice container width now controlled by CSS variable (removed hardcoded preview override)
+  - Added `.tw-voice-icon` CSS rule for proper icon size inheritance
+- **Admin Interface**
+  - Mobile input fields ordered before desktop counterparts for all width/height/size variants
+  - Desktop fields labeled with "(Desktop)" suffix for clarity
+  - Font size inputs use px units with appropriate slider ranges
+- **Bug fix**: Fixed chat widget mobile height CSS variable typo (`--tw-chat-interface-width-height` → `--tw-chat-interface-height-mobile`)
+- **Bug fix**: Removed hardcoded voice container max-width in preview that was overriding the CSS variable
+- **Code Quality**: Removed react-tooltip dependency from chat widget send button
+
 ## 2.2.0
 - **Major Feature: Database Logging System**
   - Replaced file-based logging with comprehensive database logging

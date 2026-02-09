@@ -64,8 +64,6 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_global_widget_id');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_logo_url');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_moderation');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_button_image');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_send_button_image');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_debug');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_api_base_uri');
@@ -88,8 +86,6 @@
         delete_option('tw_chat_global_widget_id');
         delete_option('tw_chat_logo_url');
         delete_option('tw_chat_is_moderation');
-        delete_option('tw_chat_button_image');
-        delete_option('tw_chat_send_button_image');
         delete_option('tw_chat_allowed_actions');
         delete_option('tw_chat_is_debug');
         delete_option('tw_chat_api_base_uri');
@@ -114,8 +110,6 @@
             'tw_chat_global_widget_id' => get_option('tw_chat_global_widget_id'),
             'tw_chat_logo_url' => get_option('tw_chat_logo_url'),
             'tw_chat_is_moderation' => get_option('tw_chat_is_moderation'),
-            'tw_chat_button_image' => get_option('tw_chat_button_image'),
-            'tw_chat_send_button_image' => get_option('tw_chat_send_button_image'),
             'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions'),
             'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
             'tw_chat_api_base_uri' => get_option('tw_chat_api_base_uri')
@@ -207,8 +201,6 @@
             update_option('tw_chat_global_widget_id', sanitize_text_field($settings['tw_chat_global_widget_id']));
             update_option('tw_chat_logo_url', sanitize_text_field($settings['tw_chat_logo_url']));
             update_option('tw_chat_is_moderation', sanitize_text_field($settings['tw_chat_is_moderation']));
-            update_option('tw_chat_button_image', sanitize_text_field($settings['tw_chat_button_image']));
-            update_option('tw_chat_send_button_image', sanitize_text_field($settings['tw_chat_send_button_image']));
             update_option('tw_chat_allowed_actions', sanitize_text_field($settings['tw_chat_allowed_actions']));
             update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
             update_option('tw_chat_api_base_uri', sanitize_text_field($settings['tw_chat_api_base_uri']));

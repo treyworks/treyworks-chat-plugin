@@ -9,6 +9,7 @@ export default class VoiceWidget {
     this.isTalking = false;
     this.agentId = agent_id;
     this.showConfirmDialog = false;
+    this.iconImage = (typeof twVoicePluginSettings !== 'undefined' && twVoicePluginSettings.tw_voice_button_icon_image) || '';
     
     // Bind methods to maintain 'this' context
     this.startCall = this.startCall.bind(this);
@@ -158,7 +159,10 @@ export default class VoiceWidget {
         </div>
         <div class="tw-voice-button-container">
           <button class="tw-voice-button ${this.isCallActive ? 'active' : ''}" aria-label="${this.isCallActive ? 'End Call' : 'Start Call'}">
-            <span class="tw-voice-icon">${this.isCallActive ? '⏹' : '🎙'}</span>
+            ${this.iconImage
+              ? `<img class="tw-voice-icon-image" src="${this.iconImage}" alt="${this.isCallActive ? 'End Call' : 'Start Call'}" />`
+              : `<span class="tw-voice-icon">${this.isCallActive ? '⏹' : '🎙'}</span>`
+            }
           </button>
         </div>
       </div>

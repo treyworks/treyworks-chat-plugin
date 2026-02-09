@@ -1,7 +1,10 @@
-# Version 2.2 - Database Logging System
+# Version 2.2.0 - Database Logging System
 
-## Overview
-Version 2.2 will replace the current file-based logging system with a comprehensive database logging solution. This will provide better performance, easier querying, and improved data management for all plugin logging needs.
+## 2.2.X Series Overview
+This series of updates will focus on improving the admin interface to make it more useful and easier to set up. The goal is to provide the user with a better experience and make it easier to manage their chat widgets.
+
+## Version Overview
+Version 2.2.0 will replace the current file-based logging system with a comprehensive database logging solution. This will provide better performance, easier querying, and improved data management for all plugin logging needs.
 
 ## Goals
 - Replace file-based message logging with database storage

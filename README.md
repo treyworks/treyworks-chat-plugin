@@ -183,188 +183,37 @@ Extend your chatbot's functionality with custom WordPress hooks and filters:
 - Example prompt
   - "Call the 'get_featured_products' filter with ['recent', 5] and summarize the titles it returns."
 
+### Example Prompts
+
+Need inspiration for setting up your chatbot? Check out these ready-to-use example prompts:
+
+- **[Site Search Assistant](docs/examples/site-search-assistant.md)** — A simple assistant that helps visitors find content on your site using the Search Site tool.
+- **[Questionnaire with Webhook](docs/examples/questionnaire-webhook.md)** — Guides visitors through a step-by-step questionnaire and submits their answers to an external service via webhook.
+- **[Product Search Assistant](docs/examples/product-recommendation-assistant.md)** — A WooCommerce shopping assistant that uses a custom WordPress filter to look up products by name, price, and availability.
+
+Each example includes widget settings, a complete system prompt, and a sample conversation.
+
 ## Customization
 
-### Widget Styling
+### Style Customizer
 
-#### Text Chat Widget CSS Variables
+The plugin includes a visual **Style Customizer** in the admin dashboard for customizing the appearance of both text chat and voice widgets. The customizer provides:
 
-Customize the appearance of text chat widgets using CSS variables. Example:
+- **Live Preview**: See changes in real-time with an isolated preview pane
+- **Organized Sections**: Settings grouped by widget area (bubble button, bubble text, bubble image, chat interface, header, messages, input, suggested answers, disclaimer, voice container, voice button, voice status, confirmation dialog)
+- **Hover States**: Customize hover effects for the chat bubble, suggested answer buttons, and voice button
+- **Mobile Settings**: Dedicated mobile-specific fields for widget dimensions and button sizes
+- **Undo/Save**: Undo changes per section or globally before saving
+- **Import/Export**: Export your current styles as a JSON file, or import styles from a previously exported file
 
-```css preview
-:root {
-  /* tw-chat-container */
-  --tw-chat-position-bottom: 25px;
-  --tw-chat-position-right: 25px;
+To view all available CSS variables and their current values, use the **Export** button in the Style Customizer to download a complete JSON file of your style settings.
 
-  /* tw-chat-bubble */
-  --tw-chat-bubble-size: 90px;
-  --tw-chat-bubble-border-radius: 100%;
-  --tw-chat-bubble-background: #fff;
-  --tw-chat-bubble-box-shadow: 0 0 5px rgba(0,0,0,.1);
-  --tw-chat-bubble-font-size: 16px;
-  --tw-chat-bubble-color: #052b43;
-  --tw-chat-bubble-z-index: 1;
-  --tw-chat-bubble-font-weight: 600;
+#### Advanced CSS Customization
 
-  /* tw-chat-bubble svg */
-  --tw-chat-bubble-icon-size: 45px;
+For advanced use cases, all widget styles are controlled via CSS custom properties (variables) prefixed with `--tw-chat-` (text chat) and `--tw-voice-` (voice chat). These variables are injected via `wp_add_inline_style` from the stored settings — widget stylesheets contain no `:root` blocks. You can override any variable in your theme's CSS if needed.
 
-  /* tw-chat-widget-fullscreen */
-  --tw-chat-interface-max-width: 85vw;
-  --tw-chat-interface-max-height: 85vh;
-  --tw-chat-background-color: #ffffff;
+For a complete list of all available CSS variables, their default values, and descriptions, see the [CSS Style Guide](docs/references/styleguide.md).
 
-  /* tw-chat-interface */
-  --tw-chat-interface-width: 500px;
-  --tw-chat-interface-height: 550px;
-  --tw-chat-background: #f7f7f7;
-  --tw-chat-interface-border: 1px solid #f7f7f7;
-  --tw-chat-interface-box-shadow: 0 0 5px rgba(0,0,0,0.15);
-
-  /* tw-chat-interface.embedded */
-  --tw-chat-interface-embedded-width: 550px;
-  --tw-chat-interface-embedded-max-width: 100%;
-  --tw-chat-interface-embedded-height: 550px;
-  --tw-chat-interface-embedded-max-height: 75vh;
-
-  /* tw-chat-header */
-  --tw-chat-header-background: #052b43;
-  --tw-chat-header-color: #fff;
-  --tw-chat-header-padding: 10px 20px;
-  --tw-chat-header-button-color: #fff;
-
-  /* tw-chat-header-close svg */
-  --tw-chat-header-close-size: 32px;
-
-  /* tw-chat-header .logo */
-  --tw-chat-logo-width: 100px;
-  --tw-chat-logo-height: auto;
-
-  /* tw-chat-messages */
-  --tw-chat-message-padding: 20px;
-  --tw-chat-message-padding-bottom: 80px;
-
-  /* tw-chat-messages .message */
-  --tw-chat-message-border-radius: 10px;
-  --tw-chat-message-box-shadow: 0 0 5px rgba(0,0,0,0.15);
-  --tw-chat-message-border: 1px solid #ddd;
-  --tw-chat-padding: 10px 20px;
-  --tw-chat-message-spacing: 1rem;
-  --tw-chat-message-width: 85%;
-  --tw-chat-message-background: #fff;
-  --tw-chat-message-color: #1d1d1d;
-
-  /* tw-chat-messages .message, .tw-chat-messages .message * */
-  --tw-chat-message-font-size: 1rem;
-
-  /* tw-chat-messages .message h1, .tw-chat-messages .message h2, ... */
-  --tw-chat-message-heading-font-weight: 600;
-
-  /* tw-chat-messages .message a */
-  --tw-chat-message-link-font-weight: bold;
-
-  /* tw-chat-messages .message.user */
-  --tw-chat-message-user-background: #052b43;
-  --tw-chat-message-user-color: #fff;
-
-  /* tw-chat-messages .message.error */
-  --tw-chat-message-error-background: transparent;
-  --tw-chat-message-error-color: #a83235;
-  --tw-chat-message-error-box-shadow: none;
-
-  /* tw-chat-form */
-  --tw-chat-input-border: 1px solid #ddd;
-  --tw-chat-input-border-radius: 10px;
-  --tw-chat-input-box-shadow: 0 0 5px rgba(0,0,0,0.1);
-  --tw-chat-input-background: #fff;
-  --tw-chat-input-max-width: 95%;
-
-  /* tw-chat-form textarea */
-  --tw-chat-input-color: #1d1d1d;
-  --tw-chat-input-font-size: 1rem;
-  --tw-chat-input-placeholder-color: #999;
-
-  /* tw-chat-input-container .tw-chat-char-count */
-  --tw-chat-char-count-font-size: 0.75rem;
-
-  /* tw-chat-suggested-answers */
-  --tw-chat-suggested-answer-spacing: 10px;
-
-  /* tw-chat-suggested-answers button */
-  --tw-chat-suggested-answer-font-size: 1rem;
-  --tw-chat-suggested-answer-padding: 10px;
-  --tw-chat-suggested-answer-border-radius: 10px;
-  --tw-chat-suggested-answer-box-shadow: none;
-  --tw-chat-suggested-answer-border: none;
-  --tw-chat-suggested-answer-transition: all 0.3s;
-  --tw-chat-suggested-answer-min-width: calc(50% - 10px);
-
-  /* tw-chat-disclaimer-container */
-  --tw-chat-disclaimer-text-align: center;
-  --tw-chat-disclaimer-padding: 10px;
-  --tw-chat-disclaimer-font-size: 0.8rem;
-  --tw-chat-disclaimer-background: transparent;
-  --tw-chat-disclaimer-color: #000;
-
-  /* tw-chat-button-image and tw-chat-send-button-image */
-  --tw-chat-send-button-image-size: 48px;
-
-  /* Mobile Styles */
-  --tw-chat-interface-width-mobile: 95vw;
-  --tw-chat-interface-width-height: 95vh;
-  --tw-chat-interface-z-index-mobile: 999;
-  --tw-chat-bubble-size-mobile: 80px;
-  --tw-chat-bubble-font-size-mobile: 14px;
-  --tw-chat-bubble-icon-size-mobile: 40px;
-}
-```
-
-#### Voice Chat Widget CSS Variables
-
-Voice widgets now use the same CSS variable naming convention as text chat widgets for consistency:
-
-```css
-:root {
-  /* Voice Widget Container */
-  --tw-voice-container-max-width: 300px;
-  --tw-voice-container-padding: 20px;
-  --tw-voice-container-border-radius: 16px;
-  --tw-voice-container-background: #ffffff;
-  --tw-voice-container-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  
-  /* Voice Status Display */
-  --tw-voice-status-font-size: 16px;
-  --tw-voice-status-color: #555;
-  --tw-voice-status-padding: 8px 12px;
-  --tw-voice-status-border-radius: 8px;
-  --tw-voice-status-background: #f5f5f5;
-  
-  /* Voice Call Button */
-  --tw-voice-button-size: 80px;
-  --tw-voice-button-border-radius: 50%;
-  --tw-voice-button-background: #4a6cf7;
-  --tw-voice-button-color: #ffffff;
-  --tw-voice-button-font-size: 24px;
-  --tw-voice-button-box-shadow: 0 4px 8px rgba(74, 108, 247, 0.3);
-  --tw-voice-button-active-background: #f74a4a;
-  --tw-voice-button-active-box-shadow: 0 4px 8px rgba(247, 74, 74, 0.3);
-  
-  /* Confirmation Dialog */
-  --tw-voice-dialog-overlay-background: rgba(0, 0, 0, 0.5);
-  --tw-voice-dialog-background: #ffffff;
-  --tw-voice-dialog-border-radius: 12px;
-  --tw-voice-dialog-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  --tw-voice-dialog-padding: 24px;
-  --tw-voice-dialog-max-width: 400px;
-  
-  /* Mobile Optimization */
-  --tw-voice-button-size-mobile: 70px;
-  
-  /* Transitions */
-  --tw-voice-transition: all 0.3s ease;
-}
-```
 ## Message Moderation (OpenAI Text Chat)
 
 Enable the message moderation feature from the plugin settings for text chat widgets. This feature is designed to filter user messages with the [Profanity PHP library](https://github.com/ConsoleTVs/Profanity) and enable the [OpenAI Moderation API](https://platform.openai.com/docs/guides/moderation).

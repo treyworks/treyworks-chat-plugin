@@ -1,0 +1,47 @@
+<!--
+  Canonical HTML structure for the voice widget preview.
+  Used by: admin StylePreview.jsx component
+  Reference for: widgets/voice-widget/src/VoiceWidget.js
+
+  When modifying widget markup (class names, DOM hierarchy, new elements):
+  1. Update this template
+  2. Update the widget app's render method to match
+  3. Update the admin StylePreview.jsx component if it references this template
+-->
+<div style="position:relative;">
+  <div class="tw-voice-container">
+    <div class="tw-voice-status-container">
+      <p class="tw-voice-status">Ready</p>
+    </div>
+    <div class="tw-voice-button-container">
+      <button class="tw-voice-button" id="tw-preview-voice-button" aria-label="Start Call">
+        <span id="tw-preview-voice-icon" class="tw-voice-icon">🎙</span>
+        <img id="tw-preview-voice-icon-image" class="tw-voice-icon-image" src="" alt="Voice" style="display:none;" />
+      </button>
+    </div>
+  </div>
+</div>
+<div class="tw-voice-dialog-overlay hidden" id="tw-preview-dialog-overlay">
+  <div class="tw-voice-dialog" role="dialog">
+    <h2 class="tw-voice-dialog-title">Start Voice Call?</h2>
+    <p class="tw-voice-dialog-text">This will initiate a voice call using your microphone and speakers. Make sure you're in a suitable environment for a voice conversation.</p>
+    <div class="tw-voice-dialog-buttons">
+      <button class="tw-voice-dialog-button tw-voice-dialog-button-cancel" id="tw-preview-dialog-cancel">Cancel</button>
+      <button class="tw-voice-dialog-button tw-voice-dialog-button-confirm" id="tw-preview-dialog-confirm">Start Call</button>
+    </div>
+  </div>
+</div>
+<script>
+  (function() {
+    var btn = document.getElementById('tw-preview-voice-button');
+    var overlay = document.getElementById('tw-preview-dialog-overlay');
+    var cancel = document.getElementById('tw-preview-dialog-cancel');
+    var confirm = document.getElementById('tw-preview-dialog-confirm');
+    if (btn && overlay) {
+      btn.addEventListener('click', function() { overlay.classList.remove('hidden'); });
+      cancel.addEventListener('click', function() { overlay.classList.add('hidden'); });
+      confirm.addEventListener('click', function() { overlay.classList.add('hidden'); });
+      overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.add('hidden'); });
+    }
+  })();
+</script>
