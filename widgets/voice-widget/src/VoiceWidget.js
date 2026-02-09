@@ -8,6 +8,7 @@ export default class VoiceWidget {
     this.callStatus = 'Ready';
     this.isTalking = false;
     this.agentId = agent_id;
+    this.showConfirmDialog = false;
     
     // Bind methods to maintain 'this' context
     this.startCall = this.startCall.bind(this);
@@ -16,6 +17,9 @@ export default class VoiceWidget {
     this.setupEventListeners = this.setupEventListeners.bind(this);
     this.setIsCallActive = this.setIsCallActive.bind(this);
     this.updateCallStatus = this.updateCallStatus.bind(this);
+    this.showConfirmation = this.showConfirmation.bind(this);
+    this.hideConfirmation = this.hideConfirmation.bind(this);
+    this.confirmStartCall = this.confirmStartCall.bind(this);
   }
 
   // Initialize the widget with the container element
@@ -80,6 +84,21 @@ export default class VoiceWidget {
     }
   }
 
+  showConfirmation() {
+    this.showConfirmDialog = true;
+    this.render();
+  }
+
+  hideConfirmation() {
+    this.showConfirmDialog = false;
+    this.render();
+  }
+
+  async confirmStartCall() {
+    this.hideConfirmation();
+    await this.startCall();
+  }
+
   async startCall() {
     if (this.isCallActive) return;
     
@@ -87,7 +106,7 @@ export default class VoiceWidget {
       this.updateCallStatus('Connecting...');
       
       // Fetch the access token from your server
-      const webCallResponse = await fetch(`${window.location.origin}/wp-json/tw-chat-assistant/v1/create-call`, {
+      const webCallResponse = await fetch(`${window.location.origin}/wp-json/tw-chat/v1/create-call`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,19 +162,55 @@ export default class VoiceWidget {
           </button>
         </div>
       </div>
+      <div class="tw-voice-dialog-overlay ${this.showConfirmDialog ? '' : 'hidden'}">
+        <div class="tw-voice-dialog" role="dialog" aria-labelledby="tw-voice-dialog-title" aria-describedby="tw-voice-dialog-text">
+          <h2 class="tw-voice-dialog-title" id="tw-voice-dialog-title">Start Voice Call?</h2>
+          <p class="tw-voice-dialog-text" id="tw-voice-dialog-text">This will initiate a voice call using your microphone and speakers. Make sure you're in a suitable environment for a voice conversation.</p>
+          <div class="tw-voice-dialog-buttons">
+            <button class="tw-voice-dialog-button tw-voice-dialog-button-cancel" aria-label="Cancel">Cancel</button>
+            <button class="tw-voice-dialog-button tw-voice-dialog-button-confirm" aria-label="Start Call">Start Call</button>
+          </div>
+        </div>
+      </div>
     `;
     
     // Set the HTML content
     this.container.innerHTML = widgetHTML;
     
-    // Add event listeners to the button
+    // Add event listeners to the call button
     const callButton = this.container.querySelector('.tw-voice-button');
     if (callButton) {
       callButton.addEventListener('click', () => {
         if (this.isCallActive) {
           this.stopCall();
         } else {
-          this.startCall();
+          this.showConfirmation();
+        }
+      });
+    }
+    
+    // Add event listeners to dialog buttons
+    const confirmButton = this.container.querySelector('.tw-voice-dialog-button-confirm');
+    const cancelButton = this.container.querySelector('.tw-voice-dialog-button-cancel');
+    
+    if (confirmButton) {
+      confirmButton.addEventListener('click', () => {
+        this.confirmStartCall();
+      });
+    }
+    
+    if (cancelButton) {
+      cancelButton.addEventListener('click', () => {
+        this.hideConfirmation();
+      });
+    }
+    
+    // Close dialog when clicking overlay
+    const dialogOverlay = this.container.querySelector('.tw-voice-dialog-overlay');
+    if (dialogOverlay) {
+      dialogOverlay.addEventListener('click', (e) => {
+        if (e.target === dialogOverlay) {
+          this.hideConfirmation();
         }
       });
     }

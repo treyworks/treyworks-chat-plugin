@@ -22,6 +22,8 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 ### Voice Chat Features (RetellAI)
 - Interactive voice conversations using RetellAI's technology
 - Selection of voice agents with unique characteristics
+- Confirmation dialog before initiating voice calls for user consent
+- Customizable appearance using CSS variables matching text chat design system
 - Voice activation options (button press or automatic)
 - Customizable voice recognition settings
 
@@ -29,6 +31,10 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 - Customizable appearance to match your website's design
 - Multiple widgets of either type per page
 - Embedding via shortcode or global widget setting
+- Comprehensive database logging system for conversations and analytics
+- Advanced reporting dashboard with usage statistics and token tracking
+- Message history management with export and delete capabilities
+- System logging for debugging and monitoring
 
 ## Installation
 
@@ -179,9 +185,11 @@ Extend your chatbot's functionality with custom WordPress hooks and filters:
 
 ## Customization
 
-### Widget Styling (Both Text and Voice)
+### Widget Styling
 
-Customize the appearance of both text chat widgets and voice chat widgets using CSS variables. Most styling options apply to both widget types, while some are specific to each type as noted. Example:
+#### Text Chat Widget CSS Variables
+
+Customize the appearance of text chat widgets using CSS variables. Example:
 
 ```css preview
 :root {
@@ -311,6 +319,52 @@ Customize the appearance of both text chat widgets and voice chat widgets using 
   --tw-chat-bubble-icon-size-mobile: 40px;
 }
 ```
+
+#### Voice Chat Widget CSS Variables
+
+Voice widgets now use the same CSS variable naming convention as text chat widgets for consistency:
+
+```css
+:root {
+  /* Voice Widget Container */
+  --tw-voice-container-max-width: 300px;
+  --tw-voice-container-padding: 20px;
+  --tw-voice-container-border-radius: 16px;
+  --tw-voice-container-background: #ffffff;
+  --tw-voice-container-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
+  /* Voice Status Display */
+  --tw-voice-status-font-size: 16px;
+  --tw-voice-status-color: #555;
+  --tw-voice-status-padding: 8px 12px;
+  --tw-voice-status-border-radius: 8px;
+  --tw-voice-status-background: #f5f5f5;
+  
+  /* Voice Call Button */
+  --tw-voice-button-size: 80px;
+  --tw-voice-button-border-radius: 50%;
+  --tw-voice-button-background: #4a6cf7;
+  --tw-voice-button-color: #ffffff;
+  --tw-voice-button-font-size: 24px;
+  --tw-voice-button-box-shadow: 0 4px 8px rgba(74, 108, 247, 0.3);
+  --tw-voice-button-active-background: #f74a4a;
+  --tw-voice-button-active-box-shadow: 0 4px 8px rgba(247, 74, 74, 0.3);
+  
+  /* Confirmation Dialog */
+  --tw-voice-dialog-overlay-background: rgba(0, 0, 0, 0.5);
+  --tw-voice-dialog-background: #ffffff;
+  --tw-voice-dialog-border-radius: 12px;
+  --tw-voice-dialog-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --tw-voice-dialog-padding: 24px;
+  --tw-voice-dialog-max-width: 400px;
+  
+  /* Mobile Optimization */
+  --tw-voice-button-size-mobile: 70px;
+  
+  /* Transitions */
+  --tw-voice-transition: all 0.3s ease;
+}
+```
 ## Message Moderation (OpenAI Text Chat)
 
 Enable the message moderation feature from the plugin settings for text chat widgets. This feature is designed to filter user messages with the [Profanity PHP library](https://github.com/ConsoleTVs/Profanity) and enable the [OpenAI Moderation API](https://platform.openai.com/docs/guides/moderation).
@@ -331,9 +385,47 @@ You can customize the widget height as with standard widgets:
 
 **Note:** Voice widgets require a modern browser with microphone access. Users will be prompted to grant microphone permissions when interacting with the voice widget.
 
-## Logging (Both Widget Types)
+## Logging and Analytics
 
-Enable logging from the plugin settings dashboard for debugging and tracking function calls for both text chat and voice chat widgets. Refresh or clear logs directly from the dashboard.
+### Database Logging System
+
+Version 2.2 introduces a comprehensive database logging system that replaces the previous file-based logging:
+
+- **Message History**: Track all conversations with detailed message logs including conversation IDs, widget IDs, message types, and token usage
+- **System Logs**: Monitor system events, errors, warnings, and debug information with contextual data
+- **Tool Call Tracking**: All function/tool calls are logged in message history with responses tracked in system logs
+- **Automatic Cleanup**: Configurable retention periods with daily scheduled cleanup tasks (default: 30 days)
+
+### Reporting Dashboard
+
+Access comprehensive analytics and usage statistics:
+
+- **Time Period Filters**: View data for 7, 14, or 30-day periods
+- **Usage Statistics**: 
+  - Total conversations
+  - User messages count
+  - Total tokens consumed (input + output)
+  - Widget performance breakdown
+- **Visual Charts**: Widget usage distribution and performance metrics
+- **Widget Titles**: Clear identification of widgets in reports and charts
+
+### Message History Management
+
+Manage conversation logs with powerful tools:
+
+- **Export to CSV**: Download conversation history for analysis or archival
+- **Delete Conversations**: Remove individual conversations or clear all history
+- **Date Filtering**: Filter messages by date range with clear From/To date labels
+- **Message Details**: View full conversation threads with token usage information
+
+### System Log Viewer
+
+Monitor system health and debug issues:
+
+- **Log Type Filtering**: Filter by info, error, warning, or debug messages
+- **Abbreviated Display**: Clean interface with expandable message details
+- **Date Range Filtering**: Focus on specific time periods
+- **Contextual Information**: View detailed context data for each log entry
 
 ## System Requirements
 

@@ -3,7 +3,7 @@
  * Plugin Name: Treyworks Chat for WordPress
  * Plugin URI: https://treyworks.com/chat-plugin/
  * Description: An AI-powered text and voice chat widget plugin for WordPress.
- * Version: 2.1.2
+ * Version: 2.2.0
  * Author: Treyworks LLC
  * Author URI: https://treyworks.com
  * License:           MIT
@@ -12,7 +12,7 @@
  * Domain Path:       /languages
 */
 
-defined('TW_CHAT_VERSION') or define('TW_CHAT_VERSION', '2.1.2');
+defined('TW_CHAT_VERSION') or define('TW_CHAT_VERSION', '2.2.0');
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -27,6 +27,20 @@ require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
  * admin-specifichooks, and public-facing site hooks.
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-tw-chat.php';
+
+// Activation hook
+function tw_chat_activate() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-tw-chat-db.php';
+	TW_Chat_DB::create_tables();
+}
+register_activation_hook(__FILE__, 'tw_chat_activate');
+
+// Deactivation hook
+function tw_chat_deactivate() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-tw-chat-log-cleanup.php';
+	TW_Chat_Log_Cleanup::unschedule();
+}
+register_deactivation_hook(__FILE__, 'tw_chat_deactivate');
 
 // Instantiate the plugin class
 

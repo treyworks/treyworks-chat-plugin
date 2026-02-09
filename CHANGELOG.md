@@ -1,5 +1,49 @@
 # Project Changelog
 
+## 2.2.0
+- **Major Feature: Database Logging System**
+  - Replaced file-based logging with comprehensive database logging
+  - Message logs: Track all conversations with conversation_id, widget_id, message_type, message_text, and token usage (input/output)
+  - System logs: Database logging for info, error, warning, and debug messages with context
+  - Tool calls now logged in message history (type: 'tool') and system logs (tool responses)
+  - Removed separate tool_logs table - consolidated into message and system logs
+  - Log retention: Configurable automatic cleanup with daily scheduled task (default: 30 days)
+  - Deprecated file-based logging system
+- **Admin Interface Refactor**
+  - New consolidated "Logging" page with Message History and System Log tabs
+  - Moved voice agents table to Chat Widgets tab for better organization
+  - Removed legacy Retell AI tab
+  - Message History: Export conversations to CSV, delete individual or all conversations
+  - System Log: Abbreviated message display with view button for full details
+  - Removed widget ID and conversation ID filters from Message History
+  - Added clear date filter labels (From Date / To Date)
+- **Reporting Dashboard Enhancements**
+  - Moved date controls (7, 14, 30 days) to dashboard header
+  - Date filters now update all stats and graphs simultaneously
+  - Display widget titles instead of widget IDs in performance charts
+  - Added Total Tokens stat card
+  - Renamed Messages stat to "User Messages" (shows only user role messages)
+  - Added graceful fallback UI for no widgets and no data scenarios
+  - Fixed 7-day filter to include current day data
+- **Voice Widget Improvements**
+  - Standardized CSS to use --tw- variable naming convention matching text chat widget
+  - Added confirmation dialog before initiating voice calls
+  - Improved user consent and control over voice call initiation
+  - Fixed REST API endpoint namespace (tw-chat/v1)
+- **Chat Widget Styling**
+  - Added comprehensive styles for `<code>` and `<pre>` elements
+  - Prevents theme styles from overriding code formatting
+  - Consistent code presentation across different WordPress themes
+- **Code Quality**
+  - Added comprehensive PHPDoc comments to all major PHP classes
+  - Removed all inline CSS from JSX components (moved to global CSS files)
+  - Enforced project rule: no inline CSS in JSX or PHP, no inline HTML in PHP
+  - Improved system logger to allow info/warning/error logs regardless of debug mode
+  - Replaced all legacy TW_Chat_Logger calls with TW_Chat_System_Logger
+- **API Enhancement**: Chat API now returns conversation_id for tracking multi-turn conversations
+- **Performance**: Improved log querying with database indexes on frequently searched fields
+- **Developer**: Updated classes for database management and logging (TW_Chat_DB, TW_Chat_Message_Logger, TW_Chat_System_Logger, TW_Chat_Log_Cleanup)
+
 ## 2.1.2
 - Bug fix: Removed JSON parsing for suggested answers response. Will migrate to Responses API in the future and add JSON structured output option.
 

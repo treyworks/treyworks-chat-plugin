@@ -234,10 +234,10 @@ class TW_Chat_Functions {
 
              // Check for errors
             if (is_wp_error($response)) {
-                TW_Chat_Logger::log(__('Error sending data: '));
+                TW_Chat_System_Logger::log_debug(__('Error sending data: '));
                 $function_result = "Error sending data";
             } else {
-                TW_Chat_Logger::log(__('Data sent successfully: ' . $webhook_address));
+                TW_Chat_System_Logger::log_debug(__('Data sent successfully: ' . $webhook_address));
                 $function_result = wp_remote_retrieve_body($response);
             }
              
@@ -260,7 +260,7 @@ class TW_Chat_Functions {
         if (array_key_exists('action_arguments', $arguments) && $arguments['action_arguments'] !== null) {
             $action_arguments = json_decode($arguments["action_arguments"]);
         } else {
-            TW_Chat_Logger::log(__("Missing action_arguments call argument"));
+            TW_Chat_System_Logger::log_debug(__("Missing action_arguments call argument"));
             $valid_arguments = false;
         }
 
@@ -275,7 +275,7 @@ class TW_Chat_Functions {
         if (array_key_exists('action_name', $arguments) && $arguments['action_name'] !== null) {
             $action_name = $arguments["action_name"];
         } else {
-            TW_Chat_Logger::log(__("Missing action_name call argument"));
+            TW_Chat_System_Logger::log_debug(__("Missing action_name call argument"));
             $valid_arguments = false;
         }
 
@@ -294,7 +294,7 @@ class TW_Chat_Functions {
                 // Get the output
                 $action_output = ob_get_clean();
 
-                TW_Chat_Logger::log(__('Successfully called action: ' . $action_name));
+                TW_Chat_System_Logger::log_debug(__('Successfully called action: ' . $action_name));
             }
 
         } else {
@@ -317,7 +317,7 @@ class TW_Chat_Functions {
             $log_message = "Hello, " . $first_name . " " . $last_name;
         }
 
-        TW_Chat_Logger::log($log_message);
+        TW_Chat_System_Logger::log_debug($log_message);
         echo $log_message;
     }
 
@@ -334,7 +334,7 @@ class TW_Chat_Functions {
             $log_message = "Goodbye, " . $first_name . " " . $last_name;
         }
 
-        TW_Chat_Logger::log($log_message);
+        TW_Chat_System_Logger::log_debug($log_message);
         return $log_message;
     }
 

@@ -25,8 +25,10 @@
         add_action( 'wp_ajax_get_chat_widgets', array($this, 'get_chat_widgets_callback') );
         add_action( 'wp_ajax_save_chat_widget', array($this, 'save_chat_widget_callback'));
         add_action( 'wp_ajax_remove_chat_widget', array($this, 'remove_chat_widget_callback'));
-        add_action( 'wp_ajax_clear_log', array($this, 'clear_log_callback'));
         add_action( 'wp_ajax_get_retell_agents', array($this, 'get_retell_agents_callback'));
+        add_action( 'wp_ajax_get_conversations_list', array($this, 'get_conversations_list_callback'));
+        add_action( 'wp_ajax_get_conversation_messages', array($this, 'get_conversation_messages_callback'));
+        add_action( 'wp_ajax_get_dashboard_stats', array($this, 'get_dashboard_stats_callback'));
         // Hook the function to the uninstall hook
         register_uninstall_hook(__FILE__, array($this, 'delete_options'));
     }
@@ -67,6 +69,7 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_debug');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_api_base_uri');
+        register_setting('tw-chat-ui-settings-group', 'tw_chat_log_retention_days');
     }
 
     /**
@@ -150,20 +153,20 @@
 
 	/**
 	 * Register the JavaScript for the admin area.
-	 *
 	 */
 	public function enqueue_scripts() {
         if ( isset( $_GET['page'] ) && $_GET['page'] === 'tw-chat-settings' ) {
-
             wp_enqueue_script( 'tw-chat-admin', plugin_dir_url( __FILE__ ) . 'app/dist/tw-chat-admin.js', array(), TW_CHAT_VERSION, false );
-
+            
             // Localize script with current settings
             $script_data = $this->get_plugin_settings();
             $script_data['ajax_url'] = admin_url( 'admin-ajax.php' );
-            $script_data['ajax_nonce'] =  wp_create_nonce( '_ajax_nonce' );
+            $script_data['ajax_nonce'] = wp_create_nonce( '_ajax_nonce' );
+            $script_data['nonce'] = wp_create_nonce('tw_chat_admin_nonce');
             $script_data['chat_widgets'] = TW_Chat_Widgets::get_chat_widgets();
             $script_data['plugin_dir_url'] = $this->get_plugin_directory_url();
-            
+            $script_data['plugin_version'] = TW_CHAT_VERSION;
+
             // Get available post types for site search
             $post_types = get_post_types( array( 'public' => true ), 'objects' );
             $available_post_types = array();
@@ -177,11 +180,10 @@
             $script_data['available_post_types'] = $available_post_types;
             
             wp_localize_script( 'tw-chat-admin', 'twChatSettings', $script_data );
-
-            // Enqueue the media uploader scripts
-            wp_enqueue_media(); 
         }
-	}
+        // Enqueue the media uploader scripts
+        wp_enqueue_media(); 
+    }
 
     /**
 	 * Handle Settings Form Submissions
@@ -262,7 +264,7 @@
             // }
             
             if (isset($_POST['id']) && $_POST['id'] !== '') {
-                TW_Chat_Logger::log('Updating widget post: ' . $_POST['id']);
+                TW_Chat_System_Logger::log_debug('Updating widget post: ' . $_POST['id']);
 
                 $post_id = sanitize_text_field($_POST['id']);
                 // Post ID is passed, update fields
@@ -272,7 +274,7 @@
                 );
                 wp_update_post($post_args);
             } else {
-                TW_Chat_Logger::log('Creating new widget post.');
+                TW_Chat_System_Logger::log_debug('Creating new widget post.');
 
                 // Create the new post
                 $post_args = array(
@@ -338,23 +340,6 @@
     }
 
     /**
-     * Clear Log File
-     */
-    function clear_log_callback() {
-        // Call clear log
-        $clear_result = TW_Chat_Logger::clear_log();
-
-        // Check for errors
-        if ( $clear_result ) {
-            wp_send_json_success(array('message' => 'Log file cleared.'));
-        } else {
-            // Log file does not exist
-            wp_send_json_error( array( 'message' => 'Failed to clear log file.') );
-        }
-        wp_die();
-    }
-
-    /**
      * Callback for fetching Retell AI voice agents
      */
     public function get_retell_agents_callback() {
@@ -395,4 +380,113 @@
         
         wp_send_json_success($data);
     }
+
+    /**
+     * Get conversations list callback
+     */
+    public function get_conversations_list_callback() {
+        // Security: Check user capabilities
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+            return;
+        }
+        
+        // Security: Verify nonce
+        check_ajax_referer('tw_chat_admin_nonce', 'nonce');
+        
+        $filters = array();
+        
+        if (isset($_POST['widget_id']) && !empty($_POST['widget_id'])) {
+            $filters['widget_id'] = absint($_POST['widget_id']);
+        }
+        
+        if (isset($_POST['conversation_id']) && !empty($_POST['conversation_id'])) {
+            $filters['conversation_id'] = sanitize_text_field($_POST['conversation_id']);
+        }
+        
+        if (isset($_POST['date_from']) && !empty($_POST['date_from'])) {
+            $filters['date_from'] = sanitize_text_field($_POST['date_from']);
+        }
+        
+        if (isset($_POST['date_to']) && !empty($_POST['date_to'])) {
+            $filters['date_to'] = sanitize_text_field($_POST['date_to']);
+        }
+        
+        $conversations = TW_Chat_Message_Logger::get_conversations_list($filters);
+        wp_send_json_success($conversations);
+    }
+
+    /**
+     * Get conversation messages callback
+     */
+    public function get_conversation_messages_callback() {
+        // Security: Check user capabilities
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+            return;
+        }
+        
+        // Security: Verify nonce
+        check_ajax_referer('tw_chat_admin_nonce', 'nonce');
+        
+        if (!isset($_POST['conversation_id']) || empty($_POST['conversation_id'])) {
+            wp_send_json_error('Conversation ID is required');
+            return;
+        }
+        
+        $conversation_id = sanitize_text_field($_POST['conversation_id']);
+        
+        // Validate conversation_id format
+        if (!preg_match('/^conv_[a-zA-Z0-9_\\.]+$/', $conversation_id)) {
+            wp_send_json_error('Invalid conversation ID format');
+            return;
+        }
+        
+        $messages = TW_Chat_Message_Logger::get_conversation_messages($conversation_id);
+        wp_send_json_success($messages);
+    }
+
+    /**
+     * Get dashboard stats callback
+     */
+    public function get_dashboard_stats_callback() {
+        // Security: Check user capabilities
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+            return;
+        }
+        
+        // Security: Verify nonce
+        check_ajax_referer('tw_chat_admin_nonce', 'nonce');
+        
+        $days = isset($_POST['days']) ? absint($_POST['days']) : 7;
+        
+        if (!in_array($days, array(7, 14, 30))) {
+            $days = 7;
+        }
+        
+        // Check cache first (5 minute cache)
+        // v2 includes widget titles
+        $cache_key = 'tw_chat_dashboard_stats_v2_' . $days;
+        $cached_stats = get_transient($cache_key);
+        
+        if ($cached_stats !== false) {
+            wp_send_json_success($cached_stats);
+            return;
+        }
+        
+        // Generate stats if not cached
+        $message_stats = TW_Chat_Message_Logger::get_dashboard_stats($days);
+        $error_stats = TW_Chat_System_Logger::get_error_stats($days);
+        
+        $combined_stats = array_merge($message_stats, array(
+            'error_stats' => $error_stats
+        ));
+        
+        // Cache for 5 minutes
+        set_transient($cache_key, $combined_stats, 5 * MINUTE_IN_SECONDS);
+        
+        wp_send_json_success($combined_stats);
+    }
+
 }
