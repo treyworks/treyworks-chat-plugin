@@ -616,7 +616,7 @@ class TW_Chat_Plugin {
                 $messages[$last_message_key]['content'] = $clean_message;
             }
 
-            // Loop through messages
+            // Loop through messages to build API payload
             foreach ($messages as $message) {
                 // Sanitize role and content before sending to the API
                 $sanitized_role = sanitize_text_field($message['role']);
@@ -624,20 +624,22 @@ class TW_Chat_Plugin {
 
                 // Add message to API messages
                 $api_messages[] = ['role' => $sanitized_role, 'content' => $sanitized_content];
+            }
 
-                // Log user messages to database
-                if ($sanitized_role === 'user') {
-                    TW_Chat_Message_Logger::log_message(
-                        $conversation_id,
-                        $widget_id,
-                        'user',
-                        $sanitized_content,
-                        0,
-                        0,
-                        $source_url,
-                        $ip_address
-                    );
-                }
+            // Log only the last user message (the new one) to avoid duplicates
+            $last_message = end($messages);
+            if ($last_message && sanitize_text_field($last_message['role']) === 'user') {
+                $last_user_content = isset($last_message['content']) ? sanitize_textarea_field($last_message['content']) : '';
+                TW_Chat_Message_Logger::log_message(
+                    $conversation_id,
+                    $widget_id,
+                    'user',
+                    $last_user_content,
+                    0,
+                    0,
+                    $source_url,
+                    $ip_address
+                );
             }
 
             // Create a chat completion

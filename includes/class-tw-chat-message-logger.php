@@ -310,6 +310,9 @@ class TW_Chat_Message_Logger {
         $stats['total_input_tokens'] = (int)$tokens->input_tokens;
         $stats['total_output_tokens'] = (int)$tokens->output_tokens;
         
+        // Total widget count (independent of conversation data)
+        $stats['widget_count'] = (int) wp_count_posts('chat_widgets')->publish;
+        
         // Widget usage with titles
         $widget_usage = $wpdb->get_results($wpdb->prepare(
             "SELECT ml.widget_id, p.post_title as widget_title, COUNT(DISTINCT ml.conversation_id) as conversations, COUNT(*) as messages 
