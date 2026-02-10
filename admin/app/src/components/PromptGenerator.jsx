@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 
 const PromptGenerator = ({ currentPrompt, widgetConfig, onApply, onClose }) => {
@@ -50,7 +51,19 @@ const PromptGenerator = ({ currentPrompt, widgetConfig, onApply, onClose }) => {
         onApply(generatedPrompt);
     }, [generatedPrompt, onApply]);
 
-    return (
+    useEffect(() => {
+        const parentModal = document.querySelector('.tw-chat-admin-modal');
+        if (parentModal) {
+            parentModal.style.overflow = 'hidden';
+        }
+        return () => {
+            if (parentModal) {
+                parentModal.style.overflow = '';
+            }
+        };
+    }, []);
+
+    return createPortal(
         <div className="tw-prompt-generator-overlay" onClick={onClose}>
             <div className="tw-prompt-generator-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="tw-prompt-generator-header">
@@ -159,7 +172,8 @@ const PromptGenerator = ({ currentPrompt, widgetConfig, onApply, onClose }) => {
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

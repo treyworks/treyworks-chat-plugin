@@ -25,6 +25,7 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
     const lastElementRef = useRef(null)
     const parentRef = useRef(null)
     const waitingIndicatorRef = useRef(null)
+    const conversationId = useRef(`conv_${widgetID}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`)
 
     // Get global settings 
     const chatSettings = window.twChatPluginSettings
@@ -98,7 +99,8 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
         // Prepare data to be sent
         const data = {
             widget_id: widgetID,
-            messages: twChatMessages[widgetID]
+            messages: twChatMessages[widgetID],
+            conversation_id: conversationId.current
         }
         
         // Set request header
