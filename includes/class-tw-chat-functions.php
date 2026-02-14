@@ -35,60 +35,69 @@ class TW_Chat_Functions {
 
         return [
             [
-                "name" => "search_site",
-                "description" => "Search the website for answers",
-                "parameters" => [
-                    "type" => "object",
-                    "properties" => [
-                        "search_term" => [
-                            "type" => "string",
-                            "description" => "The search term to lookup on the website"
+                "type" => "function",
+                "function" => [
+                    "name" => "search_site",
+                    "description" => "Search the website for answers",
+                    "parameters" => [
+                        "type" => "object",
+                        "properties" => [
+                            "search_term" => [
+                                "type" => "string",
+                                "description" => "The search term to lookup on the website"
+                            ]
+                        ],
+                        "required" => [
+                            "search_term"
                         ]
-                    ],
-                    "required" => [
-                        "search_term"
                     ]
                 ]
             ],
             [
-                "name" => "webhook",
-                "description" => "Post data to an external URL",
-                "parameters" => [
-                    "type" => "object",
-                    "properties" => [
-                        "data" => [
-                            "type" => "string",
-                            "description" => $webhook_data_description
+                "type" => "function",
+                "function" => [
+                    "name" => "webhook",
+                    "description" => "Post data to an external URL",
+                    "parameters" => [
+                        "type" => "object",
+                        "properties" => [
+                            "data" => [
+                                "type" => "string",
+                                "description" => $webhook_data_description
+                            ]
+                        ],
+                        "required" => [
+                            "data"
                         ]
-                    ],
-                    "required" => [
-                        "data"
                     ]
                 ]
             ],
             [
-                "name" => "wp_action",
-                "description" => "Calls a WordPress action and returns the result.",
-                "parameters" => [
-                    "type" => "object",
-                    "properties" => [
-                        "action_name" => [
-                            "type" => "string",
-                            "description" => "The name of the action."
+                "type" => "function",
+                "function" => [
+                    "name" => "wp_action",
+                    "description" => "Calls a WordPress action and returns the result.",
+                    "parameters" => [
+                        "type" => "object",
+                        "properties" => [
+                            "action_name" => [
+                                "type" => "string",
+                                "description" => "The name of the action."
+                            ],
+                            "action_type" => [
+                                "type" => "string",
+                                "description" => "The type of the action, filter or action."
+                            ],
+                            "action_arguments" => [
+                                "type" => "string",
+                                "description" => "The arguments to pass to the action. Formatted as a JSON array."
+                            ]
                         ],
-                        "action_type" => [
-                            "type" => "string",
-                            "description" => "The type of the action, filter or action."
-                        ],
-                        "action_arguments" => [
-                            "type" => "string",
-                            "description" => "The arguments to pass to the action. Formatted as a JSON array."
+                        "required" => [
+                            "action_name",
+                            "action_type",
+                            "action_arguments"
                         ]
-                    ],
-                    "required" => [
-                        "action_name",
-                        "action_type",
-                        "action_arguments"
                     ]
                 ]
             ]

@@ -228,7 +228,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                     )}
                                     <p className="description">
                                         {formData.tw_chat_ai_model === 'custom'
-                                            ? 'Enter any OpenAI-compatible model name. Update the API Base URI in Settings for non-OpenAI providers.'
+                                            ? 'Enter any OpenAI-compatible model name.'
                                             : 'Select a model or choose Custom to enter any OpenAI-compatible model name.'}
                                     </p>
                                 </td>

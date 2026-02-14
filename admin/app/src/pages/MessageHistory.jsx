@@ -246,6 +246,9 @@ function MessageHistory() {
                         Clear
                     </button>
                     <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                        <button className="button" onClick={loadConversations} disabled={loading}>
+                            <span className="dashicons dashicons-update"></span> Reload
+                        </button>
                         <button 
                             className="button"
                             onClick={exportConversations}

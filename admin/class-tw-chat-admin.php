@@ -67,7 +67,6 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_moderation');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_debug');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_api_base_uri');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_log_retention_days');
     }
 
@@ -89,7 +88,6 @@
         delete_option('tw_chat_is_moderation');
         delete_option('tw_chat_allowed_actions');
         delete_option('tw_chat_is_debug');
-        delete_option('tw_chat_api_base_uri');
     }
 
     /**
@@ -112,8 +110,7 @@
             'tw_chat_logo_url' => get_option('tw_chat_logo_url'),
             'tw_chat_is_moderation' => get_option('tw_chat_is_moderation'),
             'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions'),
-            'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
-            'tw_chat_api_base_uri' => get_option('tw_chat_api_base_uri')
+            'tw_chat_is_debug' => get_option('tw_chat_is_debug')
         );
     }
 
@@ -204,7 +201,6 @@
             update_option('tw_chat_is_moderation', sanitize_text_field($settings['tw_chat_is_moderation']));
             update_option('tw_chat_allowed_actions', sanitize_text_field($settings['tw_chat_allowed_actions']));
             update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
-            update_option('tw_chat_api_base_uri', sanitize_text_field($settings['tw_chat_api_base_uri']));
 
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
@@ -461,8 +457,8 @@
         }
         
         // Check cache first (5 minute cache)
-        // v2 includes widget titles
-        $cache_key = 'tw_chat_dashboard_stats_v2_' . $days;
+        // v3 includes integer-cast daily_trends
+        $cache_key = 'tw_chat_dashboard_stats_v3_' . $days;
         $cached_stats = get_transient($cache_key);
         
         if ($cached_stats !== false) {
@@ -555,11 +551,8 @@
         }
 
         try {
-            $api_base_uri = get_option('tw_chat_api_base_uri', 'api.openai.com/v1');
-
             $client = OpenAI::factory()
                 ->withApiKey($openai_key)
-                ->withBaseUri($api_base_uri)
                 ->withHttpClient(new \GuzzleHttp\Client([]))
                 ->make();
 

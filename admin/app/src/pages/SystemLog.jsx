@@ -147,6 +147,9 @@ function SystemLog() {
                     <button className="button" onClick={clearFilters}>
                         Clear
                     </button>
+                    <button className="button" onClick={loadSystemLogs} disabled={loading}>
+                        <span className="dashicons dashicons-update"></span> Refresh
+                    </button>
                     <button className="button" onClick={clearAllLogs}>
                         Clear All Logs
                     </button>

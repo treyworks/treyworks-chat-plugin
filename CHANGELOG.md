@@ -1,5 +1,27 @@
 # Project Changelog
 
+## 2.2.3
+- **API Security: Nonce Verification**
+  - Added WP REST nonce verification to `/chat` and `/create-call` REST API endpoints
+  - Requests without a valid `X-WP-Nonce` header are now rejected
+- **API Security: Rate Limiting**
+  - Added transient-based rate limiting (20 requests/minute per IP) to the `/chat` endpoint
+  - Returns `429 Too Many Requests` when limit is exceeded
+- **API Security: Input Sanitization**
+  - Sanitized `agent_id` parameter in `handle_create_call()` with `sanitize_text_field()`
+- **Feature: Tool Call Migration**
+  - Migrated from deprecated `functions`/`function_call` format to modern `tools`/`tool_choice` format
+  - Response handling updated to use `toolCalls` instead of `functionCall`
+  - Follow-up messages use `role: tool` with `tool_call_id` instead of `role: function`
+  - Improves compatibility with non-OpenAI providers
+- **Admin Interface: Removed API Base URI Setting**
+  - Removed `API Base URI` field from Settings Manager and PHP backend
+  - Cleaned up all references to the legacy setting
+- **Admin Interface: Message History Reload**
+  - Added reload button to the Message History page for refreshing conversation list
+- **Developer: Removed Guzzle Logging Middleware**
+  - Removed debug-only Guzzle response logging middleware from OpenAI client
+
 ## 2.2.2
 - **Feature: Custom Model Selector**
   - Added "Custom" option to the model dropdown for entering any OpenAI-compatible model name

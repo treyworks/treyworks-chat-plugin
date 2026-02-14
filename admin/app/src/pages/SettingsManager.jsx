@@ -21,8 +21,7 @@ const SettingsManager = () => {
         tw_chat_global_widget_id: twChatSettings.tw_chat_global_widget_id,
         tw_chat_logo_url: twChatSettings.tw_chat_logo_url,
         tw_chat_allowed_actions: twChatSettings.tw_chat_allowed_actions,
-        tw_chat_is_moderation: twChatSettings.tw_chat_is_moderation,
-        tw_chat_api_base_uri: twChatSettings.tw_chat_api_base_uri
+        tw_chat_is_moderation: twChatSettings.tw_chat_is_moderation
     };
     const [formData, setFormData] = useState(initialFormData);
     const [formIsDirty, setFormIsDirty] = useState(false);
@@ -134,12 +133,8 @@ const SettingsManager = () => {
                                     </div>
                                 </td>
                             </tr>
-                            {renderFormField("API Base URI", "tw_chat_api_base_uri", "text", formData, handleInputChange, "api.openai.com/v1")}
                         </tbody>
                     </table>
-                    <p>
-                    <span style={{ fontWeight: 'bold' }}>Note:</span> The default API Base URI is <code>api.openai.com/v1</code>.
-                    </p>
                     <p>
                         Visit the <a href="https://platform.openai.com/docs/quickstart" target="_blank" rel="noopener noreferrer">OpenAI Platform Developer quickstart</a> for information on how to obtain a new key.
                     </p>

@@ -612,6 +612,7 @@ button[type="button"]:not(.button-primary):not(.nav-tab):hover {
    ============================================ */
 
 .notice {
+  color: #000000;
   border-radius: var(--tw-radius-md);
   padding: var(--tw-spacing-md) var(--tw-spacing-lg);
   margin: var(--tw-spacing-md) 0;

@@ -200,6 +200,8 @@ class TW_Chat_Plugin {
             // Localize voice widget settings
             wp_localize_script('tw-voice-widget-js', 'twVoicePluginSettings', array(
                 'tw_voice_button_icon_image' => TW_Chat_Style_Settings::get_voice_button_icon_image_url(),
+                'api_url' => esc_url_raw(rest_url('tw-chat/v1/create-call')),
+                'nonce' => wp_create_nonce('wp_rest'),
             ));
         }
     }
@@ -567,14 +569,10 @@ class TW_Chat_Plugin {
                 }
             }
 
-            // Get API Base URI
-            $api_base_uri = !empty($settings['tw_chat_api_base_uri']) ? sanitize_text_field($settings['tw_chat_api_base_uri']) : 'api.openai.com/v1';
-
             // Init OpenAI Client
             $client = OpenAI::factory()
                 ->withApiKey($openai_key)
-                ->withBaseUri($api_base_uri) // default: api.openai.com/v1
-                ->withHttpClient($httpClient = new \GuzzleHttp\Client([])) // default: HTTP client found using PSR-18 HTTP Client Discovery
+                ->withHttpClient(new \GuzzleHttp\Client([]))
                 ->make();
 
             // Prepare messages for API
@@ -646,24 +644,26 @@ class TW_Chat_Plugin {
             $response = $client->chat()->create([
                 'model' => $model,
                 'messages' => $api_messages,
-                'functions' => TW_Chat_Functions::get_function_definitions($widget_id),
-                'function_call' => 'auto',
+                'tools' => TW_Chat_Functions::get_function_definitions($widget_id),
+                'tool_choice' => 'auto',
             ]);
 
             // Initialize token counters
             $input_tokens = 0;
             $output_tokens = 0;
 
-            // Check for function call
+            // Check for tool call
             $message = $response->choices[0]->message;
 
-            if (isset($message->functionCall)) {
-                $function_name = $message->functionCall->name;
-                $arguments = json_decode($message->functionCall->arguments, true);
+            if (!empty($message->toolCalls)) {
+                $tool_call = $message->toolCalls[0];
+                $tool_call_id = $tool_call->id;
+                $function_name = $tool_call->function->name;
+                $arguments = json_decode($tool_call->function->arguments, true);
 
-                // Log function call
-                TW_Chat_System_Logger::log_debug(__('+ Function call: ' . $function_name));
-                TW_Chat_System_Logger::log_debug(__('+ Function arguments: ' . json_encode($arguments)));
+                // Log tool call
+                TW_Chat_System_Logger::log_debug(__('+ Tool call: ' . $function_name));
+                TW_Chat_System_Logger::log_debug(__('+ Tool arguments: ' . json_encode($arguments)));
 
                 // Log tool call to message history (tool name and params)
                 $tool_message = 'Tool: ' . $function_name . ' | Params: ' . json_encode($arguments);
@@ -736,20 +736,26 @@ class TW_Chat_Plugin {
                         $widget_id
                     );
 
-                    // Add new 'function' role message including function result
+                    // Add assistant message with tool call
                     $api_messages[] = [
                         'role' => 'assistant',
                         'content' => null,
-                        'function_call' => [
-                            'name' => $function_name,
-                            'arguments' => json_encode($arguments),
+                        'tool_calls' => [
+                            [
+                                'id' => $tool_call_id,
+                                'type' => 'function',
+                                'function' => [
+                                    'name' => $function_name,
+                                    'arguments' => json_encode($arguments),
+                                ]
+                            ]
                         ]
                     ];
 
-                    // Add function result
+                    // Add tool result
                     $api_messages[] = [
-                        'role' => 'function',
-                        'name' => $function_name,
+                        'role' => 'tool',
+                        'tool_call_id' => $tool_call_id,
                         'content' => json_encode($function_result),
                     ];
 
