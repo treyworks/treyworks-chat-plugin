@@ -13,9 +13,11 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 
 ### Text Chat Features (OpenAI)
 - Seamless integration with the OpenAI Chat Completions API
+- Custom model support for any OpenAI-compatible provider (Google Gemini, etc.)
+- AI Prompt Generator to help write effective system prompts
 - Multiple text chat widgets per page
 - Advanced functions for site search, post retrieval, and more
-- Webhook capabilities for lead generation
+- Webhook capabilities with visual data structure builder
 - WordPress action and filter integration
 - Message moderation and profanity filtering
 
@@ -167,8 +169,9 @@ Search your WordPress site content and provide relevant information to users:
 Connect your chatbot to external systems and services for data exchange:
 - Settings
   - Configure Webhook URL and optional headers in the widget settings.
+  - Use the **Webhook Data Structure** builder to define expected fields (name, type, required, description). The structure is automatically injected into the AI prompt and tool definition.
 - Parameters
-  - `post_data` (string or JSON, required): Payload to send to the configured endpoint.
+  - `data` (string/JSON, required): Payload to send to the configured endpoint. When a data structure is defined, the AI formats this as a JSON object matching the schema.
 - Example prompt
   - "Send this lead to our CRM via webhook: name=Jane Smith, email=jane@example.com, interest=AI chatbot. Confirm when done."
 
@@ -202,7 +205,7 @@ The plugin includes a visual **Style Customizer** in the admin dashboard for cus
 - **Live Preview**: See changes in real-time with an isolated preview pane
 - **Organized Sections**: Settings grouped by widget area (bubble button, bubble text, bubble image, chat interface, header, messages, input, suggested answers, disclaimer, voice container, voice button, voice status, confirmation dialog)
 - **Hover States**: Customize hover effects for the chat bubble, suggested answer buttons, and voice button
-- **Mobile Settings**: Dedicated mobile-specific fields for widget dimensions and button sizes
+- **Mobile Settings**: Mobile-specific fields integrated into their respective sections (e.g., bubble size, font size, interface dimensions)
 - **Undo/Save**: Undo changes per section or globally before saving
 - **Import/Export**: Export your current styles as a JSON file, or import styles from a previously exported file
 

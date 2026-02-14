@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
  */
 function CheckboxInput({ label, variable, value, defaultValue, savedValue, onChange }) {
   const isChecked = value === '1';
-  const isModified = value && value !== (savedValue || defaultValue);
+  const isModified = value !== savedValue;
 
   const handleChange = (e) => {
     onChange(variable, e.target.checked ? '1' : '0');

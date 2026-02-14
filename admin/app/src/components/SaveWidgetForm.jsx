@@ -1,9 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import ListInput from "./ListInput";
+import WebhookSchemaBuilder from "./WebhookSchemaBuilder";
+import PromptGenerator from "./PromptGenerator";
+
+const PRESET_MODELS = [
+    { value: 'gpt-5.2-2025-12-11', label: 'GPT 5.2' },
+    { value: 'gpt-5-mini', label: 'GPT 5 Mini' },
+    { value: 'gpt-4.1-mini-2025-04-14', label: 'GPT 4.1 Mini' },
+];
+
+const isPresetModel = (model) => PRESET_MODELS.some(m => m.value === model);
 
 const SaveWidgetForm = ({ currentWidget, onSave }) => {
     const [isSaving, setIsSaving] = useState(false);
+    const [showPromptGenerator, setShowPromptGenerator] = useState(false);
     const [formData, setFormData] = useState({
         id: '',
         tw_chat_widget_name: '',
@@ -12,7 +23,8 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         tw_chat_dismiss_answers_text: '',
         tw_chat_suggested_answers: '',
         tw_chat_system_prompt: '',
-        tw_chat_ai_model: 'gpt-4.1-2025-04-14',
+        tw_chat_ai_model: 'gpt-4.1-mini-2025-04-14',
+        tw_chat_ai_model_custom: '',
         tw_chat_webhook_address: '',
         tw_chat_webhook_header: '',
         tw_chat_email_recipients: '',
@@ -22,7 +34,8 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         tw_chat_search_scope: 'all',
         tw_chat_search_post_types: [],
         tw_chat_search_specific_ids: '',
-        tw_chat_exclude_links: []
+        tw_chat_exclude_links: [],
+        tw_chat_webhook_schema: ''
     });
 
     useEffect(() => {
@@ -32,7 +45,12 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                 tw_chat_widget_name: currentWidget.name,
                 tw_chat_greeting: currentWidget.meta.tw_chat_greeting ? currentWidget.meta.tw_chat_greeting[0] : '',
                 tw_chat_system_prompt: currentWidget.meta.tw_chat_system_prompt ? currentWidget.meta.tw_chat_system_prompt[0] : '',
-                tw_chat_ai_model: currentWidget.meta.tw_chat_ai_model ? currentWidget.meta.tw_chat_ai_model[0] : 'gpt-4.1-2025-04-14',
+                tw_chat_ai_model: currentWidget.meta.tw_chat_ai_model 
+                    ? (isPresetModel(currentWidget.meta.tw_chat_ai_model[0]) ? currentWidget.meta.tw_chat_ai_model[0] : 'custom')
+                    : 'gpt-4.1-mini-2025-04-14',
+                tw_chat_ai_model_custom: currentWidget.meta.tw_chat_ai_model 
+                    ? (!isPresetModel(currentWidget.meta.tw_chat_ai_model[0]) ? currentWidget.meta.tw_chat_ai_model[0] : '')
+                    : '',
                 tw_chat_suggested_answers: currentWidget.meta.tw_chat_suggested_answers ? currentWidget.meta.tw_chat_suggested_answers[0] : '',
                 tw_chat_dismiss_answers: currentWidget.meta.tw_chat_dismiss_answers ? currentWidget.meta.tw_chat_dismiss_answers[0] : '',
                 tw_chat_dismiss_answers_text: currentWidget.meta.tw_chat_dismiss_answers_text ? currentWidget.meta.tw_chat_dismiss_answers_text[0] : '',
@@ -46,6 +64,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                 tw_chat_search_post_types: currentWidget.meta.tw_chat_search_post_types ? currentWidget.meta.tw_chat_search_post_types[0].split(',').filter(Boolean) : [],
                 tw_chat_search_specific_ids: currentWidget.meta.tw_chat_search_specific_ids ? currentWidget.meta.tw_chat_search_specific_ids[0] : '',
                 tw_chat_exclude_links: currentWidget.meta.tw_chat_exclude_links ? currentWidget.meta.tw_chat_exclude_links[0].split(',').filter(Boolean) : [],
+                tw_chat_webhook_schema: currentWidget.meta.tw_chat_webhook_schema ? currentWidget.meta.tw_chat_webhook_schema[0] : '',
             });
         }
     }, [currentWidget]);
@@ -84,6 +103,21 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         });
     }, []);
 
+    const handlePromptApply = useCallback((prompt) => {
+        setFormData(prevData => ({
+            ...prevData,
+            tw_chat_system_prompt: prompt
+        }));
+        setShowPromptGenerator(false);
+    }, []);
+
+    const handleWebhookSchemaChange = useCallback((schemaJson) => {
+        setFormData(prevData => ({
+            ...prevData,
+            tw_chat_webhook_schema: schemaJson
+        }));
+    }, []);
+
     const handleSuggestedAnswersChange = useCallback((answers) => {
         setFormData(prevData => ({
             ...prevData,
@@ -97,6 +131,9 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         // Convert post types array to comma-separated string for storage
         const submitData = {
             ...formData,
+            tw_chat_ai_model: formData.tw_chat_ai_model === 'custom' 
+                ? formData.tw_chat_ai_model_custom 
+                : formData.tw_chat_ai_model,
             tw_chat_search_post_types: Array.isArray(formData.tw_chat_search_post_types) 
                 ? formData.tw_chat_search_post_types.join(',') 
                 : formData.tw_chat_search_post_types,
@@ -104,6 +141,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                 ? formData.tw_chat_exclude_links.join(',')
                 : formData.tw_chat_exclude_links
         };
+        delete submitData.tw_chat_ai_model_custom;
         setIsSaving(true);
         onSave(submitData);
         setIsSaving(false);
@@ -172,11 +210,27 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                         required="required"
                                     >
                                         <option value="">Select a model</option>
-                                        <option value="gpt-5.2-2025-12-11">GPT 5.2</option>
-                                        <option value="gpt-5-mini">GPT 5 Mini</option>
-                                        <option value="gpt-4.1-mini-2025-04-14">GPT 4.1 Mini</option>
+                                        {PRESET_MODELS.map(m => (
+                                            <option key={m.value} value={m.value}>{m.label}</option>
+                                        ))}
+                                        <option value="custom">Custom</option>
                                     </select>
-                                    <p className="description">Select the OpenAI model to use for the chat widget.</p>
+                                    {formData.tw_chat_ai_model === 'custom' && (
+                                        <input
+                                            className="regular-text tw-chat-custom-model-input"
+                                            type="text"
+                                            name="tw_chat_ai_model_custom"
+                                            onChange={handleInputChange}
+                                            value={formData.tw_chat_ai_model_custom}
+                                            placeholder="e.g. gemini-2.0-flash"
+                                            required
+                                        />
+                                    )}
+                                    <p className="description">
+                                        {formData.tw_chat_ai_model === 'custom'
+                                            ? 'Enter any OpenAI-compatible model name.'
+                                            : 'Select a model or choose Custom to enter any OpenAI-compatible model name.'}
+                                    </p>
                                 </td>
                             </tr>
                             <tr valign="top">
@@ -190,7 +244,29 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                         value={formData.tw_chat_system_prompt}
                                         placeholder="You are a helpful assistant."
                                     ></textarea>
-                                    <p className="description">The system prompt sets the behavior and personality of your assistant.</p>
+                                    <div className="tw-prompt-generator-trigger">
+                                        <p className="description">The system prompt sets the behavior and personality of your assistant.</p>
+                                        <button
+                                            type="button"
+                                            className="button tw-prompt-generator-open-btn"
+                                            onClick={() => setShowPromptGenerator(true)}
+                                        >
+                                            ✨ Generate with AI
+                                        </button>
+                                    </div>
+                                    {showPromptGenerator && (
+                                        <PromptGenerator
+                                            currentPrompt={formData.tw_chat_system_prompt}
+                                            widgetConfig={{
+                                                hasSiteSearch: formData.tw_chat_use_site_search === '1',
+                                                hasWebhook: !!formData.tw_chat_webhook_address,
+                                                hasWebhookSchema: !!formData.tw_chat_webhook_schema,
+                                                webhookSchema: formData.tw_chat_webhook_schema,
+                                            }}
+                                            onApply={handlePromptApply}
+                                            onClose={() => setShowPromptGenerator(false)}
+                                        />
+                                    )}
                                 </td>
                             </tr>
                         </tbody>
@@ -428,6 +504,20 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                     ></textarea>
                                 </td>
                             </tr>
+                            {formData.tw_chat_webhook_address && (
+                                <tr valign="top">
+                                    <th scope="row">Webhook Data Structure</th>
+                                    <td>
+                                        <p className="description tw-webhook-schema-description">
+                                            Define the fields the assistant should collect before sending data to the webhook. This structure is automatically included in the AI prompt.
+                                        </p>
+                                        <WebhookSchemaBuilder
+                                            value={formData.tw_chat_webhook_schema}
+                                            onChange={handleWebhookSchemaChange}
+                                        />
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </>

@@ -58,8 +58,8 @@ function ReportingDashboard() {
         messages: parseInt(widget.messages)
     }));
 
-    // Check if there are no widgets
-    const hasWidgets = widgetData.length > 0;
+    // Check if there are no widgets (uses actual widget count, not just those with activity)
+    const hasWidgets = (stats.widget_count || 0) > 0;
     
     // Check if there are no conversations or messages
     const hasData = stats.total_conversations > 0 || Object.values(stats.message_types || {}).reduce((a, b) => a + b, 0) > 0;

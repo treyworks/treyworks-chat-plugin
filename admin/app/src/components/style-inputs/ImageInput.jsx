@@ -6,11 +6,11 @@ import { useState, useEffect } from 'react';
  * Displays a thumbnail preview of the selected image.
  */
 function ImageInput({ label, variable, value, defaultValue, savedValue, onChange }) {
-  const [localValue, setLocalValue] = useState(value || defaultValue);
-  const isModified = value && value !== (savedValue || defaultValue);
+  const [localValue, setLocalValue] = useState(value ?? defaultValue);
+  const isModified = value !== savedValue;
 
   useEffect(() => {
-    setLocalValue(value || defaultValue);
+    setLocalValue(value ?? defaultValue);
   }, [value, defaultValue]);
 
   const handleSelectImage = () => {

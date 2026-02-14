@@ -5,12 +5,12 @@ import { useState, useRef, useEffect } from 'react';
  * Displays a color swatch, hex text input, and reset button.
  */
 function ColorPickerInput({ label, variable, value, defaultValue, savedValue, onChange }) {
-  const [localValue, setLocalValue] = useState(value || defaultValue);
+  const [localValue, setLocalValue] = useState(value ?? defaultValue);
   const colorInputRef = useRef(null);
-  const isModified = value && value !== (savedValue || defaultValue);
+  const isModified = value !== savedValue;
 
   useEffect(() => {
-    setLocalValue(value || defaultValue);
+    setLocalValue(value ?? defaultValue);
   }, [value, defaultValue]);
 
   const handleColorChange = (e) => {

@@ -29,6 +29,7 @@
         add_action( 'wp_ajax_get_conversations_list', array($this, 'get_conversations_list_callback'));
         add_action( 'wp_ajax_get_conversation_messages', array($this, 'get_conversation_messages_callback'));
         add_action( 'wp_ajax_get_dashboard_stats', array($this, 'get_dashboard_stats_callback'));
+        add_action( 'wp_ajax_tw_chat_generate_prompt', array($this, 'generate_prompt_callback'));
         // Hook the function to the uninstall hook
         register_uninstall_hook(__FILE__, array($this, 'delete_options'));
     }
@@ -66,7 +67,6 @@
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_moderation');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_allowed_actions');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_is_debug');
-        register_setting('tw-chat-ui-settings-group', 'tw_chat_api_base_uri');
         register_setting('tw-chat-ui-settings-group', 'tw_chat_log_retention_days');
     }
 
@@ -88,7 +88,6 @@
         delete_option('tw_chat_is_moderation');
         delete_option('tw_chat_allowed_actions');
         delete_option('tw_chat_is_debug');
-        delete_option('tw_chat_api_base_uri');
     }
 
     /**
@@ -111,8 +110,7 @@
             'tw_chat_logo_url' => get_option('tw_chat_logo_url'),
             'tw_chat_is_moderation' => get_option('tw_chat_is_moderation'),
             'tw_chat_allowed_actions' => get_option('tw_chat_allowed_actions'),
-            'tw_chat_is_debug' => get_option('tw_chat_is_debug'),
-            'tw_chat_api_base_uri' => get_option('tw_chat_api_base_uri')
+            'tw_chat_is_debug' => get_option('tw_chat_is_debug')
         );
     }
 
@@ -203,7 +201,6 @@
             update_option('tw_chat_is_moderation', sanitize_text_field($settings['tw_chat_is_moderation']));
             update_option('tw_chat_allowed_actions', sanitize_text_field($settings['tw_chat_allowed_actions']));
             update_option('tw_chat_is_debug', sanitize_text_field($settings['tw_chat_is_debug']));
-            update_option('tw_chat_api_base_uri', sanitize_text_field($settings['tw_chat_api_base_uri']));
 
             // Send response back to AJAX
             wp_send_json_success( array( 'message' => 'Settings saved!' ) );
@@ -249,6 +246,7 @@
             $search_post_types = isset($_POST['tw_chat_search_post_types']) ? sanitize_text_field($_POST['tw_chat_search_post_types']) : '';
             $search_specific_ids = isset($_POST['tw_chat_search_specific_ids']) ? sanitize_text_field($_POST['tw_chat_search_specific_ids']) : '';
             $exclude_links = isset($_POST['tw_chat_exclude_links']) ? sanitize_text_field($_POST['tw_chat_exclude_links']) : '';
+            $webhook_schema = isset($_POST['tw_chat_webhook_schema']) ? sanitize_textarea_field($_POST['tw_chat_webhook_schema']) : '';
 
             // Validate chat_widget_type
             // if (!in_array($chat_widget_type, ['text', 'voice'])) {
@@ -294,6 +292,7 @@
             update_post_meta($post_id, 'tw_chat_search_post_types', $search_post_types);
             update_post_meta($post_id, 'tw_chat_search_specific_ids', $search_specific_ids);
             update_post_meta($post_id, 'tw_chat_exclude_links', $exclude_links);
+            update_post_meta($post_id, 'tw_chat_webhook_schema', $webhook_schema);
 
             $response = TW_Chat_Widgets::get_chat_widgets();
             wp_send_json_success( $response );
@@ -458,8 +457,8 @@
         }
         
         // Check cache first (5 minute cache)
-        // v2 includes widget titles
-        $cache_key = 'tw_chat_dashboard_stats_v2_' . $days;
+        // v3 includes integer-cast daily_trends
+        $cache_key = 'tw_chat_dashboard_stats_v3_' . $days;
         $cached_stats = get_transient($cache_key);
         
         if ($cached_stats !== false) {
@@ -479,6 +478,101 @@
         set_transient($cache_key, $combined_stats, 5 * MINUTE_IN_SECONDS);
         
         wp_send_json_success($combined_stats);
+    }
+
+    /**
+     * Generate a system prompt using OpenAI
+     */
+    public function generate_prompt_callback() {
+        check_ajax_referer('tw_chat_admin_nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Insufficient permissions.'));
+            wp_die();
+        }
+
+        $openai_key = get_option('tw_chat_openai_key', '');
+        if (empty($openai_key)) {
+            wp_send_json_error(array('message' => 'OpenAI API key is not configured. Add it in Settings.'));
+            wp_die();
+        }
+
+        $description = isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '';
+        $mode = isset($_POST['mode']) ? sanitize_text_field($_POST['mode']) : 'generate';
+        $current_prompt = isset($_POST['current_prompt']) ? sanitize_textarea_field($_POST['current_prompt']) : '';
+        $has_site_search = isset($_POST['has_site_search']) && $_POST['has_site_search'] === '1';
+        $has_webhook = isset($_POST['has_webhook']) && $_POST['has_webhook'] === '1';
+        $has_webhook_schema = isset($_POST['has_webhook_schema']) && $_POST['has_webhook_schema'] === '1';
+        $webhook_schema = isset($_POST['webhook_schema']) ? sanitize_textarea_field($_POST['webhook_schema']) : '';
+
+        // Build the meta-prompt
+        $meta_prompt = "You are an expert at writing system prompts for AI chatbots embedded on websites. ";
+        $meta_prompt .= "Generate a clear, well-structured system prompt based on the user's description.\n\n";
+        $meta_prompt .= "Guidelines for the prompt you generate:\n";
+        $meta_prompt .= "- Write in second person, addressing the AI directly (e.g., 'You are...')\n";
+        $meta_prompt .= "- Be specific about the chatbot's role, tone, and boundaries\n";
+        $meta_prompt .= "- Include clear instructions for how to handle edge cases\n";
+        $meta_prompt .= "- Keep it concise but thorough\n";
+        $meta_prompt .= "- Do NOT include any markdown formatting or code blocks — output only the raw prompt text\n\n";
+
+        // Add tool context
+        $tool_context = array();
+        if ($has_site_search) {
+            $tool_context[] = "The chatbot has a 'search_site' tool that can search the WordPress website for relevant content. The prompt does NOT need to explain how to use this tool — that is handled automatically. But the prompt should instruct the assistant to use website content to answer questions.";
+        }
+        if ($has_webhook) {
+            $tool_context[] = "The chatbot has a 'webhook' tool that can send data to an external URL.";
+            if ($has_webhook_schema && !empty($webhook_schema)) {
+                $schema_fields = json_decode($webhook_schema, true);
+                if (is_array($schema_fields) && !empty($schema_fields)) {
+                    $field_lines = array();
+                    foreach ($schema_fields as $field) {
+                        $req = !empty($field['required']) ? 'required' : 'optional';
+                        $desc = !empty($field['description']) ? ' — ' . $field['description'] : '';
+                        $field_lines[] = '  - ' . $field['name'] . ' (' . $field['type'] . ', ' . $req . ')' . $desc;
+                    }
+                    $tool_context[] = "The webhook expects these fields:\n" . implode("\n", $field_lines) . "\nThe prompt should instruct the assistant to collect these fields from the user before sending the webhook. The prompt does NOT need to describe the JSON format — that is handled automatically.";
+                }
+            }
+        }
+
+        if (!empty($tool_context)) {
+            $meta_prompt .= "Available tools:\n" . implode("\n\n", $tool_context) . "\n\n";
+        }
+
+        // Build the user message
+        if ($mode === 'improve' && !empty($current_prompt)) {
+            $user_message = "Here is the current system prompt:\n\n" . $current_prompt . "\n\n";
+            $user_message .= !empty($description)
+                ? "Please improve it with these changes: " . $description
+                : "Please improve this prompt to be clearer, more structured, and more effective.";
+        } else {
+            $user_message = "Create a system prompt for a chatbot with this purpose: " . $description;
+        }
+
+        try {
+            $client = OpenAI::factory()
+                ->withApiKey($openai_key)
+                ->withHttpClient(new \GuzzleHttp\Client([]))
+                ->make();
+
+            $response = $client->chat()->create([
+                'model' => 'gpt-4.1-mini-2025-04-14',
+                'messages' => [
+                    ['role' => 'system', 'content' => $meta_prompt],
+                    ['role' => 'user', 'content' => $user_message],
+                ],
+                'temperature' => 0.7,
+            ]);
+
+            $generated = $response->choices[0]->message->content;
+
+            wp_send_json_success(array('prompt' => trim($generated)));
+        } catch (Exception $e) {
+            wp_send_json_error(array('message' => 'OpenAI error: ' . $e->getMessage()));
+        }
+
+        wp_die();
     }
 
 }
