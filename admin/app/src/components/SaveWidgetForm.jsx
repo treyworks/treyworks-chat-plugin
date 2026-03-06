@@ -5,6 +5,8 @@ import WebhookSchemaBuilder from "./WebhookSchemaBuilder";
 import PromptGenerator from "./PromptGenerator";
 
 const PRESET_MODELS = [
+    { value: 'gpt-5.4', label: 'GPT 5.4'},
+    { value: 'gpt-5.3-chat-latest', label: 'GPT 5.3 Instant'},
     { value: 'gpt-5.2-2025-12-11', label: 'GPT 5.2' },
     { value: 'gpt-5-mini', label: 'GPT 5 Mini' },
     { value: 'gpt-4.1-mini-2025-04-14', label: 'GPT 4.1 Mini' },
@@ -222,7 +224,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                             name="tw_chat_ai_model_custom"
                                             onChange={handleInputChange}
                                             value={formData.tw_chat_ai_model_custom}
-                                            placeholder="e.g. gemini-2.0-flash"
+                                            placeholder="model name"
                                             required
                                         />
                                     )}
