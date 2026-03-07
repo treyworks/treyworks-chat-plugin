@@ -1,6 +1,9 @@
 # Project Changelog
 
 ## 2.2.3
+- **Feature: Model Support Updates**
+  - Added support for GPT 5.3 Instant
+  - Added support for GPT 5.4
 - **API Security: Nonce Verification**
   - Added WP REST nonce verification to `/chat` and `/create-call` REST API endpoints
   - Requests without a valid `X-WP-Nonce` header are now rejected
