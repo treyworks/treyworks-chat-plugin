@@ -6,6 +6,7 @@ import PromptGenerator from "./PromptGenerator";
 
 const PRESET_MODELS = [
     { value: 'gpt-5.4', label: 'GPT 5.4'},
+    { value: 'gpt-5.4-mini', label: 'GPT 5.4 Mini' },
     { value: 'gpt-5.3-chat-latest', label: 'GPT 5.3 Instant'},
     { value: 'gpt-5.2-2025-12-11', label: 'GPT 5.2' },
     { value: 'gpt-5-mini', label: 'GPT 5 Mini' },
