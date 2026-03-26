@@ -1,5 +1,12 @@
 # Project Changelog
 
+## 2.2.4
+- **Feature: Model Support Updates**
+  - Added support for GPT 5.4 Mini (`gpt-5.4-mini`)
+- **Documentation: License Update**
+  - Updated the README license information to GNU General Public License v3.0 (GPL v3)
+
+
 ## 2.2.3
 - **Feature: Model Support Updates**
   - Added support for GPT 5.3 Instant

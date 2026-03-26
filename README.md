@@ -13,7 +13,7 @@ The Treyworks Chat Plugin empowers your WordPress website with intelligent chatb
 
 ### Text Chat Features (OpenAI)
 - Seamless integration with the OpenAI Chat Completions API
-- Supports the latest OpenAI models including GPT 5.3 Instant and GPT 5.4
+- Supports the latest OpenAI models including GPT 5.4, GPT 5.4 Mini, and GPT 5.3 Instant
 - Custom model support for any OpenAI-compatible provider (Google Gemini, etc.)
 - AI Prompt Generator to help write effective system prompts
 - Multiple text chat widgets per page
@@ -157,7 +157,7 @@ Each page can have a unique text chat widget that overrides the global setting:
 
 ### Built-in Tools (OpenAI Text Chat)
 
-Text chat widgets in v2.0 include three built-in tools you can enable and configure per widget. No JSON schemas are needed.
+Text chat widgets in v3.0 include three built-in tools you can enable and configure per widget. No JSON schemas are needed.
 
 #### Search Site
 Search your WordPress site content and provide relevant information to users:
@@ -295,6 +295,10 @@ Monitor system health and debug issues:
 - OpenAI PHP Client: [https://github.com/openai-php/client](https://github.com/openai-php/client)
 
 For additional support or feature requests, please open an issue on our GitHub repository.
+
+## License
+
+This plugin is licensed under the GNU General Public License v3.0 (GPL v3).
 
 ## Acknowledgements
 
