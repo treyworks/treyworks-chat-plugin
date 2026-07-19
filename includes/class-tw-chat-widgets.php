@@ -62,6 +62,54 @@ class TW_Chat_Widgets {
     }
 
     /**
+     * Return only the widget settings required by the public chat JavaScript.
+     * Sensitive configuration such as prompts, webhook credentials, and email
+     * recipients must never be serialized into a public page.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public static function get_frontend_widget_settings() {
+        $widgets = self::get_chat_widgets();
+        $settings = array();
+
+        foreach ( $widgets as $widget ) {
+            $meta = $widget['meta'];
+            $settings[ $widget['id'] ] = array(
+                'tw_chat_widget_name'          => $widget['name'],
+                'tw_chat_greeting'             => isset( $meta['tw_chat_greeting'][0] ) ? $meta['tw_chat_greeting'][0] : '',
+                'tw_chat_suggested_answers'    => isset( $meta['tw_chat_suggested_answers'][0] ) ? $meta['tw_chat_suggested_answers'][0] : '',
+                'tw_chat_dismiss_answers'      => isset( $meta['tw_chat_dismiss_answers'][0] ) ? $meta['tw_chat_dismiss_answers'][0] : '',
+                'tw_chat_dismiss_answers_text' => isset( $meta['tw_chat_dismiss_answers_text'][0] ) ? $meta['tw_chat_dismiss_answers_text'][0] : '',
+            );
+        }
+
+        return $settings;
+    }
+
+    /**
+     * Determine whether an agent is configured for a published voice widget.
+     *
+     * @param string $agent_id Retell agent ID.
+     * @return bool
+     */
+    public static function has_published_voice_agent( $agent_id ) {
+        $widgets = get_posts( array(
+            'post_type'      => 'chat_widgets',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+        ) );
+
+        foreach ( $widgets as $widget_id ) {
+            if ( get_post_meta( $widget_id, 'tw_chat_widget_type', true ) === 'voice' && hash_equals( (string) get_post_meta( $widget_id, 'tw_chat_voice_agent_id', true ), $agent_id ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get Chat Widget by the ID
      */
     public static function get_chat_widget_by_id($post_id) {

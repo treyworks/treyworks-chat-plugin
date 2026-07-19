@@ -13161,7 +13161,7 @@ Check the render method of \`` + e + "`." : "";
         };
       }
     }
-    function zz(e) {
+    function Fz(e) {
       return e;
     }
     function jT(e) {
@@ -15642,9 +15642,9 @@ Incoming: %s`, le, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
       }
       return [w, d];
     }
-    function Uz(e, t, a) {
+    function jz(e, t, a) {
     }
-    function Fz(e, t, a) {
+    function Pz(e, t, a) {
     }
     function vS(e, t, a) {
       var i = gn, l = ll(), d, v = oa();
@@ -26236,25 +26236,45 @@ function Fh(c, u) {
 function Oz(c) {
   window.matchMedia("(min-width: 1025px)").matches && document.getElementById(`message-text-${c}`).focus();
 }
-const Dz = ({ html: c }) => {
+const Dz = /* @__PURE__ */ new Set(["A", "BR", "CODE", "EM", "LI", "OL", "P", "PRE", "STRONG", "UL"]), Az = (c) => {
+  const u = document.createElement("template");
+  return u.innerHTML = c, u.content.querySelectorAll("*").forEach((f) => {
+    if (!Dz.has(f.tagName)) {
+      f.replaceWith(document.createTextNode(f.textContent || ""));
+      return;
+    }
+    if (Array.from(f.attributes).forEach((p) => {
+      const y = f.tagName === "A" && ["href", "title"].includes(p.name), E = f.tagName === "CODE" && p.name === "class";
+      !y && !E && f.removeAttribute(p.name);
+    }), f.tagName === "A" && f.hasAttribute("href")) {
+      try {
+        const p = new URL(f.getAttribute("href"), window.location.origin);
+        ["http:", "https:", "mailto:"].includes(p.protocol) || f.removeAttribute("href");
+      } catch {
+        f.removeAttribute("href");
+      }
+      f.setAttribute("target", "_blank"), f.setAttribute("rel", "noopener noreferrer");
+    }
+  }), u.innerHTML;
+}, Lz = ({ html: c }) => {
   const u = Ne.useRef(null);
   return Ne.useEffect(() => {
     const f = (y) => {
-      y.target.tagName === "A" && y.target.href && (y.preventDefault(), window.open(y.target.href, "_blank"));
+      y.target.tagName === "A" && y.target.href && (y.preventDefault(), window.open(y.target.href, "_blank", "noopener,noreferrer"));
     }, p = u.current;
     return p && p.addEventListener("click", f), () => {
       p && p.removeEventListener("click", f);
     };
   }, []), // Render the HTML content with dangerouslySetInnerHTML
-  /* @__PURE__ */ mt.jsx("span", { ref: u, dangerouslySetInnerHTML: { __html: c } });
+  /* @__PURE__ */ mt.jsx("span", { ref: u, dangerouslySetInnerHTML: { __html: Az(c) } });
 };
-function Az({ iconColor: c }) {
+function Nz({ iconColor: c }) {
   return /* @__PURE__ */ mt.jsx("svg", { role: "img", width: "512pt", height: "512pt", version: "1.1", viewBox: "0 0 512 512", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ mt.jsx("path", { d: "m60.875 276.5 99.766 53.922 174.7-143.03-161.79 206.74v77.512l72.832-96.914 115.88 63.434v0.003906c5.7188 3.1289 12.594 3.3203 18.477 0.51563 5.8828-2.8086 10.059-8.2734 11.219-14.688l69.797-384.68-400.35 201.14c-4.4648 2.2227-7.957 6.0117-9.8047 10.645-1.8477 4.6328-1.9219 9.7852-0.21094 14.469 1.7109 4.6875 5.0859 8.5781 9.4883 10.93z", fill: c }) });
 }
-function Lz({ iconColor: c }) {
+function Mz({ iconColor: c }) {
   return /* @__PURE__ */ mt.jsx("svg", { role: "img", width: "512pt", height: "512pt", version: "1.1", viewBox: "0 0 512 512", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ mt.jsx("path", { d: "m227.5 256-86.512 86.516c-7.8711 7.8594-7.8711 20.637 0 28.496 7.8594 7.8672 20.633 7.8672 28.492 0l86.516-86.516 86.516 86.516c7.8594 7.8672 20.637 7.8672 28.496 0 7.8672-7.8594 7.8672-20.637 0-28.496l-86.516-86.516 86.516-86.516c7.8672-7.8594 7.8672-20.633 0-28.492-7.8594-7.8711-20.637-7.8711-28.496 0l-86.516 86.512-86.516-86.512c-7.8594-7.8711-20.633-7.8711-28.492 0-7.8711 7.8594-7.8711 20.633 0 28.492z", fill: c, fillRule: "evenodd" }) });
 }
-const Nz = ({ isFullscreen: c, color: u = "#000000" }) => c ? /* @__PURE__ */ mt.jsx("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ mt.jsx(
+const zz = ({ isFullscreen: c, color: u = "#000000" }) => c ? /* @__PURE__ */ mt.jsx("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: /* @__PURE__ */ mt.jsx(
   "path",
   {
     d: "M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3",
@@ -26307,7 +26327,7 @@ const Nz = ({ isFullscreen: c, color: u = "#000000" }) => c ? /* @__PURE__ */ mt
       let lt;
       if (ft.length > 0) {
         lt = ft;
-        const Nt = lt.replace(/(?:\r\n|\r|\n)/g, "<br />").replace(/【.*?†source】/g, "");
+        const Nt = lt.replace(/【.*?†source】/g, "");
         S([...twChatMessages[u], Fh(Nt, "assistant")]), twChatMessages[u] = [...twChatMessages[u], Fh(Nt, "assistant")];
       }
       k(""), U(0), O(!1), y && Oz(u);
@@ -26330,7 +26350,7 @@ const Nz = ({ isFullscreen: c, color: u = "#000000" }) => c ? /* @__PURE__ */ mt
         ref: ze ? xe : null,
         id: `tw-chat-message-${u}-${ce}`,
         className: `message ${Q.role}`,
-        children: /* @__PURE__ */ mt.jsx(Dz, { html: xn.use(_z).parse(Q.content ? Q.content : "Something went wrong.") })
+        children: /* @__PURE__ */ mt.jsx(Lz, { html: xn.use(_z).parse(Q.content ? Q.content : "Something went wrong.") })
       },
       ce
     );
@@ -26366,7 +26386,7 @@ const Nz = ({ isFullscreen: c, color: u = "#000000" }) => c ? /* @__PURE__ */ mt
           ] }) })
         ] }),
         /* @__PURE__ */ mt.jsxs("button", { children: [
-          We ? /* @__PURE__ */ mt.jsx("img", { src: We, alt: "Send Message", className: "tw-chat-send-button-image" }) : /* @__PURE__ */ mt.jsx(Az, { iconColor: Lt }),
+          We ? /* @__PURE__ */ mt.jsx("img", { src: We, alt: "Send Message", className: "tw-chat-send-button-image" }) : /* @__PURE__ */ mt.jsx(Nz, { iconColor: Lt }),
           /* @__PURE__ */ mt.jsx("span", { className: "sr-only", children: "Send Message" })
         ] })
       ]
@@ -26389,7 +26409,7 @@ const Nz = ({ isFullscreen: c, color: u = "#000000" }) => c ? /* @__PURE__ */ mt
             onClick: te,
             className: "tw-chat-header-fullscreen",
             "aria-label": $ ? "Exit fullscreen" : "Enter fullscreen",
-            children: /* @__PURE__ */ mt.jsx(Nz, { isFullscreen: $, color: B })
+            children: /* @__PURE__ */ mt.jsx(zz, { isFullscreen: $, color: B })
           }
         ),
         /* @__PURE__ */ mt.jsx(
@@ -26398,7 +26418,7 @@ const Nz = ({ isFullscreen: c, color: u = "#000000" }) => c ? /* @__PURE__ */ mt
             className: "tw-chat-header-close",
             onClick: () => c(),
             "aria-label": "Close chat interface",
-            children: /* @__PURE__ */ mt.jsx(Lz, { iconColor: B })
+            children: /* @__PURE__ */ mt.jsx(Mz, { iconColor: B })
           }
         )
       ] }) })
@@ -26413,7 +26433,7 @@ const Nz = ({ isFullscreen: c, color: u = "#000000" }) => c ? /* @__PURE__ */ mt
     ] })
   ] });
 };
-function Mz({ widgetID: c, sticky: u, width: f, height: p }) {
+function Uz({ widgetID: c, sticky: u, width: f, height: p }) {
   const [y, E] = Ne.useState(!1), S = window.twChatPluginSettings.tw_chat_button_text || "Chat", g = window.twChatPluginSettings.tw_chat_bubble_image || null, k = window.twChatPluginSettings.tw_chat_bubble_text_tooltip === "1", L = () => {
     E(!y);
   }, O = () => /* @__PURE__ */ mt.jsxs("div", { className: "tw-chat-container", children: [
@@ -26454,7 +26474,7 @@ window.addEventListener("load", function() {
   document.querySelectorAll(".tw-chat-widget-container").forEach((u) => {
     Uh.createRoot(u).render(
       /* @__PURE__ */ mt.jsx(vs.StrictMode, { children: /* @__PURE__ */ mt.jsx(
-        Mz,
+        Uz,
         {
           widgetID: u.dataset.widgetId,
           height: u.dataset.height,

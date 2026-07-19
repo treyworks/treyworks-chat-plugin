@@ -58,6 +58,7 @@ final class EventSourceHttpClient implements HttpClientInterface, ResetInterface
             public ?string $lastEventId = null;
             public float $reconnectionTime;
             public ?float $lastError = null;
+            public bool $firstChunkSeen = false;
         };
         $state->reconnectionTime = $this->reconnectionTime;
 
@@ -115,7 +116,8 @@ final class EventSourceHttpClient implements HttpClientInterface, ResetInterface
                     $context->passthru();
                 }
 
-                if (null === $lastError) {
+                if (!$state->firstChunkSeen) {
+                    $state->firstChunkSeen = true;
                     yield $chunk;
                 }
 

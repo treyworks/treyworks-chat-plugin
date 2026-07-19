@@ -13,7 +13,7 @@ The plugin includes a comprehensive admin interface built with React, database l
 ## Technology Stack
 
 ### Backend
-- **Language**: PHP 8.1+
+- **Language**: PHP 8.3+
 - **Framework**: WordPress 6.6+
 - **Database**: WordPress database (MySQL/MariaDB) with custom tables
 - **Dependencies**: Managed via Composer
@@ -22,7 +22,7 @@ The plugin includes a comprehensive admin interface built with React, database l
 
 ### Frontend
 - **Admin Interface**: React with Vite build system
-- **Chat Widget**: Vanilla JavaScript with esbuild
+- **Chat Widget**: React with esbuild
 - **Voice Widget**: JavaScript with RetellAI SDK and esbuild
 - **Styling**: CSS with CSS custom properties (variables)
 

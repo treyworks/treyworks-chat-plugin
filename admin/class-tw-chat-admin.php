@@ -35,6 +35,21 @@
     }
 
     /**
+     * Require an authenticated administrator request for admin AJAX actions.
+     *
+     * @return void
+     */
+    private function require_admin_ajax_request() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Insufficient permissions.' ), 403 );
+        }
+
+        if ( ! check_ajax_referer( 'tw_chat_admin_nonce', 'nonce', false ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid nonce.' ), 403 );
+        }
+    }
+
+    /**
      * Add top-level admin menu page for configuring plugin
      */
     public function add_admin_menu_page() {
@@ -183,9 +198,24 @@
 	 */
     public function save_settings_callback() {
         try {
+            $this->require_admin_ajax_request();
 
             // Sanitize and validate received data
-            $settings = $_POST['data'];
+            $settings = isset( $_POST['data'] ) && is_array( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : array();
+            $settings = wp_parse_args( $settings, array_fill_keys( array(
+                'tw_chat_openai_key',
+                'tw_chat_retell_key',
+                'tw_chat_is_enabled',
+                'tw_chat_button_text',
+                'tw_chat_disclaimer',
+                'tw_chat_error_message',
+                'tw_chat_max_characters',
+                'tw_chat_global_widget_id',
+                'tw_chat_logo_url',
+                'tw_chat_is_moderation',
+                'tw_chat_allowed_actions',
+                'tw_chat_is_debug',
+            ), '' ) );
         
             // Update settings 
             update_option('tw_chat_openai_key', sanitize_text_field($settings['tw_chat_openai_key']));
@@ -214,6 +244,7 @@
      */
     public function get_chat_widgets_callback() {
         try {
+            $this->require_admin_ajax_request();
             // Query for chat widget post
             $data = TW_Chat_Widgets::get_chat_widgets();
             // Return the data in a JSON success response
@@ -228,10 +259,11 @@
      */
     function save_chat_widget_callback() {
         try {
+            $this->require_admin_ajax_request();
             // Get and sanitize post data
             $widget_name = isset($_POST['tw_chat_widget_name']) ? sanitize_text_field($_POST['tw_chat_widget_name']) : '';
             $system_prompt = isset($_POST['tw_chat_system_prompt']) ? sanitize_textarea_field($_POST['tw_chat_system_prompt']) : '';
-            $model = isset($_POST['tw_chat_ai_model']) ? sanitize_text_field($_POST['tw_chat_ai_model']) : 'gpt-4o';
+            $model = isset($_POST['tw_chat_ai_model']) ? sanitize_text_field($_POST['tw_chat_ai_model']) : 'gpt-5.6-luna';
             $greeting = isset($_POST['tw_chat_greeting']) ? sanitize_text_field($_POST['tw_chat_greeting']) : '';
             $suggested_answers = isset($_POST['tw_chat_suggested_answers']) ? sanitize_text_field($_POST['tw_chat_suggested_answers']) : '';
             $dismiss_answers = isset($_POST['tw_chat_dismiss_answers']) ? rest_sanitize_boolean($_POST['tw_chat_dismiss_answers']) : 0;
@@ -307,6 +339,7 @@
      */
     function remove_chat_widget_callback() {
         try {
+            $this->require_admin_ajax_request();
             // Get and sanitize post data
             if (isset($_POST['id'])) {
                 $deleted = wp_delete_post($_POST['id'], true);;
@@ -334,6 +367,7 @@
      * Callback for fetching Retell AI voice agents
      */
     public function get_retell_agents_callback() {
+        $this->require_admin_ajax_request();
         
         $retell_key = get_option('tw_chat_retell_key', '');
         
@@ -557,7 +591,7 @@
                 ->make();
 
             $response = $client->chat()->create([
-                'model' => 'gpt-4.1-mini-2025-04-14',
+                'model' => 'gpt-5.6-luna',
                 'messages' => [
                     ['role' => 'system', 'content' => $meta_prompt],
                     ['role' => 'user', 'content' => $user_message],

@@ -10,6 +10,21 @@
  */
 
 class TW_Chat_Logs_Admin {
+
+    /**
+     * Require an authenticated administrator request for log actions.
+     *
+     * @return void
+     */
+    private function require_admin_ajax_request() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Insufficient permissions.' ), 403 );
+        }
+
+        if ( ! check_ajax_referer( 'tw_chat_admin_nonce', 'nonce', false ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid nonce.' ), 403 );
+        }
+    }
     
     /**
      * Constructor - Register AJAX action hooks
@@ -38,7 +53,8 @@ class TW_Chat_Logs_Admin {
      * @return void Sends JSON response with message logs
      */
     public function get_message_logs_callback() {
-        $filters = isset($_POST['filters']) ? $_POST['filters'] : array();
+        $this->require_admin_ajax_request();
+        $filters = $this->get_request_filters();
         $logs = TW_Chat_Message_Logger::get_messages($filters);
         wp_send_json_success($logs);
     }
@@ -52,7 +68,8 @@ class TW_Chat_Logs_Admin {
      * @return void Sends JSON response with system logs
      */
     public function get_system_logs_callback() {
-        $filters = isset($_POST['filters']) ? $_POST['filters'] : array();
+        $this->require_admin_ajax_request();
+        $filters = $this->get_request_filters();
         $logs = TW_Chat_System_Logger::get_logs($filters);
         wp_send_json_success($logs);
     }
@@ -66,6 +83,7 @@ class TW_Chat_Logs_Admin {
      * @return void Sends JSON response with token usage stats
      */
     public function get_token_stats_callback() {
+        $this->require_admin_ajax_request();
         $widget_id = isset($_POST['widget_id']) ? absint($_POST['widget_id']) : null;
         $stats = TW_Chat_Message_Logger::get_token_usage_stats($widget_id);
         wp_send_json_success($stats);
@@ -80,6 +98,7 @@ class TW_Chat_Logs_Admin {
      * @return void Sends JSON success response
      */
     public function clear_message_logs_callback() {
+        $this->require_admin_ajax_request();
         TW_Chat_Message_Logger::delete_old_messages(0);
         wp_send_json_success();
     }
@@ -93,6 +112,7 @@ class TW_Chat_Logs_Admin {
      * @return void Sends JSON success response
      */
     public function clear_system_logs_callback() {
+        $this->require_admin_ajax_request();
         TW_Chat_System_Logger::clear_logs();
         wp_send_json_success();
     }
@@ -136,5 +156,19 @@ class TW_Chat_Logs_Admin {
         } else {
             wp_send_json_success(array('deleted' => $deleted));
         }
+    }
+
+    /**
+     * Decode the JSON filter object posted by the React admin application.
+     *
+     * @return array
+     */
+    private function get_request_filters() {
+        if ( ! isset( $_POST['filters'] ) || ! is_string( $_POST['filters'] ) ) {
+            return array();
+        }
+
+        $filters = json_decode( wp_unslash( $_POST['filters'] ), true );
+        return is_array( $filters ) ? $filters : array();
     }
 }
