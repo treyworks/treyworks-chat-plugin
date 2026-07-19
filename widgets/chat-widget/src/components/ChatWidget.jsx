@@ -125,8 +125,8 @@ const ChatWidget = ({ toggleChat, widgetID, width, height, sticky }) => {
                 // Set reply text
                 replyText = responseMessage
 
-                // Remove annotations
-                const newText = replyText.replace(/(?:\r\n|\r|\n)/g, '<br />').replace(/【.*?†source】/g, "")
+                // Preserve Markdown line breaks and remove source annotations.
+                const newText = replyText.replace(/【.*?†source】/g, "")
                 // Add response to messages state to update UI
                 setMessages([...twChatMessages[widgetID], newMessage(newText, 'assistant')])
                 twChatMessages[widgetID] = [...twChatMessages[widgetID], newMessage(newText, 'assistant')]

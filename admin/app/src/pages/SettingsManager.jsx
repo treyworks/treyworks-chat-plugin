@@ -52,7 +52,7 @@ const SettingsManager = () => {
         try {
             await axios.post(twChatSettings.ajax_url, {
                 action: 'save_settings',
-                _ajax_nonce: twChatSettings.ajax_nonce,
+                nonce: twChatSettings.nonce,
                 data: formData
             }, {
                 headers: { 'Content-Type': 'multipart/form-data' }

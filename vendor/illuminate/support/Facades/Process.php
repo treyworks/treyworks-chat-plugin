@@ -8,8 +8,8 @@ use Illuminate\Process\Factory;
 /**
  * @method static \Illuminate\Process\PendingProcess command(array|string $command)
  * @method static \Illuminate\Process\PendingProcess path(string $path)
- * @method static \Illuminate\Process\PendingProcess timeout(int $timeout)
- * @method static \Illuminate\Process\PendingProcess idleTimeout(int $timeout)
+ * @method static \Illuminate\Process\PendingProcess timeout(\Carbon\CarbonInterval|int $timeout)
+ * @method static \Illuminate\Process\PendingProcess idleTimeout(\Carbon\CarbonInterval|int $timeout)
  * @method static \Illuminate\Process\PendingProcess forever()
  * @method static \Illuminate\Process\PendingProcess env(array $environment)
  * @method static \Illuminate\Process\PendingProcess input(\Traversable|resource|string|int|float|bool|null $input)
@@ -18,6 +18,7 @@ use Illuminate\Process\Factory;
  * @method static \Illuminate\Process\PendingProcess options(array $options)
  * @method static \Illuminate\Contracts\Process\ProcessResult run(array|string|null $command = null, callable|null $output = null)
  * @method static \Illuminate\Process\InvokedProcess start(array|string|null $command = null, callable|null $output = null)
+ * @method static bool supportsTty()
  * @method static \Illuminate\Process\PendingProcess withFakeHandlers(array $fakeHandlers)
  * @method static \Illuminate\Process\PendingProcess|mixed when(\Closure|mixed|null $value = null, callable|null $callback = null, callable|null $default = null)
  * @method static \Illuminate\Process\PendingProcess|mixed unless(\Closure|mixed|null $value = null, callable|null $callback = null, callable|null $default = null)

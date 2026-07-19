@@ -11,7 +11,9 @@ final class VectorStoreListResponseFixture
                 'id' => 'vs_8VE2cQq1jTFlH7FizhYCzUz0',
                 'object' => 'vector_store',
                 'name' => 'Product Knowledge Base',
+                'description' => 'A knowledge base for product information.',
                 'status' => 'completed',
+                'attributes' => [],
                 'usage_bytes' => 29882,
                 'created_at' => 1_715_953_317,
                 'file_counts' => [
@@ -30,7 +32,9 @@ final class VectorStoreListResponseFixture
                 'id' => 'vs_xzlnkCbIQE50B9A8RzmcFmtP',
                 'object' => 'vector_store',
                 'name' => null,
+                'description' => null,
                 'status' => 'completed',
+                'attributes' => [],
                 'usage_bytes' => 0,
                 'created_at' => 1_710_869_420,
                 'file_counts' => [

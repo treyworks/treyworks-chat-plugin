@@ -155,17 +155,8 @@ class TW_Chat_Plugin {
 
                 wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
 
-                // Localize all widget settings
-                $all_widgets = TW_Chat_Widgets::get_chat_widgets();
-                $widget_settings = [];
-                foreach ($all_widgets as $widget) {
-                    $settings = [];
-                    foreach ($widget['meta'] as $key => $value) {
-                        $settings[$key] = $value[0];
-                    }
-                    $settings['tw_chat_widget_name'] = $widget['name'];
-                    $widget_settings[$widget['id']] = $settings;
-                }
+                // Localize only the non-sensitive settings required by the widget.
+                $widget_settings = TW_Chat_Widgets::get_frontend_widget_settings();
 
                 wp_localize_script('tw-chat-js', 'twChatWidgetSettings', $widget_settings);
 
@@ -305,17 +296,8 @@ class TW_Chat_Plugin {
                 
                 wp_localize_script('tw-chat-js', 'twChatPluginSettings', $localizeData);
                 
-                // Localize all widget settings
-                $all_widgets = TW_Chat_Widgets::get_chat_widgets();
-                $widget_settings = [];
-                foreach ($all_widgets as $widget) {
-                    $settings = [];
-                    foreach ($widget['meta'] as $key => $value) {
-                        $settings[$key] = $value[0];
-                    }
-                    $settings['tw_chat_widget_name'] = $widget['name'];
-                    $widget_settings[$widget['id']] = $settings;
-                }
+                // Localize only the non-sensitive settings required by the widget.
+                $widget_settings = TW_Chat_Widgets::get_frontend_widget_settings();
                 
                 wp_localize_script('tw-chat-js', 'twChatWidgetSettings', $widget_settings);
                 
@@ -381,15 +363,38 @@ class TW_Chat_Plugin {
         register_rest_route('tw-chat/v1', '/chat', [
             'methods' => 'POST',
             'callback' => [ $this, 'handle_chat_response' ],
-            'permission_callback' => function () { return true; }
+            // Public by design; handle_chat_response applies abuse controls.
+            'permission_callback' => '__return_true'
         ]);
 
         // Create Call Endpoint
         register_rest_route('tw-chat/v1', '/create-call', [
             'methods' => 'POST',
             'callback' => [ $this, 'handle_create_call' ],
-            'permission_callback' => function () { return true; }
+            // Public by design; handle_create_call validates configured agents.
+            'permission_callback' => '__return_true'
         ]);
+    }
+
+    /**
+     * Apply a simple per-IP rate limit to public, paid API routes.
+     *
+     * @param string $bucket Limit namespace.
+     * @param int    $limit Maximum requests during the window.
+     * @param int    $window Window duration in seconds.
+     * @return true|WP_Error
+     */
+    private function enforce_public_rate_limit( $bucket, $limit, $window ) {
+        $ip_address = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+        $key = 'tw_chat_rate_' . $bucket . '_' . hash( 'sha256', $ip_address );
+        $count = (int) get_transient( $key );
+
+        if ( $count >= $limit ) {
+            return new WP_Error( 'rate_limited', 'Too many requests. Please try again shortly.', array( 'status' => 429 ) );
+        }
+
+        set_transient( $key, $count + 1, $window );
+        return true;
     }
 
 
@@ -397,15 +402,24 @@ class TW_Chat_Plugin {
      * Handles REST API create Retell AI call requests
      */
     public function handle_create_call($request) {
+        $rate_limit = $this->enforce_public_rate_limit( 'voice', 5, MINUTE_IN_SECONDS );
+        if ( is_wp_error( $rate_limit ) ) {
+            return $rate_limit;
+        }
+
+        $agent_id = sanitize_text_field( (string) $request->get_param( 'agent_id' ) );
+        if ( empty( $agent_id ) || ! TW_Chat_Widgets::has_published_voice_agent( $agent_id ) ) {
+            return new WP_Error( 'invalid_agent', 'Invalid voice agent.', array( 'status' => 400 ) );
+        }
+
         TW_Chat_System_Logger::log_debug(__('+ Create call API endpoint request'));
-        TW_Chat_System_Logger::log_debug($request);
 
         // Get Retell AI token
         $token = get_option('tw_chat_retell_key');
 
         // API Body
         $body = [
-            'agent_id' => $request->get_params()['agent_id']
+            'agent_id' => $agent_id
         ];
 
         // Build API request
@@ -429,12 +443,8 @@ class TW_Chat_Plugin {
         if (is_wp_error($response)) {
             TW_Chat_System_Logger::log_debug($response->get_error_message());
             
-            // Get error message
-            $message = $response->get_error_message();
-
             return new WP_REST_Response([
-                "message" => "Failed to create call",
-                "response" => $message
+                "message" => "Failed to create call"
             ], 500);
         }
 
@@ -495,6 +505,11 @@ class TW_Chat_Plugin {
     
     public function handle_chat_response($request) {
         try {
+            $rate_limit = $this->enforce_public_rate_limit( 'chat', 20, MINUTE_IN_SECONDS );
+            if ( is_wp_error( $rate_limit ) ) {
+                return $rate_limit;
+            }
+
             // Get OpenAI Key
             $openai_key = get_option('tw_chat_openai_key');
 
@@ -516,7 +531,7 @@ class TW_Chat_Plugin {
             $source_url = isset($_SERVER['HTTP_REFERER']) ? esc_url_raw($_SERVER['HTTP_REFERER']) : null;
             $ip_address = $this->get_client_ip();
 
-            if (empty($widget_id) || empty($messages)) {
+            if (empty($widget_id) || !is_array($messages) || empty($messages) || count($messages) > 20) {
                 return new WP_Error('bad_request', 'Missing widget_id or messages.', ['status' => 400]);
             }
 
@@ -525,13 +540,19 @@ class TW_Chat_Plugin {
 
             // Get widget settings
             $chat_widget = TW_Chat_Widgets::get_chat_widget_by_id($widget_id);
-            if (!$chat_widget) {
+            if (!$chat_widget || get_post_type( $widget_id ) !== 'chat_widgets' || get_post_status( $widget_id ) !== 'publish') {
                 return new WP_Error('not_found', 'Chat widget not found.', ['status' => 404]);
+            }
+
+            foreach ( $messages as $message ) {
+                if ( ! is_array( $message ) || ! isset( $message['role'], $message['content'] ) || ! is_string( $message['content'] ) || ! in_array( $message['role'], array( 'user', 'assistant' ), true ) || strlen( $message['content'] ) > 4000 ) {
+                    return new WP_Error( 'bad_request', 'Invalid message payload.', array( 'status' => 400 ) );
+                }
             }
             
             // Get system prompt and model
             $system_prompt = sanitize_textarea_field($chat_widget['tw_chat_system_prompt']);
-            $model = !empty($chat_widget['tw_chat_ai_model']) ? sanitize_text_field($chat_widget['tw_chat_ai_model']) : 'gpt-4o';
+            $model = !empty($chat_widget['tw_chat_ai_model']) ? sanitize_text_field($chat_widget['tw_chat_ai_model']) : 'gpt-5.6-luna';
             $use_site_search = !empty($chat_widget['tw_chat_use_site_search']);
 
             // Append site search prompt if enabled
@@ -577,10 +598,6 @@ class TW_Chat_Plugin {
 
             // Prepare messages for API
             $api_messages = [];
-            // Add system prompt
-            if (!empty($system_prompt)) {
-                $api_messages[] = ['role' => 'system', 'content' => $system_prompt];
-            }
 
             // Check moderation setting 
             $is_moderation = !empty($settings['tw_chat_is_moderation']);
@@ -640,26 +657,36 @@ class TW_Chat_Plugin {
                 );
             }
 
-            // Create a chat completion
-            $response = $client->chat()->create([
+            // Create a Responses API request. Keeping responses out of OpenAI
+            // storage avoids retaining visitor conversations outside this plugin.
+            $response = $client->responses()->create([
                 'model' => $model,
-                'messages' => $api_messages,
+                'instructions' => $system_prompt,
+                'input' => $api_messages,
                 'tools' => TW_Chat_Functions::get_function_definitions($widget_id),
                 'tool_choice' => 'auto',
+                'reasoning' => array( 'effort' => 'none' ),
+                'store' => false,
             ]);
 
             // Initialize token counters
             $input_tokens = 0;
             $output_tokens = 0;
 
-            // Check for tool call
-            $message = $response->choices[0]->message;
+            // Find the first function call returned by the Responses API.
+            $tool_call = null;
+            foreach ( $response->output as $output ) {
+                if ( $output->type === 'function_call' ) {
+                    $tool_call = $output;
+                    break;
+                }
+            }
 
-            if (!empty($message->toolCalls)) {
-                $tool_call = $message->toolCalls[0];
-                $tool_call_id = $tool_call->id;
-                $function_name = $tool_call->function->name;
-                $arguments = json_decode($tool_call->function->arguments, true);
+            if ( $tool_call !== null ) {
+                $tool_call_id = $tool_call->callId;
+                $function_name = $tool_call->name;
+                $arguments = json_decode( $tool_call->arguments, true );
+                $arguments = is_array( $arguments ) ? $arguments : array();
 
                 // Log tool call
                 TW_Chat_System_Logger::log_debug(__('+ Tool call: ' . $function_name));
@@ -736,63 +763,50 @@ class TW_Chat_Plugin {
                         $widget_id
                     );
 
-                    // Add assistant message with tool call
-                    $api_messages[] = [
-                        'role' => 'assistant',
-                        'content' => null,
-                        'tool_calls' => [
-                            [
-                                'id' => $tool_call_id,
-                                'type' => 'function',
-                                'function' => [
-                                    'name' => $function_name,
-                                    'arguments' => json_encode($arguments),
-                                ]
-                            ]
-                        ]
-                    ];
-
-                    // Add tool result
-                    $api_messages[] = [
-                        'role' => 'tool',
-                        'tool_call_id' => $tool_call_id,
-                        'content' => json_encode($function_result),
-                    ];
-
-                    // Send messages + function result back for natural language final reply
-                    $finalResponse = $client->chat()->create([
+                    // Continue the response with the function result so the model can
+                    // produce the natural-language reply.
+                    $finalResponse = $client->responses()->create([
                         'model' => $model,
-                        'messages' => $api_messages,
+                        'previous_response_id' => $response->id,
+                        'input' => [
+                            [
+                                'type' => 'function_call_output',
+                                'call_id' => $tool_call_id,
+                                'output' => wp_json_encode( $function_result ),
+                            ],
+                        ],
+                        'reasoning' => array( 'effort' => 'none' ),
+                        'store' => false,
                     ]);
                     
                     // Get the response message
-                    $message_content = $finalResponse->choices[0]->message->content;
+                    $message_content = $finalResponse->outputText ?? '';
                     
                     // Extract token usage from final response
                     if (isset($finalResponse->usage)) {
-                        $input_tokens = $finalResponse->usage->promptTokens ?? 0;
-                        $output_tokens = $finalResponse->usage->completionTokens ?? 0;
+                        $input_tokens = $finalResponse->usage->inputTokens ?? 0;
+                        $output_tokens = $finalResponse->usage->outputTokens ?? 0;
                     }
                 } else {
                     // No function result to return
                     // Output the message content
-                    $message_content = $message->content;
+                    $message_content = $response->outputText ?? '';
                     
                     // Extract token usage from initial response
                     if (isset($response->usage)) {
-                        $input_tokens = $response->usage->promptTokens ?? 0;
-                        $output_tokens = $response->usage->completionTokens ?? 0;
+                        $input_tokens = $response->usage->inputTokens ?? 0;
+                        $output_tokens = $response->usage->outputTokens ?? 0;
                     }
                 }
                 
             } else {
                 // No function call, just output reply
-                $message_content = $message->content;
+                $message_content = $response->outputText ?? '';
                 
                 // Extract token usage from response
                 if (isset($response->usage)) {
-                    $input_tokens = $response->usage->promptTokens ?? 0;
-                    $output_tokens = $response->usage->completionTokens ?? 0;
+                    $input_tokens = $response->usage->inputTokens ?? 0;
+                    $output_tokens = $response->usage->outputTokens ?? 0;
                 }
             }
 
@@ -814,8 +828,8 @@ class TW_Chat_Plugin {
             return new WP_REST_Response(['message' => $message_content], 200);
 
         } catch (Exception $e) {
-            TW_Chat_System_Logger::log_debug(__('+ API Error: ' . $e->getMessage()));
-            return new WP_Error('api_error', 'Error: ' . $e->getMessage(), ['status' => 500]);
+            TW_Chat_System_Logger::log_error( '+ API Error: ' . $e->getMessage() );
+            return new WP_Error( 'api_error', 'Unable to process the chat request.', array( 'status' => 500 ) );
         }
     }
 

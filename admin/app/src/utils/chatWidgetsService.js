@@ -9,7 +9,7 @@ const headers = {
 export function getChatWidgets(success, error) {
     axios.post(twChatSettings.ajax_url, {
         action: "get_chat_widgets",
-        _ajax_nonce: twChatSettings.ajax_nonce,
+        nonce: twChatSettings.nonce,
     }, headers)
     .then(success)
     .catch(error);    
@@ -21,7 +21,7 @@ export function saveChatWidget(data, success, error) {
 
     axios.post(twChatSettings.ajax_url, {
         action: "save_chat_widget",
-        _ajax_nonce: twChatSettings.ajax_nonce,
+        nonce: twChatSettings.nonce,
         ...data
     }, headers)
     .then(success)
@@ -31,7 +31,7 @@ export function saveChatWidget(data, success, error) {
 export function removeChatWidget(widgetID, success, error) {
     axios.post(twChatSettings.ajax_url, {
         action: "remove_chat_widget",
-        _ajax_nonce: twChatSettings.ajax_nonce,
+        nonce: twChatSettings.nonce,
         id: widgetID
     }, headers)
     .then(success)

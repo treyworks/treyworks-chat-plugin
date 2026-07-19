@@ -5,10 +5,13 @@ namespace Illuminate\Support\Facades;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Benchmark;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Js;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 use Illuminate\Support\Testing\Fakes\Fake;
+use Illuminate\Support\Uri;
 use Mockery;
 use Mockery\LegacyMockInterface;
 use RuntimeException;
@@ -190,7 +193,7 @@ abstract class Facade
      *
      * @return bool
      */
-    protected static function isFake()
+    public static function isFake()
     {
         $name = static::getFacadeAccessor();
 
@@ -244,12 +247,12 @@ abstract class Facade
     /**
      * Clear a resolved facade instance.
      *
-     * @param  string  $name
+     * @param  ?string  $name
      * @return void
      */
-    public static function clearResolvedInstance($name)
+    public static function clearResolvedInstance($name = null)
     {
-        unset(static::$resolvedInstance[$name]);
+        unset(static::$resolvedInstance[$name ?? static::getFacadeAccessor()]);
     }
 
     /**
@@ -269,16 +272,19 @@ abstract class Facade
      */
     public static function defaultAliases()
     {
-        return collect([
+        return new Collection([
             'App' => App::class,
             'Arr' => Arr::class,
             'Artisan' => Artisan::class,
             'Auth' => Auth::class,
+            'Benchmark' => Benchmark::class,
             'Blade' => Blade::class,
             'Broadcast' => Broadcast::class,
             'Bus' => Bus::class,
             'Cache' => Cache::class,
+            'Concurrency' => Concurrency::class,
             'Config' => Config::class,
+            'Context' => Context::class,
             'Cookie' => Cookie::class,
             'Crypt' => Crypt::class,
             'Date' => Date::class,
@@ -303,10 +309,12 @@ abstract class Facade
             'Request' => Request::class,
             'Response' => Response::class,
             'Route' => Route::class,
+            'Schedule' => Schedule::class,
             'Schema' => Schema::class,
             'Session' => Session::class,
             'Storage' => Storage::class,
             'Str' => Str::class,
+            'Uri' => Uri::class,
             'URL' => URL::class,
             'Validator' => Validator::class,
             'View' => View::class,

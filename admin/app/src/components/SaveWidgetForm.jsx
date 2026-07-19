@@ -5,12 +5,10 @@ import WebhookSchemaBuilder from "./WebhookSchemaBuilder";
 import PromptGenerator from "./PromptGenerator";
 
 const PRESET_MODELS = [
-    { value: 'gpt-5.4', label: 'GPT 5.4'},
+    { value: 'gpt-5.6-sol', label: 'GPT 5.6 Sol', description: 'Flagship frontier model for complex professional work, deep reasoning, and advanced agentic coding workflows.' },
+    { value: 'gpt-5.6-terra', label: 'GPT 5.6 Terra', description: 'Balanced intelligence and cost-efficiency.' },
+    { value: 'gpt-5.6-luna', label: 'GPT 5.6 Luna', description: 'Budget-friendly, low-latency model for high-volume, cost-sensitive workloads.' },
     { value: 'gpt-5.4-mini', label: 'GPT 5.4 Mini' },
-    { value: 'gpt-5.3-chat-latest', label: 'GPT 5.3 Instant'},
-    { value: 'gpt-5.2-2025-12-11', label: 'GPT 5.2' },
-    { value: 'gpt-5-mini', label: 'GPT 5 Mini' },
-    { value: 'gpt-4.1-mini-2025-04-14', label: 'GPT 4.1 Mini' },
 ];
 
 const isPresetModel = (model) => PRESET_MODELS.some(m => m.value === model);
@@ -26,7 +24,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
         tw_chat_dismiss_answers_text: '',
         tw_chat_suggested_answers: '',
         tw_chat_system_prompt: '',
-        tw_chat_ai_model: 'gpt-4.1-mini-2025-04-14',
+        tw_chat_ai_model: 'gpt-5.6-luna',
         tw_chat_ai_model_custom: '',
         tw_chat_webhook_address: '',
         tw_chat_webhook_header: '',
@@ -50,7 +48,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                 tw_chat_system_prompt: currentWidget.meta.tw_chat_system_prompt ? currentWidget.meta.tw_chat_system_prompt[0] : '',
                 tw_chat_ai_model: currentWidget.meta.tw_chat_ai_model 
                     ? (isPresetModel(currentWidget.meta.tw_chat_ai_model[0]) ? currentWidget.meta.tw_chat_ai_model[0] : 'custom')
-                    : 'gpt-4.1-mini-2025-04-14',
+                    : 'gpt-5.6-luna',
                 tw_chat_ai_model_custom: currentWidget.meta.tw_chat_ai_model 
                     ? (!isPresetModel(currentWidget.meta.tw_chat_ai_model[0]) ? currentWidget.meta.tw_chat_ai_model[0] : '')
                     : '',
@@ -232,7 +230,7 @@ const SaveWidgetForm = ({ currentWidget, onSave }) => {
                                     <p className="description">
                                         {formData.tw_chat_ai_model === 'custom'
                                             ? 'Enter any OpenAI-compatible model name.'
-                                            : 'Select a model or choose Custom to enter any OpenAI-compatible model name.'}
+                                            : PRESET_MODELS.find(m => m.value === formData.tw_chat_ai_model)?.description || 'Select a model or choose Custom to enter any OpenAI-compatible model name.'}
                                     </p>
                                 </td>
                             </tr>

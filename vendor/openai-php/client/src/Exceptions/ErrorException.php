@@ -5,17 +5,24 @@ declare(strict_types=1);
 namespace OpenAI\Exceptions;
 
 use Exception;
+use Psr\Http\Message\ResponseInterface;
 
 final class ErrorException extends Exception
 {
+    private readonly int $statusCode;
+
     /**
      * Creates a new Exception instance.
      *
-     * @param  array{message: string|array<int, string>, type: ?string, code: string|int|null}  $contents
+     * @param  array{message?: string|array<int, string>, type?: ?string, code?: string|int|null}|string  $contents
      */
-    public function __construct(private readonly array $contents, private readonly int $statusCode)
+    public function __construct(private readonly string|array $contents, public readonly ResponseInterface $response)
     {
-        $message = ($contents['message'] ?: (string) $this->contents['code']) ?: 'Unknown error';
+        $this->statusCode = $response->getStatusCode();
+
+        // Errors can be a string or an object with message, type, and code
+        $contents = is_string($contents) ? ['message' => $contents] : $contents;
+        $message = ($contents['message'] ?? null) ?: (string) ($contents['code'] ?? null) ?: 'Unknown error';
 
         if (is_array($message)) {
             $message = implode(PHP_EOL, $message);
@@ -47,7 +54,7 @@ final class ErrorException extends Exception
      */
     public function getErrorType(): ?string
     {
-        return $this->contents['type'];
+        return $this->contents['type'] ?? null;
     }
 
     /**
@@ -55,6 +62,6 @@ final class ErrorException extends Exception
      */
     public function getErrorCode(): string|int|null
     {
-        return $this->contents['code'];
+        return $this->contents['code'] ?? null;
     }
 }

@@ -1,5 +1,33 @@
 # Project Changelog
 
+## 2.3.0
+- **Major Feature: OpenAI Responses API Migration**
+  - Migrated text chat, function-tool handling, and the prompt generator from Chat Completions to the Responses API
+  - Updated function tools to the Responses API schema and tool-result continuation flow
+  - Set reasoning effort to `none` for all Responses API requests
+  - Disabled OpenAI-side response storage for chat and prompt-generation requests
+- **Feature: GPT-5.6 Model Support**
+  - Added GPT-5.6 Sol (`gpt-5.6-sol`), Terra (`gpt-5.6-terra`), and Luna (`gpt-5.6-luna`) to the widget model selector
+  - Added GPT-5.4 Mini (`gpt-5.4-mini`) to the widget model selector
+  - Set GPT-5.6 Luna as the default model for new widgets and prompt generation
+- **Security: Admin and Public API Hardening**
+  - Added capability and nonce enforcement to privileged admin and log AJAX endpoints
+  - Prevented sensitive widget metadata, including webhook headers, from being exposed in frontend JavaScript
+  - Added validation and rate limits to public chat and voice-call requests
+  - Restricted voice-call creation to agents configured on published voice widgets
+  - Sanitized rendered chat HTML and hardened outbound links
+  - Removed internal exception details from public chat API responses
+- **Developer: Dependency and Platform Updates**
+  - Updated `openai-php/client` to v0.20.0
+  - Raised the minimum supported PHP version to 8.2
+
+## 2.2.4
+- **Feature: Model Support Updates**
+  - Added support for GPT 5.4 Mini (`gpt-5.4-mini`)
+- **Documentation: License Update**
+  - Updated the README license information to GNU General Public License v3.0 (GPL v3)
+
+
 ## 2.2.3
 - **Feature: Model Support Updates**
   - Added support for GPT 5.3 Instant
