@@ -13,7 +13,7 @@
  * Domain Path:       /languages
 */
 
-defined('TW_CHAT_VERSION') or define('TW_CHAT_VERSION', '2.2.4');
+defined('TW_CHAT_VERSION') or define('TW_CHAT_VERSION', '2.3.0');
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
