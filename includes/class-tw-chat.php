@@ -598,10 +598,6 @@ class TW_Chat_Plugin {
 
             // Prepare messages for API
             $api_messages = [];
-            // Add system prompt
-            if (!empty($system_prompt)) {
-                $api_messages[] = ['role' => 'system', 'content' => $system_prompt];
-            }
 
             // Check moderation setting 
             $is_moderation = !empty($settings['tw_chat_is_moderation']);
@@ -661,26 +657,36 @@ class TW_Chat_Plugin {
                 );
             }
 
-            // Create a chat completion
-            $response = $client->chat()->create([
+            // Create a Responses API request. Keeping responses out of OpenAI
+            // storage avoids retaining visitor conversations outside this plugin.
+            $response = $client->responses()->create([
                 'model' => $model,
-                'messages' => $api_messages,
+                'instructions' => $system_prompt,
+                'input' => $api_messages,
                 'tools' => TW_Chat_Functions::get_function_definitions($widget_id),
                 'tool_choice' => 'auto',
+                'reasoning' => array( 'effort' => 'none' ),
+                'store' => false,
             ]);
 
             // Initialize token counters
             $input_tokens = 0;
             $output_tokens = 0;
 
-            // Check for tool call
-            $message = $response->choices[0]->message;
+            // Find the first function call returned by the Responses API.
+            $tool_call = null;
+            foreach ( $response->output as $output ) {
+                if ( $output->type === 'function_call' ) {
+                    $tool_call = $output;
+                    break;
+                }
+            }
 
-            if (!empty($message->toolCalls)) {
-                $tool_call = $message->toolCalls[0];
-                $tool_call_id = $tool_call->id;
-                $function_name = $tool_call->function->name;
-                $arguments = json_decode($tool_call->function->arguments, true);
+            if ( $tool_call !== null ) {
+                $tool_call_id = $tool_call->callId;
+                $function_name = $tool_call->name;
+                $arguments = json_decode( $tool_call->arguments, true );
+                $arguments = is_array( $arguments ) ? $arguments : array();
 
                 // Log tool call
                 TW_Chat_System_Logger::log_debug(__('+ Tool call: ' . $function_name));
@@ -757,63 +763,50 @@ class TW_Chat_Plugin {
                         $widget_id
                     );
 
-                    // Add assistant message with tool call
-                    $api_messages[] = [
-                        'role' => 'assistant',
-                        'content' => null,
-                        'tool_calls' => [
-                            [
-                                'id' => $tool_call_id,
-                                'type' => 'function',
-                                'function' => [
-                                    'name' => $function_name,
-                                    'arguments' => json_encode($arguments),
-                                ]
-                            ]
-                        ]
-                    ];
-
-                    // Add tool result
-                    $api_messages[] = [
-                        'role' => 'tool',
-                        'tool_call_id' => $tool_call_id,
-                        'content' => json_encode($function_result),
-                    ];
-
-                    // Send messages + function result back for natural language final reply
-                    $finalResponse = $client->chat()->create([
+                    // Continue the response with the function result so the model can
+                    // produce the natural-language reply.
+                    $finalResponse = $client->responses()->create([
                         'model' => $model,
-                        'messages' => $api_messages,
+                        'previous_response_id' => $response->id,
+                        'input' => [
+                            [
+                                'type' => 'function_call_output',
+                                'call_id' => $tool_call_id,
+                                'output' => wp_json_encode( $function_result ),
+                            ],
+                        ],
+                        'reasoning' => array( 'effort' => 'none' ),
+                        'store' => false,
                     ]);
                     
                     // Get the response message
-                    $message_content = $finalResponse->choices[0]->message->content;
+                    $message_content = $finalResponse->outputText ?? '';
                     
                     // Extract token usage from final response
                     if (isset($finalResponse->usage)) {
-                        $input_tokens = $finalResponse->usage->promptTokens ?? 0;
-                        $output_tokens = $finalResponse->usage->completionTokens ?? 0;
+                        $input_tokens = $finalResponse->usage->inputTokens ?? 0;
+                        $output_tokens = $finalResponse->usage->outputTokens ?? 0;
                     }
                 } else {
                     // No function result to return
                     // Output the message content
-                    $message_content = $message->content;
+                    $message_content = $response->outputText ?? '';
                     
                     // Extract token usage from initial response
                     if (isset($response->usage)) {
-                        $input_tokens = $response->usage->promptTokens ?? 0;
-                        $output_tokens = $response->usage->completionTokens ?? 0;
+                        $input_tokens = $response->usage->inputTokens ?? 0;
+                        $output_tokens = $response->usage->outputTokens ?? 0;
                     }
                 }
                 
             } else {
                 // No function call, just output reply
-                $message_content = $message->content;
+                $message_content = $response->outputText ?? '';
                 
                 // Extract token usage from response
                 if (isset($response->usage)) {
-                    $input_tokens = $response->usage->promptTokens ?? 0;
-                    $output_tokens = $response->usage->completionTokens ?? 0;
+                    $input_tokens = $response->usage->inputTokens ?? 0;
+                    $output_tokens = $response->usage->outputTokens ?? 0;
                 }
             }
 

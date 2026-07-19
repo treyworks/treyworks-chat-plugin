@@ -590,16 +590,17 @@
                 ->withHttpClient(new \GuzzleHttp\Client([]))
                 ->make();
 
-            $response = $client->chat()->create([
+            $response = $client->responses()->create([
                 'model' => 'gpt-5.6-luna',
-                'messages' => [
-                    ['role' => 'system', 'content' => $meta_prompt],
+                'instructions' => $meta_prompt,
+                'input' => [
                     ['role' => 'user', 'content' => $user_message],
                 ],
-                'temperature' => 0.7,
+                'reasoning' => array( 'effort' => 'none' ),
+                'store' => false,
             ]);
 
-            $generated = $response->choices[0]->message->content;
+            $generated = $response->outputText ?? '';
 
             wp_send_json_success(array('prompt' => trim($generated)));
         } catch (Exception $e) {

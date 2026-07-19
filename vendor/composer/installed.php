@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'e2e1f7e9be28dea037824a3872748b823542dcb7',
+        'reference' => '68d89d9c37d1603972703579f7faa523c95d99c3',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'e2e1f7e9be28dea037824a3872748b823542dcb7',
+            'reference' => '68d89d9c37d1603972703579f7faa523c95d99c3',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -146,9 +146,9 @@
             'dev_requirement' => false,
         ),
         'openai-php/client' => array(
-            'pretty_version' => 'v0.10.3',
-            'version' => '0.10.3.0',
-            'reference' => '4a565d145e0fb3ea1baba8fffe39d86c56b6dc2c',
+            'pretty_version' => 'v0.20.0',
+            'version' => '0.20.0.0',
+            'reference' => 'b5c0e1e0f210e6b9aca5ee048157fcf3039ca91f',
             'type' => 'library',
             'install_path' => __DIR__ . '/../openai-php/client',
             'aliases' => array(),
@@ -226,8 +226,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-factory' => array(

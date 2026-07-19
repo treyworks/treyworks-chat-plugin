@@ -25163,7 +25163,7 @@ const o7 = () => {
     try {
       await Ur.post(twChatSettings.ajax_url, {
         action: "save_settings",
-        _ajax_nonce: twChatSettings.ajax_nonce,
+        nonce: twChatSettings.nonce,
         data: t
       }, {
         headers: { "Content-Type": "multipart/form-data" }
@@ -27000,14 +27000,14 @@ const gg = /* @__PURE__ */ Gn(AY), oU = {
 function RY(e, t, n) {
   console.log("Saving chat data"), console.log(e), Ur.post(twChatSettings.ajax_url, {
     action: "save_chat_widget",
-    _ajax_nonce: twChatSettings.ajax_nonce,
+    nonce: twChatSettings.nonce,
     ...e
   }, oU).then(t).catch(n);
 }
 function jY(e, t, n) {
   Ur.post(twChatSettings.ajax_url, {
     action: "remove_chat_widget",
-    _ajax_nonce: twChatSettings.ajax_nonce,
+    nonce: twChatSettings.nonce,
     id: e
   }, oU).then(t).catch(n);
 }
@@ -27018,7 +27018,7 @@ const oM = (e) => {
 function kY(e, t) {
   Ur.post(twChatSettings.ajax_url, {
     action: "get_retell_agents",
-    _ajax_nonce: twChatSettings.ajax_nonce
+    nonce: twChatSettings.nonce
   }, {
     headers: {
       "Content-Type": "multipart/form-data"

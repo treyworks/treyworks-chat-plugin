@@ -283,7 +283,7 @@ Monitor system health and debug issues:
 ## System Requirements
 
 - WordPress 6.6 or higher
-- PHP 8.1 or higher
+- PHP 8.2 or higher
 - Valid OpenAI API key (for text chat widgets)
 - Valid API key for RetellAI (for voice chat widgets)
 
